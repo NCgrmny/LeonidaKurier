@@ -51,7 +51,7 @@ export const articles: Article[] = [
       { type: "heading", text: "Wo das Wissen endet" },
       {
         type: "paragraph",
-        text: "Aus benannten Orten folgt kein Kartenbild. Weder die Fläche der Spielwelt noch die Lage der Schauplätze zueinander sind offiziell dokumentiert. Deshalb trägt jede Position im Leonida Kompass eine Genauigkeitsangabe – und die lautet derzeit durchgängig „Platzhalter“.",
+        text: "Aus benannten Orten folgt kein Kartenbild. Weder die Fläche der Spielwelt noch die Lage der Schauplätze zueinander sind offiziell dokumentiert. Deshalb trägt jede Position im Leonida Kompass eine Genauigkeitsangabe: Verortet wird nur, wo ein reales Vorbild nachvollziehbar ist – alles Übrige bleibt unbelegt und wird gesondert ausgewiesen.",
       },
       {
         type: "quote",
