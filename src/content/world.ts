@@ -22,6 +22,7 @@ export const regions: Region[] = [
   {
     id: "reg-leonida",
     slug: "leonida",
+    motif: "skyline-sonnenuntergang",
     title: "Leonida",
     summary:
       "Der Bundesstaat, in dem Grand Theft Auto VI spielt. Rockstar Games hat Leonida als Schauplatz offiziell bestätigt.",
@@ -40,6 +41,7 @@ export const locations: GameLocation[] = [
   {
     id: "loc-vice-city",
     slug: "vice-city",
+    motif: "nachtviertel",
     title: "Vice City",
     summary:
       "Die Metropole des Bundesstaates Leonida und zentraler Schauplatz von Grand Theft Auto VI.",
@@ -61,6 +63,7 @@ export const locations: GameLocation[] = [
   {
     id: "loc-leonida-keys",
     slug: "leonida-keys",
+    motif: "inselkette",
     title: "Leonida Keys",
     summary:
       "Vorgelagerte Inselkette im Süden des Bundesstaates, von Rockstar Games namentlich genannt.",
@@ -79,6 +82,7 @@ export const locations: GameLocation[] = [
   {
     id: "loc-port-gellhorn",
     slug: "port-gellhorn",
+    motif: "kuestenstrasse",
     title: "Port Gellhorn",
     summary: "Von Rockstar Games benannter Schauplatz im Bundesstaat Leonida.",
     category: "stadt",
@@ -92,6 +96,7 @@ export const locations: GameLocation[] = [
   {
     id: "loc-ambrosia",
     slug: "ambrosia",
+    motif: "sumpfland",
     title: "Ambrosia",
     summary: "Von Rockstar Games benannter Schauplatz im Bundesstaat Leonida.",
     category: "gebiet",
@@ -105,6 +110,7 @@ export const locations: GameLocation[] = [
   {
     id: "loc-grassrivers",
     slug: "grassrivers",
+    motif: "sumpfland",
     title: "Grassrivers",
     summary: "Von Rockstar Games benannter Schauplatz im Bundesstaat Leonida.",
     category: "gebiet",
@@ -118,6 +124,7 @@ export const locations: GameLocation[] = [
   {
     id: "loc-mount-kalaga",
     slug: "mount-kalaga",
+    motif: "sumpfland",
     title: "Mount Kalaga",
     summary:
       "Von Rockstar Games benannter Schauplatz im Bundesstaat Leonida, ausgewiesen als Nationalpark.",
@@ -135,6 +142,7 @@ export const characters: Character[] = [
   {
     id: "chr-lucia-caminos",
     slug: "lucia-caminos",
+    motif: "nachtviertel",
     title: "Lucia Caminos",
     summary:
       "Eine der beiden Hauptfiguren von Grand Theft Auto VI, offiziell von Rockstar Games vorgestellt.",
@@ -151,6 +159,7 @@ export const characters: Character[] = [
   {
     id: "chr-jason-duval",
     slug: "jason-duval",
+    motif: "kuestenstrasse",
     title: "Jason Duval",
     summary:
       "Die zweite Hauptfigur von Grand Theft Auto VI, offiziell von Rockstar Games vorgestellt.",
@@ -179,6 +188,7 @@ export const theories: Theory[] = [
   {
     id: "thr-kartenumfang",
     slug: "wie-gross-wird-leonida",
+    motif: "inselkette",
     title: "Wie groß wird Leonida?",
     summary:
       "Die Community vergleicht Trailerbilder und offizielle Ortsnamen, um den Umfang der Spielwelt abzuschätzen. Belastbare Angaben von Rockstar Games gibt es dazu nicht.",

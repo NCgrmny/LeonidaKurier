@@ -8,39 +8,41 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 /** Chronologie des Wissensstands – das Gedächtnis der Plattform. */
 export function Timeline({ entries }: { entries: TimelineEntry[] }) {
   return (
-    <ol className="relative grid gap-0">
+    <ol className="relative grid">
       {entries.map((entry, index) => (
-        <li key={entry.id} className="relative grid gap-4 pl-8 sm:grid-cols-[8rem_1fr] sm:gap-8 sm:pl-10">
+        <li
+          key={entry.id}
+          className="relative grid gap-3 pl-8 sm:grid-cols-[9rem_1fr] sm:gap-8 sm:pl-10"
+        >
+          {index < entries.length - 1 ? (
+            <span
+              aria-hidden
+              className="absolute left-[7px] top-3 bottom-0 w-px bg-ink-900/20 sm:left-[9px]"
+            />
+          ) : null}
           <span
             aria-hidden
-            className="absolute left-[7px] top-2 bottom-0 w-px bg-[var(--rule)] sm:left-[9px]"
-            style={{ display: index === entries.length - 1 ? "none" : undefined }}
-          />
-          <span
-            aria-hidden
-            className="absolute left-0 top-1.5 size-[15px] rounded-full border-2 border-ink-950 sm:left-0.5"
+            className="absolute left-0 top-1.5 size-4 rounded-full ring-2 ring-paper-100"
             style={{ backgroundColor: statusDefinition(entry.status).accent }}
           />
 
-          <p className="pt-0.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper-500">
+          <p className="pt-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-coral-600">
             {formatByPrecision(entry.date, entry.datePrecision)}
           </p>
 
-          <div className="pb-10">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="headline text-xl text-paper-50">{entry.title}</h3>
-              <StatusBadge status={entry.status} size="sm" />
+          <div className="pb-9">
+            <div className="flex flex-wrap items-center gap-3">
+              <h3 className="subhead text-[1.35rem]">{entry.title}</h3>
+              <StatusBadge status={entry.status} />
             </div>
-            <p className="standfirst mt-2 max-w-2xl text-sm leading-relaxed">
-              {entry.summary}
-            </p>
+            <p className="standfirst mt-2 max-w-2xl text-[15px]">{entry.summary}</p>
             {entry.related && entry.related.length > 0 ? (
               <ul className="mt-3 flex flex-wrap gap-2">
                 {entry.related.map((ref) => (
                   <li key={`${ref.type}-${ref.slug}`}>
                     <Link
                       href={entityHref(ref.type, ref.slug)}
-                      className="inline-block rounded-full border border-[var(--rule)] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-paper-400 transition-colors hover:border-lagoon-400/40 hover:text-lagoon-300"
+                      className="inline-block border border-ink-900/20 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-600 transition-colors hover:border-coral-500 hover:text-coral-600"
                     >
                       {ref.slug.replace(/-/g, " ")}
                     </Link>

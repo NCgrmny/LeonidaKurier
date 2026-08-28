@@ -12,6 +12,7 @@ export const articles: Article[] = [
   {
     id: "art-leonida-gesichert",
     slug: "was-ueber-leonida-gesichert-ist",
+    motif: "skyline-sonnenuntergang",
     title: "Sechs Namen, ein Bundesstaat: Was über Leonida gesichert ist",
     standfirst:
       "Rockstar Games hat den Schauplatz von Grand Theft Auto VI benannt – mehr aber auch nicht. Eine Bestandsaufnahme dessen, was tatsächlich belegt ist.",
@@ -80,6 +81,7 @@ export const articles: Article[] = [
   {
     id: "art-zwei-trailer",
     slug: "zwei-trailer-zwei-wissensstaende",
+    motif: "nachtviertel",
     title: "Zwei Trailer, zwei Wissensstände",
     standfirst:
       "Zwischen dem ersten und dem zweiten offiziellen Trailer liegen rund anderthalb Jahre. Was sich am belegbaren Wissen tatsächlich geändert hat.",
@@ -132,6 +134,7 @@ export const articles: Article[] = [
   {
     id: "art-kartenumfang",
     slug: "wie-gross-wird-leonida",
+    motif: "kuestenstrasse",
     title: "Wie groß wird Leonida?",
     standfirst:
       "Die meistdiskutierte Frage der Community lässt sich derzeit nicht beantworten. Warum die kursierenden Zahlen keine Grundlage haben.",
@@ -184,6 +187,7 @@ export const articles: Article[] = [
   {
     id: "art-standards",
     slug: "wie-der-kurier-arbeitet",
+    motif: "sumpfland",
     title: "Wie der Kurier arbeitet",
     standfirst:
       "Fünf Statusstufen, verlinkte Quellen, keine gespiegelten Fremdinhalte: Die redaktionellen Regeln dieser Plattform, offengelegt.",

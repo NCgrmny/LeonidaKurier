@@ -1,53 +1,71 @@
 @import "tailwindcss";
 
-/* ---------------------------------------------------------------------------
-   Leonida Kurier – Designsystem
-   Dunkel, editorial, mit zurückhaltender Florida-Anmutung: Tiefseeblau als
-   Grundton, Sonnenuntergangs-Koralle als Leitfarbe, Lagunen-Türkis für den
-   Kompass. Typografie trägt die Hierarchie, nicht die Dekoration.
----------------------------------------------------------------------------- */
+/* ===========================================================================
+   LEONIDA KURIER – Designsystem
+
+   Grundfläche ist warmes Zeitungspapier, nicht Schwarz. Kontrast kommt aus
+   tiefem Nachtblau, Wärme aus Koralle und sonnenverblasstem Orange, Kühle aus
+   dem Türkis der Küste. Schlagzeilen tragen eine redaktionelle Serife,
+   Navigation und Metadaten eine klare Sans, Stempel und Koordinaten eine Mono.
+   =========================================================================== */
 
 @theme {
-  --color-ink-950: #070a0f;
-  --color-ink-900: #0b0f16;
-  --color-ink-850: #0f141d;
-  --color-ink-800: #141b26;
-  --color-ink-700: #1d2634;
-  --color-ink-600: #2b3648;
+  /* Papier – die tragende Fläche */
+  --color-paper-50: #fdfaf3;
+  --color-paper-100: #f8f2e6;
+  --color-paper-200: #f1e8d7;
+  --color-paper-300: #e5d9c3;
+  --color-paper-400: #cfc0a5;
 
-  --color-paper-50: #f4f6f8;
-  --color-paper-200: #d5dbe3;
-  --color-paper-400: #9aa6b6;
-  --color-paper-500: #7b8798;
+  /* Druckerschwärze und Grautöne auf Papier */
+  --color-ink-900: #16130d;
+  --color-ink-800: #241f16;
+  --color-ink-700: #3b3327;
+  --color-ink-600: #5c5241;
+  --color-ink-500: #7d7260;
+  --color-ink-400: #a2977f;
 
-  --color-coral-300: #ff9a7d;
-  --color-coral-400: #ff7a55;
-  --color-coral-500: #f2603a;
+  /* Nachtblau – Kontrastbänder, Kompass, Fußbereich */
+  --color-night-950: #050d17;
+  --color-night-900: #071523;
+  --color-night-800: #0b2035;
+  --color-night-700: #123049;
+  --color-night-600: #1c4666;
 
-  --color-lagoon-300: #6fe3d4;
-  --color-lagoon-400: #35c4b4;
-  --color-lagoon-500: #1ea294;
+  /* Sonne und Hitze */
+  --color-coral-700: #a8321f;
+  --color-coral-600: #c8412a;
+  --color-coral-500: #e4573d;
+  --color-coral-400: #f27a58;
+  --color-sun-500: #f0913e;
+  --color-sun-400: #f7ad5c;
+  --color-sun-300: #ffc978;
+  --color-flamingo-500: #e8578c;
+  --color-flamingo-400: #f47aa7;
 
-  --color-sand-300: #f0d79a;
-  --color-sand-400: #e2bd6b;
+  /* Meer, Kompass, interaktive Elemente */
+  --color-lagoon-700: #0d6f75;
+  --color-lagoon-600: #12888c;
+  --color-lagoon-500: #17a2a2;
+  --color-lagoon-400: #2bbdb6;
+  --color-lagoon-300: #67d9cf;
+  --color-lagoon-200: #a8ebe3;
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", sans-serif;
-  --font-serif: var(--font-source-serif), ui-serif, Georgia, "Times New Roman",
-    serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular",
-    Menlo, monospace;
+  --font-display: var(--font-playfair), ui-serif, Georgia, serif;
+  --font-serif: var(--font-source-serif), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, Menlo, monospace;
 }
 
 :root {
-  --status-bestaetigt: #34d399;
-  --status-wahrscheinlich: #38bdf8;
-  --status-hinweis: #fbbf24;
-  --status-spekulation: #a78bfa;
-  --status-widerlegt: #f87171;
+  --status-bestaetigt: #1f9d63;
+  --status-wahrscheinlich: #1c7fb8;
+  --status-hinweis: #d78b1c;
+  --status-spekulation: #8b5cc7;
+  --status-widerlegt: #c8412a;
 
-  --rule: color-mix(in oklab, var(--color-paper-400) 16%, transparent);
-  --surface: color-mix(in oklab, var(--color-ink-850) 92%, transparent);
+  --rule: #16130d1f;
+  --rule-strong: #16130d5c;
 }
 
 * {
@@ -55,115 +73,254 @@
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--color-ink-950);
-  color: var(--color-paper-50);
+  background-color: var(--color-paper-100);
+  color: var(--color-ink-900);
   font-family: var(--font-sans);
-  font-feature-settings: "cv01", "ss01";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Ruhiger, tiefer Hintergrund: zwei sehr weiche Lichtquellen statt Farbverlauf
-   über die ganze Fläche – hält großflächige Bereiche kontrolliert. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      60rem 40rem at 12% -10%,
-      color-mix(in oklab, var(--color-coral-500) 12%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      55rem 38rem at 92% 4%,
-      color-mix(in oklab, var(--color-lagoon-500) 12%, transparent),
-      transparent 62%
-    );
-}
-
 ::selection {
-  background: color-mix(in oklab, var(--color-coral-400) 35%, transparent);
-  color: var(--color-paper-50);
+  background: #e4573d3d;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-lagoon-300);
+  outline: 2px solid var(--color-coral-500);
   outline-offset: 2px;
-  border-radius: 2px;
 }
 
-/* Typografische Grundbausteine ------------------------------------------- */
+/* --- Papierstruktur --------------------------------------------------------
+   Feines Korn über der gesamten Fläche. Ohne sie wirkt das Papier wie eine
+   flache Farbfläche statt wie bedrucktes Material. */
+.paper-grain {
+  position: relative;
+}
+.paper-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.34 0 0 0 0 0.29 0 0 0 0 0.2 0 0 0 0.3 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-.kicker {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.18em;
+/* Druckraster: Halbtonpunkte, wie im Zeitungsdruck. */
+.halftone {
+  background-image: radial-gradient(currentColor 1px, transparent 1.2px);
+  background-size: 5px 5px;
+}
+
+/* --- Typografie ------------------------------------------------------------ */
+
+.masthead {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 0.84;
   text-transform: uppercase;
-  color: var(--color-paper-400);
 }
 
 .headline {
-  font-family: var(--font-serif);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.08;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.021em;
+  line-height: 1.03;
+  text-wrap: balance;
+}
+
+.subhead {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.014em;
+  line-height: 1.12;
   text-wrap: balance;
 }
 
 .standfirst {
-  color: var(--color-paper-200);
+  font-family: var(--font-serif);
+  color: var(--color-ink-600);
+  line-height: 1.55;
   text-wrap: pretty;
 }
 
-.rule-top {
+/* Rubrik-, Status- und Koordinatenzeilen */
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-500);
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-500);
+}
+
+/* Rubrikenschild über einem Aufmacher */
+.rubric {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  background: var(--color-coral-500);
+  color: var(--color-paper-50);
+}
+
+/* Aktenstempel – schräg gesetzte Auszeichnung */
+.stamp {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: 2px solid currentColor;
+  padding: 0.3rem 0.6rem;
+  transform: rotate(-6deg);
+  display: inline-block;
+  opacity: 0.85;
+}
+
+/* --- Linien und Flächen ---------------------------------------------------- */
+
+.rule-double {
+  border-top: 3px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule);
+  height: 4px;
+}
+
+.rule-hair {
   border-top: 1px solid var(--rule);
 }
 
-/* Artikelfließtext */
-.prose-kurier > * + * {
-  margin-top: 1.15em;
+/* Ressortkopf: Versalien mit kräftiger Unterlinie */
+.ressort {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-ink-900);
+  border-bottom: 2px solid var(--color-ink-900);
+  padding-bottom: 0.4rem;
 }
-.prose-kurier p {
-  color: var(--color-paper-200);
-  line-height: 1.75;
+
+/* --- Zeitungssatz ---------------------------------------------------------- */
+
+.columns-news {
+  column-gap: 1.75rem;
+  column-rule: 1px solid var(--rule);
+}
+@media (min-width: 640px) {
+  .columns-news-2 {
+    column-count: 2;
+  }
+}
+@media (min-width: 1024px) {
+  .columns-news-3 {
+    column-count: 3;
+  }
+  .columns-news-4 {
+    column-count: 4;
+  }
+}
+.column-item {
+  break-inside: avoid;
+}
+
+.body-text {
+  font-family: var(--font-serif);
+  color: var(--color-ink-800);
+}
+.body-text p {
+  font-size: 1.0125rem;
+  line-height: 1.68;
   text-wrap: pretty;
 }
-.prose-kurier h2 {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--color-paper-50);
-  margin-top: 2.2em;
-  line-height: 1.2;
+.body-text > * + * {
+  margin-top: 1.05em;
 }
-.prose-kurier ul {
+.body-text h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.55rem;
+  line-height: 1.15;
+  margin-top: 1.9em;
+  color: var(--color-ink-900);
+}
+.body-text ul {
   list-style: none;
   padding: 0;
   display: grid;
-  gap: 0.6rem;
+  gap: 0.55rem;
 }
-.prose-kurier li {
+.body-text li {
   position: relative;
-  padding-left: 1.4rem;
-  color: var(--color-paper-200);
-  line-height: 1.6;
+  padding-left: 1.35rem;
+  line-height: 1.55;
 }
-.prose-kurier li::before {
+.body-text li::before {
   content: "";
   position: absolute;
-  left: 0.15rem;
-  top: 0.65em;
-  width: 0.45rem;
-  height: 1px;
-  background: var(--color-coral-400);
+  left: 0.1rem;
+  top: 0.68em;
+  width: 0.5rem;
+  height: 2px;
+  background: var(--color-coral-500);
+}
+
+/* Justierter Spaltensatz für die Titelseite */
+.justified p {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+.justified p + p {
+  margin-top: 0;
+  text-indent: 1.15em;
+}
+
+.dropcap::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 3.7em;
+  line-height: 0.76;
+  padding-right: 0.07em;
+  padding-top: 0.06em;
+  color: var(--color-coral-600);
+}
+
+/* --- Nachtbereiche ---------------------------------------------------------
+   Radar, Kompass und Fußbereich stehen als dunkle Bänder im Papier. */
+.night {
+  background-color: var(--color-night-900);
+  color: var(--color-paper-100);
+  --rule: #f8f2e626;
+  --rule-strong: #f8f2e659;
+}
+.night .kicker,
+.night .meta {
+  color: #cfc0a5;
+}
+.night .standfirst {
+  color: #e5d9c3;
+}
+.night .ressort {
+  color: var(--color-paper-100);
+  border-bottom-color: var(--color-paper-100);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -176,192 +333,4 @@ body::before {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* ---------------------------------------------------------------------------
-   Zeitungssatz
-   Der Kurier tritt als Zeitungsseite auf: Zeitungskopf, Datumszeile,
-   Spaltensatz mit Spaltenlinien und Initial. Die UI ringsum bleibt modern.
----------------------------------------------------------------------------- */
-
-.masthead-title {
-  font-family: var(--font-serif);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 0.9;
-  text-transform: uppercase;
-  font-variant-ligatures: none;
-}
-
-/* Doppellinie unter dem Zeitungskopf, wie im Druck. */
-.rule-double {
-  border-top: 3px solid color-mix(in oklab, var(--color-paper-400) 45%, transparent);
-  border-bottom: 1px solid color-mix(in oklab, var(--color-paper-400) 28%, transparent);
-  height: 4px;
-}
-
-.newspaper-columns {
-  column-gap: 2.25rem;
-  column-rule: 1px solid var(--rule);
-}
-@media (min-width: 640px) {
-  .newspaper-columns-2 {
-    column-count: 2;
-  }
-}
-@media (min-width: 1024px) {
-  .newspaper-columns-3 {
-    column-count: 3;
-  }
-}
-
-.newspaper-columns p {
-  color: var(--color-paper-200);
-  line-height: 1.7;
-  text-wrap: pretty;
-  hyphens: auto;
-}
-.newspaper-columns p + p {
-  margin-top: 0.85em;
-  text-indent: 1.1em;
-}
-
-/* Initial am Textanfang. */
-.dropcap::first-letter {
-  float: left;
-  font-family: var(--font-serif);
-  font-size: 3.6em;
-  line-height: 0.8;
-  padding-right: 0.09em;
-  padding-top: 0.06em;
-  color: var(--color-coral-400);
-  font-weight: 600;
-}
-
-/* Verhindert Umbrüche innerhalb eines Zeitungsartikels im Spaltensatz. */
-.column-item {
-  break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-}
-
-/* ---------------------------------------------------------------------------
-   Papierbogen
-   Der Kurier liegt als heller Zeitungsbogen in der ansonsten dunklen
-   Oberfläche – wie eine aufgeschlagene Zeitung auf dem Tisch. Alle Farben
-   werden innerhalb von `.paper` lokal umgestellt.
----------------------------------------------------------------------------- */
-
-.paper {
-  --paper-bg: #f2ece0;
-  --paper-ink: #16130e;
-  --paper-muted: #5c5445;
-  --paper-faint: #857b68;
-  --paper-rule: #16130e26;
-  --paper-rule-strong: #16130e6b;
-  --paper-accent: #c2412a;
-
-  position: relative;
-  background-color: var(--paper-bg);
-  color: var(--paper-ink);
-  font-family: var(--font-serif);
-  box-shadow:
-    0 1px 0 #ffffff80 inset,
-    0 24px 60px -20px #000000a6;
-}
-
-/* Papierstruktur: feines Korn, damit die Fläche nicht digital wirkt. */
-.paper::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.32;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.31 0 0 0 0 0.22 0 0 0 0.32 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-.paper > * {
-  position: relative;
-}
-
-.paper .kicker {
-  color: var(--paper-muted);
-}
-
-/* Kennzeile, Zwischenlinien, Ressortköpfe */
-.paper-hairline {
-  border-top: 1px solid var(--paper-rule);
-}
-.paper-rule-strong {
-  border-top: 1px solid var(--paper-rule-strong);
-}
-.paper-rule-double {
-  border-top: 3px solid var(--paper-rule-strong);
-  border-bottom: 1px solid var(--paper-rule);
-  height: 4px;
-}
-
-.paper-ressort {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--paper-ink);
-  border-bottom: 2px solid var(--paper-ink);
-  padding-bottom: 0.35rem;
-}
-
-/* Enger Spaltensatz mit Blocksatz und Silbentrennung – wie im Druck. */
-.paper-columns {
-  column-gap: 1.6rem;
-  column-rule: 1px solid var(--paper-rule);
-}
-@media (min-width: 640px) {
-  .paper-columns-2 {
-    column-count: 2;
-  }
-}
-@media (min-width: 1024px) {
-  .paper-columns-3 {
-    column-count: 3;
-  }
-  .paper-columns-4 {
-    column-count: 4;
-  }
-}
-
-.paper-body p {
-  color: var(--paper-ink);
-  font-size: 0.9375rem;
-  line-height: 1.62;
-  text-align: justify;
-  hyphens: auto;
-  -webkit-hyphens: auto;
-}
-.paper-body p + p {
-  margin-top: 0;
-  text-indent: 1.15em;
-}
-
-.paper-dropcap::first-letter {
-  float: left;
-  font-family: var(--font-serif);
-  font-size: 3.9em;
-  line-height: 0.76;
-  padding-right: 0.08em;
-  padding-top: 0.07em;
-  color: var(--paper-accent);
-  font-weight: 700;
-}
-
-/* Statusauszeichnung auf Papier: Punkt plus Versalien statt Farbfläche. */
-.paper-status {
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--paper-muted);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
 }

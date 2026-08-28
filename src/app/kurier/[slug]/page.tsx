@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
+import { Scene, motifForSlug } from "@/components/art/Scene";
 import { ArticleBody } from "@/components/kurier/ArticleBody";
-import { articleCategoryLabel } from "@/components/kurier/ArticleCard";
+import { articleCategoryLabel, StoryCard } from "@/components/kurier/ArticleCard";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { SourceList } from "@/components/ui/SourceList";
 import { RelatedRefs } from "@/components/ui/RelatedRefs";
@@ -26,7 +27,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const article = await content.getArticle(slug);
-  if (!article) return { title: "Beitrag nicht gefunden" };
+  if (!article) return { title: "Bericht nicht gefunden" };
 
   return pageMetadata({
     title: article.title,
@@ -47,61 +48,82 @@ export default async function ArticlePage({
   const article = await content.getArticle(slug);
   if (!article) notFound();
 
-  const [sources, related] = await Promise.all([
+  const [sources, related, all] = await Promise.all([
     content.getSources(article.sourceIds),
     resolveRefs(article.related),
+    content.listArticles(),
   ]);
   const status = statusDefinition(article.status);
+  const more = all.filter((entry) => entry.slug !== article.slug).slice(0, 3);
 
   return (
-    <Container width="wide">
-      <article className="py-12 sm:py-16">
-        <nav aria-label="Brotkrumen" className="kicker mb-8">
-          <Link href="/kurier" className="hover:text-paper-200">
-            Kurier
-          </Link>
-          <span aria-hidden> / </span>
-          <span>{articleCategoryLabel(article.category)}</span>
-        </nav>
+    <article>
+      {/* Aufmacherbild mit überlagerter Rubrik und Schlagzeile */}
+      <div className="relative isolate overflow-hidden bg-night-950">
+        <div className="absolute inset-0">
+          <Scene variant={article.motif ?? motifForSlug(article.slug)} />
+        </div>
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-night-950 via-night-950/58 to-night-950/8"
+        />
+        <Container width="wide">
+          <div className="relative flex min-h-[22rem] flex-col justify-end py-10 sm:min-h-[28rem] sm:py-14">
+            <nav aria-label="Brotkrumen" className="meta mb-5 text-paper-300">
+              <Link href="/kurier" className="hover:text-coral-400">
+                Kurier
+              </Link>
+              <span aria-hidden> / </span>
+              <span>{articleCategoryLabel(article.category)}</span>
+            </nav>
 
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16">
-          <div className="min-w-0">
-            <header className="max-w-3xl">
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={article.status} />
-                {article.demo ? <DemoBadge /> : null}
-              </div>
-              <h1 className="headline mt-4 text-4xl text-paper-50 sm:text-5xl">
-                {article.title}
-              </h1>
-              <p className="standfirst mt-5 text-lg sm:text-xl">{article.standfirst}</p>
-              <p className="mt-6 border-t border-[var(--rule)] pt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-paper-500">
-                {formatDate(article.publishedAt)} · {article.author} ·{" "}
-                {article.readingMinutes} Min. Lesezeit
-              </p>
-            </header>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rubric">{articleCategoryLabel(article.category)}</span>
+              <StatusBadge status={article.status} tone="night" />
+              {article.demo ? <DemoBadge className="text-paper-300" /> : null}
+            </div>
 
+            <h1 className="headline mt-5 max-w-4xl text-[2.1rem] text-paper-50 sm:text-[3.1rem] lg:text-[3.6rem]">
+              {article.title}
+            </h1>
+            <p className="mt-4 max-w-2xl font-serif text-[1.05rem] leading-relaxed text-paper-200 sm:text-[1.2rem]">
+              {article.standfirst}
+            </p>
+            <p className="mt-6 border-t border-paper-100/20 pt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-paper-300">
+              {formatDate(article.publishedAt)} · {article.author} ·{" "}
+              {article.readingMinutes} Min. Lesezeit
+            </p>
+          </div>
+        </Container>
+      </div>
+
+      <Container width="wide">
+        <div className="grid gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-14 lg:py-14">
+          <div className="min-w-0 max-w-3xl">
             {article.demo ? (
-              <p className="mt-8 rounded-lg border border-[var(--rule)] bg-ink-900/60 px-4 py-3 text-xs leading-relaxed text-paper-400">
-                Dieser Beitrag ist ein redaktioneller Beispielinhalt der ersten
+              <p className="mb-8 border-l-4 border-ink-400 bg-paper-200/70 px-4 py-3 font-serif text-[13px] leading-relaxed text-ink-600">
+                Dieser Bericht ist ein redaktioneller Beispielinhalt der ersten
                 Ausbaustufe. Er enthält ausschließlich öffentlich belegte Aussagen und
                 keine unbestätigten Behauptungen.
               </p>
             ) : null}
 
-            <div className="mt-10 max-w-3xl">
+            <div className="body-text">
               <ArticleBody blocks={article.body} />
             </div>
 
             {article.facts && article.facts.length > 0 ? (
-              <section className="mt-12 max-w-3xl rounded-xl border border-[var(--rule)] bg-ink-900/50 p-6">
-                <h2 className="kicker mb-4">Fakten</h2>
-                <ul className="grid gap-3">
+              <section className="mt-12 border-y-2 border-ink-900 py-6">
+                <p className="ressort inline-block">Was gesichert ist</p>
+                <ul className="mt-4 grid gap-3">
                   {article.facts.map((fact) => (
-                    <li key={fact} className="flex gap-3 text-sm leading-relaxed text-paper-200">
+                    <li
+                      key={fact}
+                      className="flex gap-3 font-serif text-[15px] leading-relaxed text-ink-800"
+                    >
                       <span
                         aria-hidden
-                        className="mt-2 block size-1 shrink-0 rounded-full bg-lagoon-400"
+                        className="mt-2.5 block h-0.5 w-3 shrink-0 bg-lagoon-600"
                       />
                       {fact}
                     </li>
@@ -110,53 +132,68 @@ export default async function ArticlePage({
               </section>
             ) : null}
 
-            {article.assessment ? (
-              <section className="mt-4 max-w-3xl rounded-xl border border-[var(--rule)] bg-ink-900/50 p-6">
-                <h2 className="kicker mb-3">Einordnung</h2>
-                <p className="text-sm leading-relaxed text-paper-200">
-                  {article.assessment}
-                </p>
-              </section>
-            ) : null}
+            <div className="mt-6 grid gap-6 sm:grid-cols-2">
+              {article.assessment ? (
+                <section className="border-t border-ink-900/20 pt-4">
+                  <p className="ressort inline-block">Einordnung</p>
+                  <p className="mt-3 font-serif text-[15px] leading-relaxed text-ink-800">
+                    {article.assessment}
+                  </p>
+                </section>
+              ) : null}
 
-            {article.communityReaction ? (
-              <section className="mt-4 max-w-3xl rounded-xl border border-[var(--rule)] bg-ink-900/50 p-6">
-                <h2 className="kicker mb-3">Community-Reaktion</h2>
-                <p className="text-sm leading-relaxed text-paper-200">
-                  {article.communityReaction}
-                </p>
-                <p className="mt-3 text-xs text-paper-500">
-                  Community-Aufkommen ist ein Signal für die Recherche – kein Beleg.
-                </p>
-              </section>
-            ) : null}
+              {article.communityReaction ? (
+                <section className="border-t border-ink-900/20 pt-4">
+                  <p className="ressort inline-block">Community</p>
+                  <p className="mt-3 font-serif text-[15px] leading-relaxed text-ink-800">
+                    {article.communityReaction}
+                  </p>
+                  <p className="mt-2 font-serif text-[12px] italic text-ink-500">
+                    Community-Aufkommen ist ein Signal für die Recherche – kein Beleg.
+                  </p>
+                </section>
+              ) : null}
+            </div>
           </div>
 
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <section className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-5">
-              <h2 className="kicker mb-3">Status</h2>
-              <StatusBadge status={article.status} />
-              <p className="mt-3 text-xs leading-relaxed text-paper-400">
+          <aside className="lg:sticky lg:top-20 lg:self-start">
+            <div className="border-t-2 border-ink-900 pt-4">
+              <p className="ressort inline-block">Status</p>
+              <div className="mt-3">
+                <StatusBadge status={article.status} />
+              </div>
+              <p className="mt-2 font-serif text-[13px] leading-snug text-ink-600">
                 {status.definition}
               </p>
-            </section>
+            </div>
 
-            <section className="mt-4">
-              <h2 className="kicker mb-3">Quellen</h2>
+            <div className="mt-8">
+              <p className="ressort mb-4">Quellen</p>
               <SourceList sources={sources} />
-            </section>
+            </div>
 
             {related.length > 0 ? (
-              <section className="mt-6">
-                <h2 className="kicker mb-3">Verknüpfte Inhalte</h2>
+              <div className="mt-8">
+                <p className="ressort mb-4">Verknüpft</p>
                 <div className="[&_ul]:grid-cols-1">
                   <RelatedRefs refs={related} />
                 </div>
-              </section>
+              </div>
             ) : null}
           </aside>
         </div>
-      </article>
+
+        {more.length > 0 ? (
+          <section className="border-t-2 border-ink-900 py-10">
+            <p className="ressort inline-block">Weiter im Kurier</p>
+            <div className="mt-6 grid gap-x-7 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+              {more.map((entry) => (
+                <StoryCard key={entry.id} article={entry} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+      </Container>
 
       <JsonLd
         data={articleJsonLd({
@@ -175,6 +212,6 @@ export default async function ArticlePage({
           { name: article.title, path: `/kurier/${article.slug}` },
         ])}
       />
-    </Container>
+    </article>
   );
 }

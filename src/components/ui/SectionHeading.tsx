@@ -1,42 +1,43 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-/** Abschnittskopf im Zeitungslayout: Kicker, Titel, optionaler Weiterlesen-Link. */
+/** Ressortkopf mit kräftiger Linie und optionalem Weiterlesen-Verweis. */
 export function SectionHeading({
-  kicker,
+  ressort,
   title,
   description,
   action,
   id,
 }: {
-  kicker?: string;
-  title: ReactNode;
+  ressort: string;
+  title?: ReactNode;
   description?: string;
   action?: { href: string; label: string };
   id?: string;
 }) {
   return (
-    <div
-      id={id}
-      className="flex flex-col gap-3 border-t border-[var(--rule)] pt-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8"
-    >
-      <div className="max-w-2xl">
-        {kicker ? <p className="kicker mb-2">{kicker}</p> : null}
-        <h2 className="headline text-2xl text-paper-50 sm:text-3xl">{title}</h2>
-        {description ? (
-          <p className="standfirst mt-2 text-sm sm:text-base">{description}</p>
+    <div id={id}>
+      <div className="flex items-end justify-between gap-6 border-b-2 border-current pb-2">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em]">
+          {ressort}
+        </p>
+        {action ? (
+          <Link
+            href={action.href}
+            className="group shrink-0 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-coral-600 hover:text-coral-500"
+          >
+            {action.label}{" "}
+            <span aria-hidden className="inline-block transition-transform group-hover:translate-x-0.5">
+              →
+            </span>
+          </Link>
         ) : null}
       </div>
-      {action ? (
-        <Link
-          href={action.href}
-          className="group inline-flex shrink-0 items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-lagoon-300 transition-colors hover:text-lagoon-400"
-        >
-          {action.label}
-          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
-            →
-          </span>
-        </Link>
+      {title ? (
+        <h2 className="subhead mt-4 text-2xl sm:text-3xl">{title}</h2>
+      ) : null}
+      {description ? (
+        <p className="standfirst mt-2 max-w-2xl text-[15px]">{description}</p>
       ) : null}
     </div>
   );

@@ -44,21 +44,17 @@ export default async function CollectionPage({
 
   return (
     <Container width="wide">
-      <header className="py-12 sm:py-16">
-        <nav aria-label="Brotkrumen" className="kicker mb-6">
-          <Link href="/datenbank" className="hover:text-paper-200">
+      <header className="border-b-2 border-ink-900 py-10 sm:py-12">
+        <nav aria-label="Brotkrumen" className="meta mb-5">
+          <Link href="/datenbank" className="hover:text-coral-600">
             Datenbank
           </Link>
           <span aria-hidden> / </span>
-          <span>{collection.label}</span>
+          <span className="text-coral-600">{collection.label}</span>
         </nav>
-        <h1 className="headline text-4xl text-paper-50 sm:text-5xl">
-          {collection.label}
-        </h1>
-        <p className="standfirst mt-4 max-w-2xl text-base sm:text-lg">
-          {collection.description}
-        </p>
-        <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-paper-500">
+        <h1 className="headline text-[2.4rem] sm:text-[3.2rem]">{collection.label}</h1>
+        <p className="standfirst mt-3 max-w-2xl text-[16px]">{collection.description}</p>
+        <p className="meta mt-4">
           {entries.length} {entries.length === 1 ? "Eintrag" : "Einträge"}
         </p>
       </header>
@@ -70,7 +66,7 @@ export default async function CollectionPage({
             description={collection.emptyHint}
           />
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {entries.map((entity) => (
               <li key={entity.id}>
                 <EntityCard

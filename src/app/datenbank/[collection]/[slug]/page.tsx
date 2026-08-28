@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
+import { Scene, motifForSlug } from "@/components/art/Scene";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { SourceList } from "@/components/ui/SourceList";
 import { RelatedRefs } from "@/components/ui/RelatedRefs";
+import { EntityCard } from "@/components/datenbank/EntityCard";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { content } from "@/lib/content";
-import { COLLECTIONS, collectionBySlug } from "@/lib/content/collections";
+import { COLLECTIONS, collectionBySlug, entityHref } from "@/lib/content/collections";
 import { entriesForCollection, resolveRefs } from "@/lib/content/queries";
 import { formatDate } from "@/lib/format";
 import { statusDefinition } from "@/lib/status";
@@ -32,7 +34,7 @@ async function loadEntity(collectionSlug: string, slug: string) {
   if (!collection) return null;
   const entries = await entriesForCollection(collection.slug);
   const entity = entries.find((entry) => entry.slug === slug);
-  return entity ? { collection, entity } : null;
+  return entity ? { collection, entity, siblings: entries } : null;
 }
 
 export async function generateMetadata({
@@ -69,90 +71,131 @@ export default async function EntityPage({
   const found = await loadEntity(collectionSlug, slug);
   if (!found) notFound();
 
-  const { collection, entity } = found;
+  const { collection, entity, siblings } = found;
   const [sources, related] = await Promise.all([
     content.getSources(entity.sourceIds),
     resolveRefs(entity.related),
   ]);
   const status = statusDefinition(entity.status);
+  const more = siblings.filter((item) => item.slug !== entity.slug).slice(0, 3);
 
   return (
-    <Container width="wide">
-      <article className="py-12 sm:py-16">
-        <nav aria-label="Brotkrumen" className="kicker mb-8">
-          <Link href="/datenbank" className="hover:text-paper-200">
-            Datenbank
-          </Link>
-          <span aria-hidden> / </span>
-          <Link href={`/datenbank/${collection.slug}`} className="hover:text-paper-200">
-            {collection.label}
-          </Link>
-        </nav>
+    <>
+      {/* Aufmacher mit Motiv und Aktenkopf */}
+      <div className="relative isolate overflow-hidden bg-night-950">
+        <div className="absolute inset-0">
+          <Scene variant={entity.motif ?? motifForSlug(entity.slug)} />
+        </div>
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-night-950 via-night-950/60 to-night-950/12"
+        />
+        <Container width="wide">
+          <div className="relative flex min-h-[20rem] flex-col justify-end py-10 sm:min-h-[24rem] sm:py-14">
+            <nav aria-label="Brotkrumen" className="meta mb-5 text-paper-300">
+              <Link href="/datenbank" className="hover:text-coral-400">
+                Datenbank
+              </Link>
+              <span aria-hidden> / </span>
+              <Link
+                href={`/datenbank/${collection.slug}`}
+                className="hover:text-coral-400"
+              >
+                {collection.label}
+              </Link>
+            </nav>
 
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16">
-          <div className="min-w-0">
-            <header className="max-w-3xl">
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={entity.status} />
-                {entity.demo ? <DemoBadge /> : null}
-              </div>
-              <h1 className="headline mt-4 text-4xl text-paper-50 sm:text-5xl">
-                {entity.title}
-              </h1>
-              <p className="standfirst mt-5 text-lg">{entity.summary}</p>
-              <p className="mt-6 border-t border-[var(--rule)] pt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-paper-500">
-                {collection.singular} · Aktualisiert {formatDate(entity.updatedAt)}
-              </p>
-            </header>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rubric">{collection.singular}</span>
+              <StatusBadge status={entity.status} tone="night" />
+              {entity.demo ? <DemoBadge className="text-paper-300" /> : null}
+            </div>
 
+            <h1 className="headline mt-5 max-w-3xl text-[2.3rem] text-paper-50 sm:text-[3.4rem]">
+              {entity.title}
+            </h1>
+            <p className="mt-4 max-w-2xl font-serif text-[1.05rem] leading-relaxed text-paper-200">
+              {entity.summary}
+            </p>
+            <p className="mt-6 border-t border-paper-100/20 pt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-paper-300">
+              Aktualisiert {formatDate(entity.updatedAt)}
+            </p>
+          </div>
+        </Container>
+      </div>
+
+      <Container width="wide">
+        <div className="grid gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-14 lg:py-14">
+          <div className="min-w-0 max-w-3xl">
             {isTheory(entity) ? (
-              <section className="mt-10 max-w-3xl">
-                <div className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-6">
-                  <h2 className="kicker mb-3">Behauptung</h2>
-                  <p className="headline text-xl text-paper-50">„{entity.claim}“</p>
-                </div>
+              <>
+                <section className="border-y-2 border-ink-900 py-6">
+                  <p className="ressort inline-block">Behauptung</p>
+                  <p className="subhead mt-3 text-[1.5rem]">„{entity.claim}“</p>
+                </section>
                 {entity.arguments ? (
-                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-6">
-                      <h3 className="kicker mb-3">Dafür spricht</h3>
-                      <ul className="grid gap-2.5">
+                  <div className="mt-6 grid gap-6 sm:grid-cols-2">
+                    <section>
+                      <p className="ressort inline-block">Dafür spricht</p>
+                      <ul className="mt-3 grid gap-2.5">
                         {entity.arguments.pro.map((item) => (
-                          <li key={item} className="text-sm leading-relaxed text-paper-200">
+                          <li
+                            key={item}
+                            className="font-serif text-[15px] leading-relaxed text-ink-800"
+                          >
                             {item}
                           </li>
                         ))}
                       </ul>
-                    </div>
-                    <div className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-6">
-                      <h3 className="kicker mb-3">Dagegen spricht</h3>
-                      <ul className="grid gap-2.5">
+                    </section>
+                    <section>
+                      <p className="ressort inline-block">Dagegen spricht</p>
+                      <ul className="mt-3 grid gap-2.5">
                         {entity.arguments.contra.map((item) => (
-                          <li key={item} className="text-sm leading-relaxed text-paper-200">
+                          <li
+                            key={item}
+                            className="font-serif text-[15px] leading-relaxed text-ink-800"
+                          >
                             {item}
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </section>
                   </div>
                 ) : null}
+              </>
+            ) : (
+              <section className="border-y-2 border-ink-900 py-6">
+                <p className="ressort inline-block">Eintrag</p>
+                <p className="mt-3 font-serif text-[1.05rem] leading-relaxed text-ink-800">
+                  {entity.summary}
+                </p>
+                <p className="mt-3 font-serif text-[14px] italic leading-relaxed text-ink-500">
+                  Weitere Angaben werden ergänzt, sobald sie aus einer benennbaren Quelle
+                  hervorgehen. Bis dahin bleibt dieser Eintrag bewusst knapp.
+                </p>
               </section>
-            ) : null}
+            )}
 
             {hasMarker(entity) && entity.marker ? (
-              <section className="mt-10 max-w-3xl rounded-xl border border-[var(--rule)] bg-ink-900/50 p-6">
-                <h2 className="kicker mb-3">Auf der Karte</h2>
-                <p className="text-sm leading-relaxed text-paper-400">
+              <section className="mt-8 border border-ink-900/15 bg-paper-200/60 p-5">
+                <p className="ressort inline-block">Auf der Karte</p>
+                <p className="mt-3 font-serif text-[15px] leading-relaxed text-ink-700">
                   Dieser Eintrag ist im Leonida Kompass verzeichnet. Genauigkeit der
                   Position:{" "}
-                  <span className="font-mono text-xs text-paper-200">
+                  <span className="font-mono text-[13px] font-bold text-ink-900">
                     {entity.marker.precision}
                   </span>
-                  . Solange keine offiziellen Geodaten vorliegen, dient die Position
-                  ausschließlich der Orientierung innerhalb der Kartenarchitektur.
+                  .
                 </p>
+                {entity.marker.note ? (
+                  <p className="mt-2 border-l-2 border-lagoon-600 pl-3 font-serif text-[13px] italic text-ink-600">
+                    {entity.marker.note}
+                  </p>
+                ) : null}
                 <Link
                   href={`/kompass?marker=${entity.slug}`}
-                  className="mt-4 inline-flex items-center gap-2 rounded-md border border-lagoon-400/35 bg-lagoon-500/10 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-lagoon-300 hover:bg-lagoon-500/20"
+                  className="mt-4 inline-flex items-center gap-2 bg-night-900 px-4 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-paper-100 transition-colors hover:bg-lagoon-700"
                 >
                   Im Kompass anzeigen →
                 </Link>
@@ -160,28 +203,44 @@ export default async function EntityPage({
             ) : null}
 
             {related.length > 0 ? (
-              <section className="mt-10 max-w-3xl">
-                <h2 className="kicker mb-3">Verwandte Inhalte</h2>
+              <section className="mt-8">
+                <p className="ressort mb-4 inline-block">Verwandte Inhalte</p>
                 <RelatedRefs refs={related} />
               </section>
             ) : null}
           </div>
 
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <section className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-5">
-              <h2 className="kicker mb-3">Status</h2>
-              <StatusBadge status={entity.status} />
-              <p className="mt-3 text-xs leading-relaxed text-paper-400">
+          <aside className="lg:sticky lg:top-20 lg:self-start">
+            <div className="border-t-2 border-ink-900 pt-4">
+              <p className="ressort inline-block">Status</p>
+              <div className="mt-3">
+                <StatusBadge status={entity.status} />
+              </div>
+              <p className="mt-2 font-serif text-[13px] leading-snug text-ink-600">
                 {status.definition}
               </p>
-            </section>
-            <section className="mt-4">
-              <h2 className="kicker mb-3">Quellen</h2>
+            </div>
+
+            <div className="mt-8">
+              <p className="ressort mb-4">Quellen</p>
               <SourceList sources={sources} />
-            </section>
+            </div>
           </aside>
         </div>
-      </article>
+
+        {more.length > 0 ? (
+          <section className="border-t-2 border-ink-900 py-10">
+            <p className="ressort inline-block">Weitere {collection.label}</p>
+            <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {more.map((item) => (
+                <li key={item.id}>
+                  <EntityCard entity={item} href={entityHref(collection.type, item.slug)} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </Container>
 
       <JsonLd
         data={breadcrumbJsonLd([
@@ -194,6 +253,6 @@ export default async function EntityPage({
           },
         ])}
       />
-    </Container>
+    </>
   );
 }

@@ -19,23 +19,23 @@ const TYPE_LABEL: Record<string, string> = {
 export function RelatedRefs({ refs }: { refs: ResolvedRef[] }) {
   if (refs.length === 0) return null;
   return (
-    <ul className="grid gap-2 sm:grid-cols-2">
+    <ul className="grid gap-px bg-ink-900/15 sm:grid-cols-2">
       {refs.map((item) => (
-        <li key={`${item.ref.type}-${item.ref.slug}`}>
+        <li key={`${item.ref.type}-${item.ref.slug}`} className="bg-paper-100">
           <Link
             href={item.href}
-            className="group flex h-full flex-col gap-1.5 rounded-lg border border-[var(--rule)] bg-ink-900/50 px-4 py-3 transition-colors hover:border-lagoon-400/40 hover:bg-ink-850"
+            className="group flex h-full flex-col gap-1.5 px-4 py-3.5 transition-colors hover:bg-paper-200"
           >
             <span className="flex items-center justify-between gap-3">
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-paper-500">
-                {TYPE_LABEL[item.ref.type] ?? item.ref.type}
-              </span>
-              <StatusBadge status={item.entity.status} size="sm" />
+              <span className="meta">{TYPE_LABEL[item.ref.type] ?? item.ref.type}</span>
+              <StatusBadge status={item.entity.status} />
             </span>
-            <span className="text-sm font-medium text-paper-50 group-hover:text-lagoon-300">
+            <span className="subhead text-[17px] group-hover:text-coral-600">
               {item.title}
             </span>
-            <span className="line-clamp-2 text-xs text-paper-400">{item.summary}</span>
+            <span className="line-clamp-2 font-serif text-[13px] leading-snug text-ink-500">
+              {item.summary}
+            </span>
           </Link>
         </li>
       ))}

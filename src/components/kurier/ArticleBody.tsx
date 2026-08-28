@@ -3,22 +3,17 @@ import type { ArticleBlock } from "@/lib/types";
 /** Rendert die Blockstruktur eines Beitrags – kein HTML aus dem Content. */
 export function ArticleBody({ blocks }: { blocks: ArticleBlock[] }) {
   return (
-    <div className="prose-kurier">
+    <>
       {blocks.map((block, index) => {
         switch (block.type) {
           case "heading":
             return <h2 key={index}>{block.text}</h2>;
           case "quote":
             return (
-              <blockquote
-                key={index}
-                className="border-l-2 border-coral-400/60 py-1 pl-5"
-              >
-                <p className="headline text-xl text-paper-50">„{block.text}“</p>
+              <blockquote key={index} className="border-l-4 border-coral-500 py-1 pl-5">
+                <p className="subhead text-[1.4rem] text-ink-900">„{block.text}“</p>
                 {block.attribution ? (
-                  <cite className="mt-2 block font-mono text-[11px] uppercase not-italic tracking-[0.14em] text-paper-500">
-                    {block.attribution}
-                  </cite>
+                  <cite className="meta mt-2 block not-italic">{block.attribution}</cite>
                 ) : null}
               </blockquote>
             );
@@ -31,9 +26,13 @@ export function ArticleBody({ blocks }: { blocks: ArticleBlock[] }) {
               </ul>
             );
           default:
-            return <p key={index}>{block.text}</p>;
+            return (
+              <p key={index} className={index === 0 ? "dropcap" : undefined}>
+                {block.text}
+              </p>
+            );
         }
       })}
-    </div>
+    </>
   );
 }

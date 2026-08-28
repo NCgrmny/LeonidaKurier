@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
+import { Inter, JetBrains_Mono, Playfair_Display, Source_Serif_4 } from "next/font/google";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -16,6 +16,13 @@ const inter = Inter({
 const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
   variable: "--font-source-serif",
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  variable: "--font-playfair",
   display: "swap",
 });
 
@@ -59,8 +66,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#070a0f",
-  colorScheme: "dark",
+  themeColor: "#f8f2e6",
+  colorScheme: "light",
 };
 
 export default function RootLayout({
@@ -69,12 +76,12 @@ export default function RootLayout({
   return (
     <html
       lang="de"
-      className={`${inter.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${sourceSerif.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="min-h-dvh">
+      <body className="paper-grain min-h-dvh">
         <a
           href="#inhalt"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-ink-800 focus:px-4 focus:py-2 focus:text-sm"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:bg-ink-900 focus:px-4 focus:py-2 focus:text-sm focus:text-paper-50"
         >
           Zum Inhalt springen
         </a>

@@ -57,6 +57,18 @@ export type EntityType =
   | "theory"
   | "mapMarker";
 
+/**
+ * Bildmotiv eines Inhalts. Die Motive sind eigene grafische Kompositionen
+ * (siehe `src/components/art/Scene.tsx`) und tragen die Atmosphäre der Küste,
+ * bis dokumentierte offizielle Motive an ihre Stelle treten können.
+ */
+export type MotifVariant =
+  | "skyline-sonnenuntergang"
+  | "kuestenstrasse"
+  | "nachtviertel"
+  | "inselkette"
+  | "sumpfland";
+
 /** Gemeinsame Basis aller inhaltlichen Entitaeten. */
 export interface BaseEntity {
   id: string;
@@ -71,6 +83,8 @@ export interface BaseEntity {
   updatedAt: string;
   /** Verwandte Inhalte – erzeugt die Verzahnung Kurier ↔ Kompass ↔ Datenbank. */
   related?: EntityRef[];
+  /** Bildmotiv für Aufmacher und Karten. */
+  motif?: MotifVariant;
   /**
    * Kennzeichnet Beispiel-/Platzhalterinhalte. Wird in der UI sichtbar
    * ausgewiesen, damit nie Platzhalter als Fakt gelesen wird.

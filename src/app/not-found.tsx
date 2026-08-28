@@ -6,8 +6,8 @@ export default function NotFound() {
   return (
     <Container width="narrow">
       <div className="py-24 text-center">
-        <p className="kicker">Fehler 404</p>
-        <h1 className="headline mt-4 text-4xl text-paper-50 sm:text-5xl">
+        <span className="rubric">Fehler 404</span>
+        <h1 className="headline mt-4 text-[2.4rem] sm:text-[3.2rem]">
           Diese Route führt ins Leere
         </h1>
         <p className="standfirst mx-auto mt-4 max-w-lg">
@@ -19,7 +19,7 @@ export default function NotFound() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="inline-block rounded-md border border-[var(--rule)] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-paper-200 transition-colors hover:border-lagoon-400/40 hover:text-lagoon-300"
+                className="inline-block border border-ink-900/25 px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-ink-800 transition-colors hover:border-coral-500 hover:text-coral-600"
               >
                 {item.label}
               </Link>

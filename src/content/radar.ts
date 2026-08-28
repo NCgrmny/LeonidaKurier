@@ -82,6 +82,23 @@ export const radarSignals: RadarSignal[] = [
  */
 export const mapMarkers: MapMarker[] = [
   {
+    id: "mm-leonida",
+    slug: "leonida",
+    title: "Leonida",
+    summary:
+      "Der Bundesstaat, in dem Grand Theft Auto VI spielt. Er umfasst die gesamte dargestellte Landmasse.",
+    layer: "regionen",
+    status: "bestaetigt",
+    sourceIds: ["src-rockstar-gta6"],
+    updatedAt: "2026-08-01",
+    position: {
+      ...fromGeo(-81.9, 28.6),
+      precision: "grob",
+      note: "Der Bundesstaat umfasst die gesamte Landmasse; der Marker sitzt in ihrer Mitte.",
+    },
+    target: { type: "region", slug: "leonida" },
+  },
+  {
     id: "mm-vice-city",
     slug: "vice-city",
     title: "Vice City",

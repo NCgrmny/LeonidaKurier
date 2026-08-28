@@ -14,10 +14,10 @@ export default function RechtlichesPage() {
   return (
     <Container width="narrow">
       <div className="py-12 sm:py-16">
-        <p className="kicker">Hinweise</p>
-        <h1 className="headline mt-3 text-4xl text-paper-50 sm:text-5xl">Rechtliches</h1>
+        <span className="rubric">Hinweise</span>
+        <h1 className="headline mt-4 text-[2.4rem] sm:text-[3.2rem]">Rechtliches</h1>
 
-        <div className="prose-kurier mt-10">
+        <div className="body-text mt-10">
           <h2>Unabhängiges Fanprojekt</h2>
           <p>{SITE.disclaimerLong}</p>
           <p>

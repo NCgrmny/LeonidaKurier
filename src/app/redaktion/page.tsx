@@ -42,39 +42,31 @@ const PRINCIPLES = [
 export default function RedaktionPage() {
   return (
     <Container width="wide">
-      <header className="py-12 sm:py-16">
-        <p className="kicker">Transparenz</p>
-        <h1 className="headline mt-3 text-4xl text-paper-50 sm:text-5xl">
+      <header className="border-b-2 border-ink-900 py-10 sm:py-14">
+        <span className="rubric">Transparenz</span>
+        <h1 className="headline mt-4 text-[2.4rem] sm:text-[3.2rem]">
           Redaktion &amp; Standards
         </h1>
-        <p className="standfirst mt-4 max-w-2xl text-base sm:text-lg">
+        <p className="standfirst mt-3 max-w-2xl text-[16px]">
           {SITE.name} ist ein unabhängiges Fanprojekt von {SITE.operator}. Diese Seite legt
           offen, nach welchen Regeln hier gearbeitet wird.
         </p>
       </header>
 
       <section className="pb-16">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-px border border-ink-900/15 bg-ink-900/15 sm:grid-cols-2 lg:grid-cols-3">
           {PRINCIPLES.map((principle) => (
-            <div
-              key={principle.title}
-              className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-5"
-            >
-              <h2 className="headline text-lg text-paper-50">{principle.title}</h2>
-              <p className="mt-2.5 text-sm leading-relaxed text-paper-400">
-                {principle.text}
-              </p>
+            <div key={principle.title} className="bg-paper-100 p-5">
+              <h2 className="subhead text-[19px]">{principle.title}</h2>
+              <p className="standfirst mt-2 text-[13px]">{principle.text}</p>
             </div>
           ))}
         </div>
       </section>
 
       <section className="pb-20">
-        <SectionHeading
-          kicker="Statuslogik"
-          title="Die fünf Stufen im Detail"
-        />
-        <div className="mt-6">
+        <SectionHeading ressort="Statuslogik" title="Die fünf Stufen im Detail" />
+        <div className="mt-6 border border-ink-900/15">
           <StatusLegend />
         </div>
       </section>

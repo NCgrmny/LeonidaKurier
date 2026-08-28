@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { EntityCard } from "@/components/datenbank/EntityCard";
 import { JsonLd } from "@/components/ui/JsonLd";
-import { COLLECTIONS } from "@/lib/content/collections";
+import { Scene } from "@/components/art/Scene";
+import { content } from "@/lib/content";
+import { COLLECTIONS, entityHref } from "@/lib/content/collections";
 import { collectionCounts } from "@/lib/content/queries";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
@@ -22,83 +25,92 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function DatenbankPage() {
-  const counts = await collectionCounts();
+  const [counts, locations, characters] = await Promise.all([
+    collectionCounts(),
+    content.listLocations(),
+    content.listCharacters(),
+  ]);
 
   return (
-    <Container width="wide">
-      <header className="py-12 sm:py-16">
-        <p className="kicker">Was wissen wir wirklich?</p>
-        <h1 className="headline mt-3 text-4xl text-paper-50 sm:text-5xl">Datenbank</h1>
-        <p className="standfirst mt-4 max-w-2xl text-base sm:text-lg">
-          Die Wissensbasis der Plattform. Jeder Eintrag trägt Status, Quelle und Datum –
-          und ist mit Kurier und Kompass verknüpft. Leere Sammlungen bleiben leer, bis
-          belegte Daten vorliegen.
-        </p>
-      </header>
+    <>
+      <div className="relative isolate overflow-hidden bg-night-950">
+        <div className="absolute inset-0">
+          <Scene variant="inselkette" />
+        </div>
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-night-950 via-night-950/60 to-night-950/12"
+        />
+        <Container width="wide">
+          <div className="relative py-12 sm:py-16">
+            <span className="rubric">Was wissen wir wirklich?</span>
+            <h1 className="headline mt-4 text-[2.4rem] text-paper-50 sm:text-[3.4rem]">
+              Die Datenbank
+            </h1>
+            <p className="mt-4 max-w-2xl font-serif text-[1.05rem] leading-relaxed text-paper-200">
+              Jeder Eintrag trägt Status, Quelle und Datum – und ist mit Kurier und
+              Kompass verknüpft. Leere Sammlungen bleiben leer, bis belegte Daten
+              vorliegen.
+            </p>
+          </div>
+        </Container>
+      </div>
 
-      <section className="pb-16">
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {COLLECTIONS.map((collection) => {
-            const count = counts[collection.slug] ?? 0;
-            return (
-              <li key={collection.slug}>
+      <Container width="wide">
+        <section className="py-12">
+          <SectionHeading ressort="Sammlungen" />
+          <ul className="mt-6 grid gap-px border border-ink-900/15 bg-ink-900/15 sm:grid-cols-2 lg:grid-cols-4">
+            {COLLECTIONS.map((collection) => (
+              <li key={collection.slug} className="bg-paper-100">
                 <Link
                   href={`/datenbank/${collection.slug}`}
-                  className="group flex h-full flex-col rounded-xl border border-[var(--rule)] bg-ink-900/50 p-5 transition-colors hover:border-lagoon-400/35 hover:bg-ink-850"
+                  className="flex h-full flex-col p-5 transition-colors hover:bg-paper-200"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <h2 className="headline text-xl text-paper-50 group-hover:text-lagoon-300">
-                      {collection.label}
-                    </h2>
-                    <span className="font-mono text-sm text-paper-500">{count}</span>
-                  </div>
-                  <p className="mt-2 text-sm leading-relaxed text-paper-400">
+                  <span className="font-mono text-[26px] font-bold leading-none text-lagoon-700">
+                    {counts[collection.slug] ?? 0}
+                  </span>
+                  <span className="subhead mt-2 text-[19px]">{collection.label}</span>
+                  <span className="standfirst mt-1.5 text-[13px]">
                     {collection.description}
-                  </p>
+                  </span>
                 </Link>
               </li>
-            );
-          })}
-        </ul>
-      </section>
+            ))}
+          </ul>
+        </section>
 
-      <section className="pb-20">
-        <SectionHeading
-          kicker="Datenmodell"
-          title="Auf Wachstum ausgelegt"
-          description="Inhalte stehen nicht in Komponenten, sondern in einer eigenen Datenschicht. Jeder Eintrag kann Beziehungen zu anderen Entitäten führen."
-        />
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            {
-              title: "Einheitliches Schema",
-              text: "Titel, Beschreibung, Kategorie, Status, Quelle, Datum, Region, Position und Verweise.",
-            },
-            {
-              title: "Eigene Seiten",
-              text: "Jede Entität bekommt eine indexierbare Detailseite unterhalb ihrer Sammlung.",
-            },
-            {
-              title: "Verknüpfungen",
-              text: "Beitrag ↔ Ort ↔ Kartenmarker ↔ Region – auswertbar in beide Richtungen.",
-            },
-            {
-              title: "Austauschbare Quelle",
-              text: "Die Datenschicht liegt hinter einem Repository-Interface; PostgreSQL ersetzt sie ohne Änderung an den Seiten.",
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-5"
-            >
-              <h3 className="font-mono text-[11px] uppercase tracking-[0.14em] text-coral-300">
-                {item.title}
-              </h3>
-              <p className="mt-2.5 text-sm leading-relaxed text-paper-400">{item.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+        {locations.length > 0 ? (
+          <section className="pb-12">
+            <SectionHeading
+              ressort="Orte"
+              action={{ href: "/datenbank/orte", label: "Alle Orte" }}
+            />
+            <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {locations.slice(0, 6).map((entity) => (
+                <li key={entity.id}>
+                  <EntityCard entity={entity} href={entityHref("location", entity.slug)} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {characters.length > 0 ? (
+          <section className="pb-14">
+            <SectionHeading
+              ressort="Charaktere"
+              action={{ href: "/datenbank/charaktere", label: "Alle Charaktere" }}
+            />
+            <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {characters.map((entity) => (
+                <li key={entity.id}>
+                  <EntityCard entity={entity} href={entityHref("character", entity.slug)} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </Container>
 
       <JsonLd
         data={breadcrumbJsonLd([
@@ -106,6 +118,6 @@ export default async function DatenbankPage() {
           { name: "Datenbank", path: "/datenbank" },
         ])}
       />
-    </Container>
+    </>
   );
 }

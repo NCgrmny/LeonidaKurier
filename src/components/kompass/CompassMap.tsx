@@ -1,37 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { statusDefinition } from "@/lib/status";
 import { cx } from "@/lib/format";
 import { entityHref } from "@/lib/content/collections";
-import { MAP_VIEWBOX } from "@/content/geography";
+import { MAINLAND, MAP_VIEWBOX, toSmoothPath } from "@/content/geography";
 import type { MapLayerId, MapMarker } from "@/lib/types";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { BaseMap, MapFurniture } from "./BaseMap";
 
 export interface MapLayerDefinition {
   id: MapLayerId;
   label: string;
-  description: string;
+  /** Signaturform, mit der Marker dieser Ebene gezeichnet werden. */
+  shape: "kreis" | "raute" | "quadrat" | "dreieck" | "stern";
 }
 
 /**
- * Ebenen des Kompass. Die Struktur ist auf Wachstum ausgelegt: Fahrzeug-Spawns,
- * Missionen, Immobilien und Community-Marker werden später als weitere Ebenen
- * ergänzt, ohne dass die Kartenmechanik angefasst werden muss.
+ * Ebenen des Kompass. Jede Ebene hat eine eigene Signaturform, damit
+ * Kategorien auch ohne Farbe unterscheidbar bleiben.
  */
 export const MAP_LAYERS: MapLayerDefinition[] = [
-  { id: "orte", label: "Orte", description: "Städte, Gebiete und Landmarken." },
-  { id: "regionen", label: "Regionen", description: "Räumliche Gliederung." },
-  { id: "geschaefte", label: "Geschäfte", description: "Läden und Betriebe." },
-  { id: "geheimnisse", label: "Geheimnisse", description: "Fundstücke und Easter Eggs." },
-  { id: "community", label: "Community", description: "Eingereichte Marker (in Vorbereitung)." },
+  { id: "orte", label: "Orte", shape: "kreis" },
+  { id: "regionen", label: "Regionen", shape: "raute" },
+  { id: "geschaefte", label: "Geschäfte", shape: "quadrat" },
+  { id: "geheimnisse", label: "Geheimnisse", shape: "dreieck" },
+  { id: "community", label: "Community", shape: "stern" },
 ];
 
+const SHAPE_BY_LAYER = new Map(MAP_LAYERS.map((layer) => [layer.id, layer.shape]));
+
 const MIN_SCALE = 1;
-const MAX_SCALE = 6;
-const PAN_STEP = 48;
+const MAX_SCALE = 7;
+const PAN_STEP = 56;
 
 interface Transform {
   scale: number;
@@ -39,14 +40,50 @@ interface Transform {
   y: number;
 }
 
+/** Markersignatur nach Kategorie. */
+function MarkerShape({
+  shape,
+  color,
+  hollow,
+  size = 18,
+}: {
+  shape: MapLayerDefinition["shape"];
+  color: string;
+  hollow: boolean;
+  size?: number;
+}) {
+  const common = {
+    fill: hollow ? "#fdf4e2" : color,
+    stroke: hollow ? color : "#14110d",
+    strokeWidth: hollow ? 2.5 : 1.6,
+    strokeDasharray: hollow ? "3 2.5" : undefined,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+      {shape === "kreis" ? <circle cx="12" cy="12" r="7.5" {...common} /> : null}
+      {shape === "raute" ? <path d="M12 3 L21 12 L12 21 L3 12 Z" {...common} /> : null}
+      {shape === "quadrat" ? <rect x="4.5" y="4.5" width="15" height="15" {...common} /> : null}
+      {shape === "dreieck" ? <path d="M12 3.5 L21 20 L3 20 Z" {...common} /> : null}
+      {shape === "stern" ? (
+        <path
+          d="M12 2.5 L14.6 9.4 L21.8 9.8 L16.2 14.3 L18.1 21.2 L12 17.3 L5.9 21.2 L7.8 14.3 L2.2 9.8 L9.4 9.4 Z"
+          {...common}
+        />
+      ) : null}
+    </svg>
+  );
+}
+
 /**
- * Interaktive Kartenfläche des Leonida Kompass.
+ * Leonida Kompass – das Entdeckungswerkzeug der Plattform.
  *
- * Bewusst ohne Kartenbibliothek und ohne fremde Kartenassets: Die Grundkarte
- * ist die reale Küstenlinie Floridas (siehe `src/content/geography.ts`), auf
- * die Leonida erkennbar zurückgeht. Verortet wird nur, wo ein reales Vorbild
- * nachvollziehbar ist; alles Übrige liegt sichtbar getrennt im Bereich „ohne
- * belegte Position“, statt eine Position zu behaupten.
+ * Die Karte steht im Mittelpunkt: Suche, Filter und Ebenen liegen als kompakte
+ * Bedienelemente über der Fläche, die Auswahl erscheint auf dem Desktop als
+ * Seitenpanel und auf dem Smartphone als Bottom Sheet.
+ *
+ * Grundlage ist eine redaktionelle Rekonstruktion auf Basis der realen
+ * Geografie – keine offizielle Karte. Verortet wird nur, wo ein reales Vorbild
+ * nachvollziehbar ist; alles Übrige bleibt sichtbar getrennt.
  */
 export function CompassMap({
   markers,
@@ -56,32 +93,68 @@ export function CompassMap({
   initialMarkerSlug?: string;
 }) {
   const [transform, setTransform] = useState<Transform>({ scale: 1, x: 0, y: 0 });
-  const [activeLayers, setActiveLayers] = useState<MapLayerId[]>(["orte", "regionen"]);
+  const [activeLayers, setActiveLayers] = useState<MapLayerId[]>([
+    "orte",
+    "regionen",
+    "geschaefte",
+    "geheimnisse",
+    "community",
+  ]);
+  const [query, setQuery] = useState("");
   const [showUnplaced, setShowUnplaced] = useState(false);
+  const [legendOpen, setLegendOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(
     initialMarkerSlug ?? null,
   );
   const [isDragging, setIsDragging] = useState(false);
+  const [box, setBox] = useState({ width: 0, height: 0 });
   const viewportRef = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ pointerId: number; startX: number; startY: number } | null>(
     null,
   );
 
-  const visibleMarkers = useMemo(
-    () => markers.filter((marker) => activeLayers.includes(marker.layer)),
-    [markers, activeLayers],
-  );
+  // Sichtfenster vermessen: Die Kartenfläche behält ihr Seitenverhältnis, sonst
+  // würde die Geografie gestreckt. Sie wird vollständig eingepasst, damit beim
+  // Öffnen die ganze Region sichtbar ist; ringsum liegt offenes Wasser.
+  useEffect(() => {
+    const element = viewportRef.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setBox({ width, height });
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
-  /** Verortet: Position beruht auf einem nachvollziehbaren Vorbild. */
+  const canvas = useMemo(() => {
+    const aspect = MAP_VIEWBOX.width / MAP_VIEWBOX.height;
+    if (box.width === 0 || box.height === 0) return { width: 0, height: 0 };
+    return box.width / box.height > aspect
+      ? { width: box.height * aspect, height: box.height }
+      : { width: box.width, height: box.width / aspect };
+  }, [box]);
+
+  const matches = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return markers.filter((marker) => {
+      if (!activeLayers.includes(marker.layer)) return false;
+      if (!needle) return true;
+      return (
+        marker.title.toLowerCase().includes(needle) ||
+        marker.summary.toLowerCase().includes(needle)
+      );
+    });
+  }, [markers, activeLayers, query]);
+
   const placed = useMemo(
-    () => visibleMarkers.filter((marker) => marker.position.precision !== "platzhalter"),
-    [visibleMarkers],
+    () => matches.filter((marker) => marker.position.precision !== "platzhalter"),
+    [matches],
   );
-
-  /** Unbelegt: keine Position behauptet – gesondert ausgewiesen. */
   const unplaced = useMemo(
-    () => visibleMarkers.filter((marker) => marker.position.precision === "platzhalter"),
-    [visibleMarkers],
+    () => matches.filter((marker) => marker.position.precision === "platzhalter"),
+    [matches],
   );
 
   const selected = useMemo(
@@ -92,7 +165,6 @@ export function CompassMap({
   const clamp = useCallback((next: Transform): Transform => {
     const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, next.scale));
     const box = viewportRef.current?.getBoundingClientRect();
-    // Verschiebung so begrenzen, dass die Karte das Sichtfenster stets füllt.
     const limitX = box ? (box.width * (scale - 1)) / 2 : 0;
     const limitY = box ? (box.height * (scale - 1)) / 2 : 0;
     return {
@@ -113,6 +185,11 @@ export function CompassMap({
       setTransform((current) => clamp({ ...current, x: current.x + dx, y: current.y + dy })),
     [clamp],
   );
+
+  const select = (slug: string) => {
+    setSelectedSlug(slug);
+    setSheetOpen(true);
+  };
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return;
@@ -146,8 +223,8 @@ export function CompassMap({
       ArrowDown: () => panBy(0, -PAN_STEP),
       ArrowLeft: () => panBy(PAN_STEP, 0),
       ArrowRight: () => panBy(-PAN_STEP, 0),
-      "+": () => zoomBy(1.25),
-      "-": () => zoomBy(0.8),
+      "+": () => zoomBy(1.3),
+      "-": () => zoomBy(0.78),
       "0": () => setTransform({ scale: 1, x: 0, y: 0 }),
     };
     const action = actions[event.key];
@@ -162,11 +239,13 @@ export function CompassMap({
       current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id],
     );
 
-  const onMapMarkers = showUnplaced ? [...placed, ...unplaced] : placed;
+  const onMap = showUnplaced ? [...placed, ...unplaced] : placed;
+  const regionsOn = activeLayers.includes("regionen");
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <div className="relative overflow-hidden rounded-2xl border border-lagoon-400/25 bg-[#0d6b7d]">
+    <div className="grid lg:grid-cols-[minmax(0,1fr)_21rem]">
+      {/* ============================ Kartenfläche ============================ */}
+      <div className="relative bg-[#0d6b7d]">
         <div
           ref={viewportRef}
           role="application"
@@ -177,21 +256,40 @@ export function CompassMap({
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
           onKeyDown={onKeyDown}
-          // Seitenverhältnis der Grundkarte, damit Marker exakt auf der
-          // Geometrie sitzen und nichts beschnitten wird.
-          style={{ aspectRatio: `${MAP_VIEWBOX.width} / ${MAP_VIEWBOX.height}` }}
-          className="relative w-full cursor-grab touch-none select-none overflow-hidden active:cursor-grabbing"
+          className="relative h-[calc(100dvh-9.5rem)] w-full cursor-grab touch-none select-none overflow-hidden active:cursor-grabbing lg:h-[calc(100vh-6.5rem)]"
         >
           <div
-            className="absolute inset-0 origin-center"
+            className="absolute left-1/2 top-1/2 origin-center"
             style={{
-              transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
-              transition: isDragging ? "none" : "transform 180ms ease-out",
+              width: canvas.width || "100%",
+              height: canvas.height || "100%",
+              transform: `translate(-50%, -50%) translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
+              transition: isDragging ? "none" : "transform 200ms ease-out",
             }}
           >
             <BaseMap />
 
-            {onMapMarkers.map((marker) => {
+            {/* Region Leonida: der Bundesstaat umfasst die gesamte Landmasse. */}
+            {regionsOn ? (
+              <svg
+                viewBox={`0 0 ${MAP_VIEWBOX.width} ${MAP_VIEWBOX.height}`}
+                preserveAspectRatio="none"
+                className="pointer-events-none absolute inset-0 size-full"
+                aria-hidden
+              >
+                <path
+                  d={toSmoothPath(MAINLAND, true, 0.32)}
+                  fill="#e4573d"
+                  fillOpacity="0.07"
+                  stroke="#c8412a"
+                  strokeOpacity="0.5"
+                  strokeWidth="2.5"
+                  strokeDasharray="9 6"
+                />
+              </svg>
+            ) : null}
+
+            {onMap.map((marker) => {
               const definition = statusDefinition(marker.status);
               const isSelected = marker.slug === selectedSlug;
               const isUnplaced = marker.position.precision === "platzhalter";
@@ -199,50 +297,41 @@ export function CompassMap({
                 <button
                   key={marker.id}
                   type="button"
-                  onClick={() => setSelectedSlug(marker.slug)}
-                  // Ohne dies startet die Kartenflaeche einen Drag und faengt den
-                  // Zeiger ab – der Klick auf den Marker ginge verloren.
+                  onClick={() => select(marker.slug)}
                   onPointerDown={(event) => event.stopPropagation()}
                   aria-pressed={isSelected}
                   className="group absolute -translate-x-1/2 -translate-y-1/2"
                   style={{
                     left: `${marker.position.x * 100}%`,
                     top: `${marker.position.y * 100}%`,
-                    // Marker behalten unabhängig vom Zoom ihre Größe.
                     scale: `${1 / transform.scale}`,
                   }}
                 >
-                  {/* Ortssignatur: Ring mit Kern, wie in gedruckten Karten. */}
-                  <span
-                    aria-hidden
-                    className={cx(
-                      "block rounded-full transition-transform group-hover:scale-125",
-                      isUnplaced ? "size-3.5 border-2 border-dashed" : "size-3.5 border-2",
-                      isSelected && "scale-125",
-                    )}
-                    style={{
-                      borderColor: definition.accent,
-                      backgroundColor: isUnplaced ? "rgba(253,244,226,0.75)" : "#123038",
-                      boxShadow: isUnplaced
-                        ? "none"
-                        : `inset 0 0 0 2px ${definition.accent}, 0 0 0 3px rgba(253,244,226,0.95)`,
-                    }}
-                  />
-                  {/* Kartenbeschriftung mit Freistellung statt Chip-Hintergrund. */}
                   <span
                     className={cx(
-                      "pointer-events-none absolute left-1/2 top-4 w-max max-w-[11rem] -translate-x-1/2 text-center font-mono text-[10px] uppercase tracking-[0.14em] transition-colors",
-                      isSelected ? "text-[#0b4f5e]" : "text-[#123038]",
-                      isUnplaced && "text-[9px] italic",
+                      "block transition-transform group-hover:scale-125",
+                      isSelected && "scale-[1.35]",
+                    )}
+                  >
+                    <MarkerShape
+                      shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"}
+                      color={definition.accent}
+                      hollow={isUnplaced}
+                      size={isSelected ? 22 : 18}
+                    />
+                  </span>
+                  <span
+                    className={cx(
+                      "pointer-events-none absolute left-1/2 top-[19px] w-max max-w-[11rem] -translate-x-1/2 text-center font-mono text-[10px] font-bold uppercase tracking-[0.12em]",
+                      isSelected ? "text-coral-700" : "text-[#123038]",
+                      isUnplaced && "font-normal italic",
                     )}
                     style={{
-                      // Freistellung gegen den hellen Kartengrund.
                       textShadow:
-                        "0 0 3px #fdf4e2, 0 0 3px #fdf4e2, 0 0 6px #fdf4e2, 0 1px 0 rgba(253,244,226,0.9)",
+                        "0 0 3px #fdf4e2, 0 0 3px #fdf4e2, 0 0 7px #fdf4e2, 0 1px 0 #fdf4e2",
                     }}
                   >
                     {marker.title}
-                    {isUnplaced ? " · unbelegt" : ""}
                   </span>
                 </button>
               );
@@ -252,26 +341,43 @@ export function CompassMap({
           <MapFurniture scale={transform.scale} />
         </div>
 
-        <div className="absolute right-3 top-3 flex flex-col gap-1.5">
-          <MapButton label="Vergrößern" onClick={() => zoomBy(1.3)}>
-            +
-          </MapButton>
-          <MapButton label="Verkleinern" onClick={() => zoomBy(0.77)}>
-            −
-          </MapButton>
-          <MapButton
-            label="Ansicht zurücksetzen"
-            onClick={() => setTransform({ scale: 1, x: 0, y: 0 })}
-          >
-            ⟲
-          </MapButton>
-        </div>
-      </div>
+        {/* --- Werkzeugleiste über der Karte --- */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 p-3">
+          <div className="pointer-events-auto flex flex-wrap items-center gap-2">
+            <label className="relative flex min-w-0 flex-1 items-center sm:max-w-xs">
+              <span className="sr-only">Marker durchsuchen</span>
+              <svg
+                aria-hidden
+                viewBox="0 0 24 24"
+                className="pointer-events-none absolute left-2.5 size-4 text-ink-500"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20 L16 16" strokeLinecap="round" />
+              </svg>
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Ort, Region, Fundstück …"
+                className="w-full border border-ink-900/20 bg-[#fdf4e2]/95 py-2 pl-8 pr-3 text-[13px] text-ink-900 shadow-sm outline-none placeholder:text-ink-400 focus:border-coral-500"
+              />
+            </label>
 
-      <aside className="flex flex-col gap-4">
-        <section className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-4">
-          <h3 className="kicker mb-3">Ebenen</h3>
-          <ul className="grid gap-1.5">
+            <button
+              type="button"
+              onClick={() => setLegendOpen((value) => !value)}
+              aria-expanded={legendOpen}
+              className="shrink-0 border border-ink-900/20 bg-[#fdf4e2]/95 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-ink-800 shadow-sm hover:bg-[#fdf4e2]"
+            >
+              Legende
+            </button>
+          </div>
+
+          {/* Ebenenfilter als Chips */}
+          <ul className="pointer-events-auto mt-2 flex flex-wrap gap-1.5">
             {MAP_LAYERS.map((layer) => {
               const count = markers.filter((marker) => marker.layer === layer.id).length;
               const active = activeLayers.includes(layer.id);
@@ -283,130 +389,292 @@ export function CompassMap({
                     aria-pressed={active}
                     disabled={count === 0}
                     className={cx(
-                      "flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-colors",
+                      "flex items-center gap-1.5 border px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] shadow-sm transition-colors",
                       active
-                        ? "border-lagoon-400/40 bg-lagoon-500/10 text-paper-50"
-                        : "border-[var(--rule)] text-paper-400 hover:text-paper-50",
-                      count === 0 && "cursor-not-allowed opacity-45 hover:text-paper-400",
+                        ? "border-ink-900 bg-ink-900 text-paper-100"
+                        : "border-ink-900/20 bg-[#fdf4e2]/95 text-ink-700 hover:border-ink-900/45",
+                      count === 0 && "cursor-not-allowed opacity-45",
                     )}
                   >
-                    <span className="text-sm">{layer.label}</span>
-                    <span className="font-mono text-[10px] text-paper-500">{count}</span>
+                    <MarkerShape
+                      shape={layer.shape}
+                      color={active ? "#fdf4e2" : "#5c5241"}
+                      hollow={false}
+                      size={11}
+                    />
+                    {layer.label}
+                    <span className="opacity-60">{count}</span>
                   </button>
                 </li>
               );
             })}
           </ul>
-        </section>
 
-        {unplaced.length > 0 ? (
-          <section className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-4">
-            <h3 className="kicker mb-2">Ohne belegte Position ({unplaced.length})</h3>
-            <p className="mb-3 text-[11px] leading-relaxed text-paper-500">
-              Offiziell benannt, aber nicht verortbar. Diese Einträge werden nicht auf der
-              Karte platziert, solange ihre Lage nicht belegt ist.
-            </p>
-            <ul className="grid gap-1">
-              {unplaced.map((marker) => (
-                <li key={marker.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedSlug(marker.slug)}
-                    className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-ink-850"
-                  >
-                    <span
-                      aria-hidden
-                      className="size-2 shrink-0 rounded-full border border-dashed"
-                      style={{ borderColor: statusDefinition(marker.status).accent }}
-                    />
-                    <span className="text-sm text-paper-200">{marker.title}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <label className="mt-3 flex cursor-pointer items-center gap-2.5 border-t border-[var(--rule)] pt-3">
-              <input
-                type="checkbox"
-                checked={showUnplaced}
-                onChange={(event) => setShowUnplaced(event.target.checked)}
-                className="size-3.5 accent-[var(--color-lagoon-400)]"
-              />
-              <span className="text-[11px] leading-tight text-paper-400">
-                Trotzdem auf der Karte einblenden (gestrichelt, ohne Aussagewert)
-              </span>
-            </label>
-          </section>
-        ) : null}
-
-        <section className="flex-1 rounded-xl border border-[var(--rule)] bg-ink-900/50 p-4">
-          <h3 className="kicker mb-3">
-            {selected ? "Auswahl" : `Verortet (${placed.length})`}
-          </h3>
-
-          {selected ? (
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={selected.status} size="sm" />
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-paper-500">
-                  Position: {selected.position.precision}
-                </span>
-              </div>
-              <h4 className="headline mt-3 text-xl text-paper-50">{selected.title}</h4>
-              <p className="mt-2 text-sm leading-relaxed text-paper-400">
-                {selected.summary}
+          {legendOpen ? (
+            <div className="pointer-events-auto mt-2 max-w-md border border-ink-900/20 bg-[#fdf4e2]/97 p-4 shadow-lg">
+              <p className="ressort inline-block">Zur Karte</p>
+              <p className="mt-3 font-serif text-[13px] leading-relaxed text-ink-700">
+                <strong className="font-bold">Redaktionelle Rekonstruktion.</strong> Die
+                Spielkarte von GTA VI ist unveröffentlicht. Diese Karte ist eine
+                eigenständige Darstellung auf Basis der realen Geografie der Küstenregion
+                – keine offizielle Karte und kein Spielmaterial.
               </p>
-              {selected.position.note ? (
-                <p className="mt-3 border-l-2 border-sand-400/40 pl-3 text-xs leading-relaxed text-paper-500">
-                  {selected.position.note}
-                </p>
-              ) : (
-                <p className="mt-3 border-l-2 border-paper-400/25 pl-3 text-xs leading-relaxed text-paper-500">
-                  Zur Lage dieses Eintrags liegt nichts Belegtes vor.
-                </p>
-              )}
-              {selected.target ? (
-                <Link
-                  href={entityHref(selected.target.type, selected.target.slug)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-md border border-lagoon-400/35 bg-lagoon-500/10 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-lagoon-300 hover:bg-lagoon-500/20"
-                >
-                  Zum Datenbankeintrag →
-                </Link>
-              ) : null}
+              <p className="mt-2 font-serif text-[13px] leading-relaxed text-ink-700">
+                Verortet wird nur, wo ein reales Vorbild nachvollziehbar ist. Einträge ohne
+                belegbare Lage stehen getrennt und werden nicht auf der Fläche platziert.
+              </p>
+              <dl className="mt-4 grid gap-2">
+                {MAP_LAYERS.map((layer) => (
+                  <div key={layer.id} className="flex items-center gap-2">
+                    <MarkerShape shape={layer.shape} color="#5c5241" hollow={false} size={14} />
+                    <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-ink-800">
+                      {layer.label}
+                    </dt>
+                  </div>
+                ))}
+                <div className="flex items-center gap-2 border-t border-ink-900/15 pt-2">
+                  <MarkerShape shape="kreis" color="#5c5241" hollow size={14} />
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-600">
+                    Ohne belegte Position
+                  </dt>
+                </div>
+              </dl>
               <button
                 type="button"
-                onClick={() => setSelectedSlug(null)}
-                className="mt-3 block font-mono text-[10px] uppercase tracking-[0.12em] text-paper-500 hover:text-paper-200"
+                onClick={() => setLegendOpen(false)}
+                className="mt-4 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-coral-600"
               >
-                Auswahl aufheben
+                Schließen
               </button>
             </div>
-          ) : (
-            <ul className="grid gap-1">
-              {placed.map((marker) => (
-                <li key={marker.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedSlug(marker.slug)}
-                    className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-ink-850"
-                  >
-                    <span
-                      aria-hidden
-                      className="size-2 shrink-0 rounded-full"
-                      style={{ backgroundColor: statusDefinition(marker.status).accent }}
+          ) : null}
+        </div>
+
+        {/* --- Zoomsteuerung --- */}
+        <div className="absolute bottom-24 right-3 flex flex-col gap-1 lg:bottom-20">
+          <MapButton label="Vergrößern" onClick={() => zoomBy(1.35)}>
+            +
+          </MapButton>
+          <MapButton label="Verkleinern" onClick={() => zoomBy(0.74)}>
+            −
+          </MapButton>
+          <MapButton
+            label="Ansicht zurücksetzen"
+            onClick={() => setTransform({ scale: 1, x: 0, y: 0 })}
+          >
+            ⟲
+          </MapButton>
+        </div>
+
+        {/* --- Bottom Sheet (nur mobil) --- */}
+        <div className="absolute inset-x-0 bottom-0 lg:hidden">
+          <div className="border-t-2 border-ink-900 bg-paper-100 shadow-[0_-8px_24px_rgba(0,0,0,0.25)]">
+            <button
+              type="button"
+              onClick={() => setSheetOpen((value) => !value)}
+              aria-expanded={sheetOpen}
+              className="flex w-full items-center justify-between gap-3 px-4 py-3"
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                {selected ? (
+                  <>
+                    <MarkerShape
+                      shape={SHAPE_BY_LAYER.get(selected.layer) ?? "kreis"}
+                      color={statusDefinition(selected.status).accent}
+                      hollow={selected.position.precision === "platzhalter"}
+                      size={16}
                     />
-                    <span className="text-sm text-paper-200">{marker.title}</span>
-                  </button>
-                </li>
-              ))}
-              {placed.length === 0 ? (
-                <li className="rounded-lg border border-dashed border-[var(--rule)] px-3 py-6 text-center text-xs text-paper-500">
-                  Keine verortete Ebene aktiv.
-                </li>
-              ) : null}
-            </ul>
+                    <span className="subhead truncate text-[17px]">{selected.title}</span>
+                  </>
+                ) : (
+                  <span className="font-mono text-[11px] font-bold uppercase tracking-[0.16em]">
+                    {matches.length} Marker
+                  </span>
+                )}
+              </span>
+              <span aria-hidden className="meta shrink-0">
+                {sheetOpen ? "Schließen ▾" : "Öffnen ▴"}
+              </span>
+            </button>
+
+            {sheetOpen ? (
+              <div className="max-h-[42vh] overflow-y-auto border-t border-ink-900/15 px-4 pb-5 pt-4">
+                {selected ? (
+                  <SelectionDetail
+                    marker={selected}
+                    onClear={() => {
+                      setSelectedSlug(null);
+                      setSheetOpen(false);
+                    }}
+                  />
+                ) : (
+                  <MarkerList
+                    placed={placed}
+                    unplaced={unplaced}
+                    onSelect={select}
+                    showUnplaced={showUnplaced}
+                    onToggleUnplaced={setShowUnplaced}
+                  />
+                )}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* ============================ Seitenpanel ============================ */}
+      <aside className="hidden border-l-2 border-ink-900 bg-paper-100 lg:block lg:h-[calc(100vh-6.5rem)] lg:overflow-y-auto">
+        <div className="p-5">
+          {selected ? (
+            <SelectionDetail marker={selected} onClear={() => setSelectedSlug(null)} />
+          ) : (
+            <MarkerList
+              placed={placed}
+              unplaced={unplaced}
+              onSelect={select}
+              showUnplaced={showUnplaced}
+              onToggleUnplaced={setShowUnplaced}
+            />
           )}
-        </section>
+        </div>
       </aside>
+    </div>
+  );
+}
+
+function MarkerList({
+  placed,
+  unplaced,
+  onSelect,
+  showUnplaced,
+  onToggleUnplaced,
+}: {
+  placed: MapMarker[];
+  unplaced: MapMarker[];
+  onSelect: (slug: string) => void;
+  showUnplaced: boolean;
+  onToggleUnplaced: (value: boolean) => void;
+}) {
+  return (
+    <>
+      <p className="ressort">Verortet ({placed.length})</p>
+      <ul className="mt-3 grid">
+        {placed.map((marker) => (
+          <li key={marker.id}>
+            <button
+              type="button"
+              onClick={() => onSelect(marker.slug)}
+              className="flex w-full items-center gap-2.5 border-b border-ink-900/10 py-2.5 text-left transition-colors hover:bg-paper-200"
+            >
+              <MarkerShape
+                shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"}
+                color={statusDefinition(marker.status).accent}
+                hollow={false}
+                size={15}
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-serif text-[15px] text-ink-900">
+                  {marker.title}
+                </span>
+                <span className="meta">{statusDefinition(marker.status).label}</span>
+              </span>
+            </button>
+          </li>
+        ))}
+        {placed.length === 0 ? (
+          <li className="border border-dashed border-ink-900/25 px-3 py-5 text-center font-serif text-[13px] text-ink-500">
+            Keine Treffer in den aktiven Ebenen.
+          </li>
+        ) : null}
+      </ul>
+
+      {unplaced.length > 0 ? (
+        <div className="mt-7">
+          <p className="ressort">Ohne belegte Position ({unplaced.length})</p>
+          <p className="mt-2.5 font-serif text-[12px] leading-snug text-ink-500">
+            Offiziell benannt, aber nicht verortbar. Diese Einträge werden nicht auf der
+            Fläche platziert, solange ihre Lage nicht belegt ist.
+          </p>
+          <ul className="mt-3 grid">
+            {unplaced.map((marker) => (
+              <li key={marker.id}>
+                <button
+                  type="button"
+                  onClick={() => onSelect(marker.slug)}
+                  className="flex w-full items-center gap-2.5 border-b border-ink-900/10 py-2.5 text-left transition-colors hover:bg-paper-200"
+                >
+                  <MarkerShape
+                    shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"}
+                    color={statusDefinition(marker.status).accent}
+                    hollow
+                    size={15}
+                  />
+                  <span className="font-serif text-[15px] italic text-ink-700">
+                    {marker.title}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <label className="mt-3 flex cursor-pointer items-start gap-2.5">
+            <input
+              type="checkbox"
+              checked={showUnplaced}
+              onChange={(event) => onToggleUnplaced(event.target.checked)}
+              className="mt-0.5 size-3.5 accent-[var(--color-coral-500)]"
+            />
+            <span className="font-serif text-[12px] leading-snug text-ink-600">
+              Trotzdem auf der Karte einblenden – gestrichelt, ohne Aussagewert
+            </span>
+          </label>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+function SelectionDetail({ marker, onClear }: { marker: MapMarker; onClear: () => void }) {
+  const definition = statusDefinition(marker.status);
+  return (
+    <div>
+      <div className="flex items-center gap-2.5">
+        <MarkerShape
+          shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"}
+          color={definition.accent}
+          hollow={marker.position.precision === "platzhalter"}
+          size={20}
+        />
+        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink-700">
+          {definition.label}
+        </span>
+      </div>
+
+      <h3 className="headline mt-3 text-[1.7rem]">{marker.title}</h3>
+      <p className="standfirst mt-2 text-[14px]">{marker.summary}</p>
+
+      <div className="mt-4 border-y border-ink-900/15 py-3">
+        <p className="meta">Position: {marker.position.precision}</p>
+        <p className="mt-1.5 font-serif text-[12px] leading-snug text-ink-600">
+          {marker.position.note ?? "Zur Lage dieses Eintrags liegt nichts Belegtes vor."}
+        </p>
+      </div>
+
+      {marker.target ? (
+        <Link
+          href={entityHref(marker.target.type, marker.target.slug)}
+          className="mt-4 inline-flex items-center gap-2 bg-night-900 px-4 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-paper-100 transition-colors hover:bg-lagoon-700"
+        >
+          Zum Datenbankeintrag →
+        </Link>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={onClear}
+        className="mt-4 block font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-coral-600 hover:underline"
+      >
+        ← Zur Übersicht
+      </button>
     </div>
   );
 }
@@ -425,7 +693,7 @@ function MapButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="grid size-9 place-items-center rounded-md border border-[#123038]/15 bg-[#fdf4e2]/90 text-[#123038] shadow-sm transition-colors hover:bg-[#fdf4e2] hover:text-[#ff6a55]"
+      className="grid size-9 place-items-center border border-ink-900/20 bg-[#fdf4e2]/95 text-[15px] text-ink-800 shadow-sm transition-colors hover:bg-[#fdf4e2] hover:text-coral-600"
     >
       <span aria-hidden>{children}</span>
     </button>

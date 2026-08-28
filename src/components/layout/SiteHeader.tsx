@@ -8,18 +8,24 @@ import { cx } from "@/lib/format";
 import { Container } from "@/components/ui/Container";
 import { Wordmark } from "./Wordmark";
 
+/**
+ * Schmale Ressortleiste im Zeitungsstil: Versalien, kräftige Trennlinie,
+ * durchgehend sichtbar. Der große Zeitungskopf steht darunter auf der
+ * Titelseite und tritt hier bewusst nicht in Konkurrenz.
+ */
 export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const onHome = pathname === "/";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--rule)] bg-ink-950/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b-2 border-ink-900 bg-paper-100/95 backdrop-blur-sm">
       <Container width="wide">
-        <div className="flex h-16 items-center justify-between gap-4">
-          <Wordmark />
+        <div className="flex h-12 items-center justify-between gap-4">
+          <Wordmark className={onHome ? "lg:opacity-0 lg:transition-opacity" : ""} />
 
           <nav aria-label="Hauptnavigation" className="hidden lg:block">
-            <ul className="flex items-center gap-1">
+            <ul className="flex items-center gap-7">
               {MAIN_NAV.map((item) => {
                 const active =
                   pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -29,17 +35,15 @@ export function SiteHeader() {
                       href={item.href}
                       aria-current={active ? "page" : undefined}
                       className={cx(
-                        "relative rounded-md px-3 py-2 font-mono text-[11px] uppercase tracking-[0.16em] transition-colors",
-                        active
-                          ? "text-paper-50"
-                          : "text-paper-400 hover:text-paper-50",
+                        "relative block py-3 font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-colors",
+                        active ? "text-coral-600" : "text-ink-700 hover:text-coral-600",
                       )}
                     >
                       {item.label}
                       {active ? (
                         <span
                           aria-hidden
-                          className="absolute inset-x-3 -bottom-px h-px bg-coral-400"
+                          className="absolute inset-x-0 bottom-0 h-[3px] bg-coral-500"
                         />
                       ) : null}
                     </Link>
@@ -52,7 +56,7 @@ export function SiteHeader() {
           <div className="flex items-center gap-2">
             <Link
               href="/kompass"
-              className="hidden rounded-md border border-lagoon-400/35 bg-lagoon-500/10 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-lagoon-300 transition-colors hover:bg-lagoon-500/20 sm:inline-block"
+              className="hidden bg-night-900 px-3.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-paper-100 transition-colors hover:bg-lagoon-700 sm:inline-block"
             >
               Karte öffnen
             </Link>
@@ -61,22 +65,22 @@ export function SiteHeader() {
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="mobile-nav"
-              className="inline-flex size-10 items-center justify-center rounded-md border border-[var(--rule)] text-paper-200 lg:hidden"
+              className="inline-flex size-9 items-center justify-center border border-ink-900/25 text-ink-900 lg:hidden"
             >
               <span className="sr-only">Navigation {open ? "schließen" : "öffnen"}</span>
-              <span aria-hidden className="grid gap-1">
+              <span aria-hidden className="grid gap-[3px]">
                 <span
                   className={cx(
-                    "block h-px w-5 bg-current transition-transform",
+                    "block h-[2px] w-4 bg-current transition-transform",
                     open && "translate-y-[5px] rotate-45",
                   )}
                 />
                 <span
-                  className={cx("block h-px w-5 bg-current transition-opacity", open && "opacity-0")}
+                  className={cx("block h-[2px] w-4 bg-current transition-opacity", open && "opacity-0")}
                 />
                 <span
                   className={cx(
-                    "block h-px w-5 bg-current transition-transform",
+                    "block h-[2px] w-4 bg-current transition-transform",
                     open && "-translate-y-[5px] -rotate-45",
                   )}
                 />
@@ -90,22 +94,21 @@ export function SiteHeader() {
         <nav
           id="mobile-nav"
           aria-label="Hauptnavigation (mobil)"
-          className="border-t border-[var(--rule)] bg-ink-950 lg:hidden"
+          className="border-t border-ink-900/20 bg-paper-50 lg:hidden"
         >
           <Container width="wide">
-            <ul className="grid gap-1 py-3">
+            <ul className="grid divide-y divide-ink-900/10 py-1">
               {MAIN_NAV.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    // Nach der Navigation schliesst sich die mobile Ebene wieder.
                     onClick={() => setOpen(false)}
-                    className="flex items-baseline justify-between gap-4 rounded-lg px-3 py-3 hover:bg-ink-850"
+                    className="flex items-baseline justify-between gap-4 py-3"
                   >
-                    <span className="font-mono text-xs uppercase tracking-[0.16em] text-paper-50">
+                    <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-ink-900">
                       {item.label}
                     </span>
-                    <span className="text-right text-xs text-paper-500">
+                    <span className="text-right font-serif text-xs italic text-ink-500">
                       {item.question}
                     </span>
                   </Link>
