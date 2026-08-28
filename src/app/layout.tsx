@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Playfair_Display, Source_Serif_4 } from "next/font/google";
+import {
+  Anton,
+  JetBrains_Mono,
+  Playfair_Display,
+  Source_Serif_4,
+} from "next/font/google";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -7,9 +12,11 @@ import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { SITE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const inter = Inter({
+/** Schmale, fette Versalschrift für Zeitungskopf und Schlagzeilen. */
+const anton = Anton({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: "400",
+  variable: "--font-anton",
   display: "swap",
 });
 
@@ -76,7 +83,7 @@ export default function RootLayout({
   return (
     <html
       lang="de"
-      className={`${inter.variable} ${sourceSerif.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
+      className={`${anton.variable} ${sourceSerif.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
     >
       <body className="paper-grain min-h-dvh">
         <a

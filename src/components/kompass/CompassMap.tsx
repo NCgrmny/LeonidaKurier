@@ -40,36 +40,87 @@ interface Transform {
   y: number;
 }
 
-/** Markersignatur nach Kategorie. */
-function MarkerShape({
+/** Piktogramm je Kategorie – innerhalb des Pins gezeichnet. */
+function LayerGlyph({ shape }: { shape: MapLayerDefinition["shape"] }) {
+  switch (shape) {
+    case "raute":
+      return <path d="M12 5.5 L18.5 12 L12 18.5 L5.5 12 Z" />;
+    case "quadrat":
+      return <path d="M6.5 8 h11 v9 h-11 Z M9 8 V6 h6 v2" />;
+    case "dreieck":
+      return <path d="M12 5.5 L18.5 17.5 H5.5 Z" />;
+    case "stern":
+      return (
+        <path d="M12 4.5 L14 10 L19.8 10.3 L15.3 13.9 L16.8 19.5 L12 16.4 L7.2 19.5 L8.7 13.9 L4.2 10.3 L10 10 Z" />
+      );
+    default:
+      // Ortssignatur: Haeuserzeile
+      return <path d="M5.5 17.5 V11 l3.2 -2.4 V17.5 Z M9.6 17.5 V8.2 l3.4 -2.6 V17.5 Z M13.8 17.5 V10.4 l3.4 2.2 V17.5 Z" />;
+  }
+}
+
+/**
+ * Kartenpin: runder Kopf mit Piktogramm, heller Fassung und Spitze nach unten.
+ * Unbelegte Eintraege bekommen eine gestrichelte, ungefuellte Fassung.
+ */
+function MarkerPin({
   shape,
   color,
   hollow,
-  size = 18,
+  size = 34,
 }: {
   shape: MapLayerDefinition["shape"];
   color: string;
   hollow: boolean;
   size?: number;
 }) {
-  const common = {
-    fill: hollow ? "#fdf4e2" : color,
-    stroke: hollow ? color : "#14110d",
-    strokeWidth: hollow ? 2.5 : 1.6,
-    strokeDasharray: hollow ? "3 2.5" : undefined,
-  };
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      {shape === "kreis" ? <circle cx="12" cy="12" r="7.5" {...common} /> : null}
-      {shape === "raute" ? <path d="M12 3 L21 12 L12 21 L3 12 Z" {...common} /> : null}
-      {shape === "quadrat" ? <rect x="4.5" y="4.5" width="15" height="15" {...common} /> : null}
-      {shape === "dreieck" ? <path d="M12 3.5 L21 20 L3 20 Z" {...common} /> : null}
-      {shape === "stern" ? (
-        <path
-          d="M12 2.5 L14.6 9.4 L21.8 9.8 L16.2 14.3 L18.1 21.2 L12 17.3 L5.9 21.2 L7.8 14.3 L2.2 9.8 L9.4 9.4 Z"
-          {...common}
-        />
+    <svg width={size} height={size * 1.24} viewBox="0 0 34 42" aria-hidden>
+      {!hollow ? (
+        <ellipse cx="17" cy="39.4" rx="6.5" ry="2.1" fill="#0b2027" opacity="0.28" />
       ) : null}
+      <path
+        d="M17 37.5 L12.4 28.5 h9.2 Z"
+        fill={hollow ? "#fbf3e2" : color}
+        stroke={hollow ? color : "none"}
+        strokeWidth={hollow ? 1.6 : 0}
+        strokeDasharray={hollow ? "2.5 2" : undefined}
+      />
+      <circle
+        cx="17"
+        cy="16"
+        r="14.2"
+        fill="#fbf3e2"
+        stroke={hollow ? color : "#122b33"}
+        strokeOpacity={hollow ? 1 : 0.28}
+        strokeWidth={hollow ? 2 : 1.4}
+        strokeDasharray={hollow ? "3.5 2.6" : undefined}
+      />
+      <circle cx="17" cy="16" r="11.4" fill={hollow ? "none" : color} />
+      <g
+        transform="translate(5 4) scale(1)"
+        fill={hollow ? color : "#fbf3e2"}
+        fillOpacity={hollow ? 0.7 : 1}
+      >
+        <LayerGlyph shape={shape} />
+      </g>
+    </svg>
+  );
+}
+
+/** Kompaktes Piktogramm für Legende und Filterchips. */
+function LayerIcon({
+  shape,
+  color,
+  size = 14,
+}: {
+  shape: MapLayerDefinition["shape"];
+  color: string;
+  size?: number;
+}) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden fill={color}>
+      <LayerGlyph shape={shape} />
     </svg>
   );
 }
@@ -300,36 +351,36 @@ export function CompassMap({
                   onClick={() => select(marker.slug)}
                   onPointerDown={(event) => event.stopPropagation()}
                   aria-pressed={isSelected}
-                  className="group absolute -translate-x-1/2 -translate-y-1/2"
+                  className="group absolute flex -translate-x-1/2 -translate-y-full flex-col items-center"
                   style={{
                     left: `${marker.position.x * 100}%`,
                     top: `${marker.position.y * 100}%`,
                     scale: `${1 / transform.scale}`,
                   }}
                 >
+                  {/* Der Pin sitzt mit seiner Spitze auf der Position. */}
                   <span
                     className={cx(
-                      "block transition-transform group-hover:scale-125",
-                      isSelected && "scale-[1.35]",
+                      "block origin-bottom transition-transform group-hover:scale-110",
+                      isSelected && "scale-[1.18]",
                     )}
+                    style={{ marginBottom: "-2px" }}
                   >
-                    <MarkerShape
+                    <MarkerPin
                       shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"}
                       color={definition.accent}
                       hollow={isUnplaced}
-                      size={isSelected ? 22 : 18}
+                      size={isSelected ? 38 : 32}
                     />
                   </span>
                   <span
                     className={cx(
-                      "pointer-events-none absolute left-1/2 top-[19px] w-max max-w-[11rem] -translate-x-1/2 text-center font-mono text-[10px] font-bold uppercase tracking-[0.12em]",
-                      isSelected ? "text-coral-700" : "text-[#123038]",
+                      "pointer-events-none absolute left-1/2 top-full w-max max-w-[11rem] -translate-x-1/2 whitespace-nowrap border px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] shadow-sm",
+                      isSelected
+                        ? "border-coral-500 bg-coral-500 text-paper-50"
+                        : "border-[#122b33]/25 bg-[#fbf3e2]/95 text-[#122b33]",
                       isUnplaced && "font-normal italic",
                     )}
-                    style={{
-                      textShadow:
-                        "0 0 3px #fdf4e2, 0 0 3px #fdf4e2, 0 0 7px #fdf4e2, 0 1px 0 #fdf4e2",
-                    }}
                   >
                     {marker.title}
                   </span>
@@ -396,12 +447,7 @@ export function CompassMap({
                       count === 0 && "cursor-not-allowed opacity-45",
                     )}
                   >
-                    <MarkerShape
-                      shape={layer.shape}
-                      color={active ? "#fdf4e2" : "#5c5241"}
-                      hollow={false}
-                      size={11}
-                    />
+                    <LayerIcon shape={layer.shape} color={active ? "#f8f2e6" : "#5c5241"} size={12} />
                     {layer.label}
                     <span className="opacity-60">{count}</span>
                   </button>
@@ -426,14 +472,14 @@ export function CompassMap({
               <dl className="mt-4 grid gap-2">
                 {MAP_LAYERS.map((layer) => (
                   <div key={layer.id} className="flex items-center gap-2">
-                    <MarkerShape shape={layer.shape} color="#5c5241" hollow={false} size={14} />
+                    <LayerIcon shape={layer.shape} color="#5c5241" size={14} />
                     <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-ink-800">
                       {layer.label}
                     </dt>
                   </div>
                 ))}
                 <div className="flex items-center gap-2 border-t border-ink-900/15 pt-2">
-                  <MarkerShape shape="kreis" color="#5c5241" hollow size={14} />
+                  <LayerIcon shape="kreis" color="#8d7f6d" size={14} />
                   <dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-600">
                     Ohne belegte Position
                   </dt>
@@ -478,12 +524,7 @@ export function CompassMap({
               <span className="flex min-w-0 items-center gap-2">
                 {selected ? (
                   <>
-                    <MarkerShape
-                      shape={SHAPE_BY_LAYER.get(selected.layer) ?? "kreis"}
-                      color={statusDefinition(selected.status).accent}
-                      hollow={selected.position.precision === "platzhalter"}
-                      size={16}
-                    />
+                    <LayerIcon shape={SHAPE_BY_LAYER.get(selected.layer) ?? "kreis"} color={statusDefinition(selected.status).accent} size={16} />
                     <span className="subhead truncate text-[17px]">{selected.title}</span>
                   </>
                 ) : (
@@ -566,12 +607,7 @@ function MarkerList({
               onClick={() => onSelect(marker.slug)}
               className="flex w-full items-center gap-2.5 border-b border-ink-900/10 py-2.5 text-left transition-colors hover:bg-paper-200"
             >
-              <MarkerShape
-                shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"}
-                color={statusDefinition(marker.status).accent}
-                hollow={false}
-                size={15}
-              />
+              <LayerIcon shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"} color={statusDefinition(marker.status).accent} size={15} />
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-serif text-[15px] text-ink-900">
                   {marker.title}
@@ -603,12 +639,7 @@ function MarkerList({
                   onClick={() => onSelect(marker.slug)}
                   className="flex w-full items-center gap-2.5 border-b border-ink-900/10 py-2.5 text-left transition-colors hover:bg-paper-200"
                 >
-                  <MarkerShape
-                    shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"}
-                    color={statusDefinition(marker.status).accent}
-                    hollow
-                    size={15}
-                  />
+                  <LayerIcon shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"} color={statusDefinition(marker.status).accent} size={15} />
                   <span className="font-serif text-[15px] italic text-ink-700">
                     {marker.title}
                   </span>
@@ -638,12 +669,7 @@ function SelectionDetail({ marker, onClear }: { marker: MapMarker; onClear: () =
   return (
     <div>
       <div className="flex items-center gap-2.5">
-        <MarkerShape
-          shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"}
-          color={definition.accent}
-          hollow={marker.position.precision === "platzhalter"}
-          size={20}
-        />
+        <LayerIcon shape={SHAPE_BY_LAYER.get(marker.layer) ?? "kreis"} color={definition.accent} size={20} />
         <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink-700">
           {definition.label}
         </span>

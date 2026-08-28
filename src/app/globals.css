@@ -51,9 +51,12 @@
   --color-lagoon-300: #67d9cf;
   --color-lagoon-200: #a8ebe3;
 
-  --font-display: var(--font-playfair), ui-serif, Georgia, serif;
+  /* Schmale Versalien tragen Kopf und Schlagzeilen, die Didone die Ressort-
+     und Zwischenüberschriften, die Lesserife den Fließtext. */
+  --font-display: var(--font-anton), "Haettenschweiler", "Impact", sans-serif;
+  --font-editorial: var(--font-playfair), ui-serif, Georgia, serif;
   --font-serif: var(--font-source-serif), ui-serif, Georgia, serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, Menlo, monospace;
 }
 
@@ -120,25 +123,28 @@ body {
 
 .masthead {
   font-family: var(--font-display);
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  line-height: 0.84;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 0.82;
   text-transform: uppercase;
 }
 
+/* Schlagzeile: schmale Versalien, eng gesetzt – die Stimme der Titelseite. */
 .headline {
   font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -0.021em;
-  line-height: 1.03;
+  font-weight: 400;
+  letter-spacing: 0.002em;
+  line-height: 0.92;
+  text-transform: uppercase;
   text-wrap: balance;
 }
 
+/* Zwischen- und Ressortüberschriften in der Didone, gemischt gesetzt. */
 .subhead {
-  font-family: var(--font-display);
+  font-family: var(--font-editorial);
   font-weight: 700;
   letter-spacing: -0.014em;
-  line-height: 1.12;
+  line-height: 1.14;
   text-wrap: balance;
 }
 
@@ -177,6 +183,18 @@ body {
   padding: 0.35rem 0.7rem;
   background: var(--color-coral-500);
   color: var(--color-paper-50);
+}
+
+/* Statuschip: farbige Fläche mit Versalzeile, wie im Laufband. */
+.status-chip {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  color: #0b1420;
+  white-space: nowrap;
 }
 
 /* Aktenstempel – schräg gesetzte Auszeichnung */
@@ -253,7 +271,7 @@ body {
   margin-top: 1.05em;
 }
 .body-text h2 {
-  font-family: var(--font-display);
+  font-family: var(--font-editorial);
   font-weight: 800;
   font-size: 1.55rem;
   line-height: 1.15;
@@ -294,7 +312,7 @@ body {
 
 .dropcap::first-letter {
   float: left;
-  font-family: var(--font-display);
+  font-family: var(--font-editorial);
   font-weight: 900;
   font-size: 3.7em;
   line-height: 0.76;

@@ -23,27 +23,30 @@ import {
  * lässt.
  */
 export const MAP_PALETTE = {
-  waterDeep: "#127f92",
-  waterMid: "#1f9aa8",
-  waterShelf: "#4cc2c4",
-  waterShallow: "#8fdedb",
-  landHigh: "#f6e6c8",
-  landMid: "#efd9b1",
-  landLow: "#e8cfa4",
-  beach: "#fdf4e2",
-  forest: "#b7cf9c",
-  marsh: "#9ecab4",
-  marshLine: "#4f9c8a",
+  waterDeep: "#0d5f74",
+  waterMid: "#158497",
+  waterShelf: "#2ba7b0",
+  waterShallow: "#6fcfcd",
+  /** Gelände von der Küstenebene bis ins bewaldete Hinterland. */
+  landLow: "#c9cf94",
+  landMid: "#a8bd83",
+  landHigh: "#8fae76",
+  beach: "#f0e2bd",
+  forest: "#5f8a5a",
+  forestDark: "#4a7249",
+  marsh: "#7ba98c",
+  marshLine: "#3f7a63",
   river: "#2f9fb4",
-  roadMajor: "#ff6a55",
-  roadMinor: "#ff9b76",
-  roadCasing: "#fff6ea",
-  urban: "#ff5fa2",
-  coast: "#ffffff",
-  frame: "#0f6b7a",
-  label: "#0c5f70",
+  roadMajor: "#e8593f",
+  roadMinor: "#d98a5c",
+  roadCasing: "#fbf3e2",
+  urban: "#b7a894",
+  urbanBlock: "#8d7f6d",
+  coast: "#fbf3e2",
+  frame: "#0b4c5c",
+  label: "#08424f",
   /** Dunkle Schrift auf hellem Grund – für Marker und Kartenzubehör. */
-  ink: "#123038",
+  ink: "#122b33",
 } as const;
 
 /**
@@ -80,11 +83,32 @@ export function BaseMap() {
           <stop offset="100%" stopColor="#0d6b7d" />
         </linearGradient>
 
-        <linearGradient id="lk-land" x1="0.15" y1="0" x2="0.8" y2="1">
+        <linearGradient id="lk-land" x1="0.2" y1="0" x2="0.75" y2="1">
           <stop offset="0%" stopColor={MAP_PALETTE.landHigh} />
-          <stop offset="45%" stopColor={MAP_PALETTE.landMid} />
+          <stop offset="40%" stopColor={MAP_PALETTE.landMid} />
           <stop offset="100%" stopColor={MAP_PALETTE.landLow} />
         </linearGradient>
+
+        {/* Waldsignatur: gestreute Kronen statt einer glatten Flaeche. */}
+        <pattern id="lk-trees" width="16" height="16" patternUnits="userSpaceOnUse">
+          <circle cx="4" cy="4" r="2.6" fill={MAP_PALETTE.forestDark} fillOpacity="0.55" />
+          <circle cx="12" cy="9" r="2.1" fill={MAP_PALETTE.forestDark} fillOpacity="0.4" />
+          <circle cx="7" cy="13" r="1.7" fill={MAP_PALETTE.forestDark} fillOpacity="0.3" />
+        </pattern>
+
+        {/* Siedlungsraster: Baublockstruktur statt farbigem Nebel. */}
+        <pattern id="lk-blocks" width="9" height="9" patternUnits="userSpaceOnUse">
+          <rect width="9" height="9" fill={MAP_PALETTE.urban} fillOpacity="0.5" />
+          <rect x="0.9" y="0.9" width="3.2" height="3.2" fill={MAP_PALETTE.urbanBlock} fillOpacity="0.6" />
+          <rect x="5.4" y="1.6" width="2.6" height="2.2" fill={MAP_PALETTE.urbanBlock} fillOpacity="0.45" />
+          <rect x="1.6" y="5.6" width="2.4" height="2.4" fill={MAP_PALETTE.urbanBlock} fillOpacity="0.4" />
+          <rect x="5.2" y="5.4" width="3" height="2.6" fill={MAP_PALETTE.urbanBlock} fillOpacity="0.55" />
+        </pattern>
+
+        {/* Reliefschattierung: versetzte Kopien der Kueste erzeugen Plastizitaet. */}
+        <filter id="lk-relief" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="14" />
+        </filter>
 
         {/* Sandsaum, der vom Strand nach innen ausläuft. */}
         <linearGradient id="lk-shore" x1="0" y1="0" x2="0" y2="1">
@@ -92,11 +116,19 @@ export function BaseMap() {
           <stop offset="100%" stopColor={MAP_PALETTE.beach} stopOpacity="0.35" />
         </linearGradient>
 
-        <radialGradient id="lk-urban">
-          <stop offset="0%" stopColor={MAP_PALETTE.urban} stopOpacity="0.5" />
-          <stop offset="45%" stopColor={MAP_PALETTE.urban} stopOpacity="0.2" />
-          <stop offset="100%" stopColor={MAP_PALETTE.urban} stopOpacity="0" />
+        <radialGradient id="lk-urban-mask">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+          <stop offset="62%" stopColor="#ffffff" stopOpacity="0.75" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
         </radialGradient>
+        {URBAN_AREAS.map((area) => {
+          const [x, y] = toViewBox(...area.center);
+          return (
+            <mask key={area.id} id={`lk-urban-${area.id}`}>
+              <circle cx={x} cy={y} r={area.radius * 130} fill="url(#lk-urban-mask)" />
+            </mask>
+          );
+        })}
 
         {/* Feinkörnige Papiertextur – nimmt der Fläche das Vektorhafte. */}
         <filter id="lk-grain" x="0%" y="0%" width="100%" height="100%">
@@ -237,15 +269,37 @@ export function BaseMap() {
           d={coast}
           fill="none"
           stroke={MAP_PALETTE.beach}
-          strokeOpacity="0.85"
-          strokeWidth="5"
+          strokeOpacity="0.95"
+          strokeWidth="7"
         />
         <path d={coast} fill="none" stroke="url(#lk-shore)" strokeWidth="22" opacity="0.7" />
 
-        {/* Waldflächen */}
-        <g fill={MAP_PALETTE.forest} fillOpacity="0.8">
+        {/* Relief: weiche Aufhellung im Landesinneren, Abdunklung an der Kueste */}
+        <path
+          d={coast}
+          fill="none"
+          stroke="#3f5c3a"
+          strokeOpacity="0.3"
+          strokeWidth="34"
+          filter="url(#lk-relief)"
+        />
+        <path
+          d={coast}
+          fill="none"
+          stroke="#e6ecc0"
+          strokeOpacity="0.28"
+          strokeWidth="90"
+          filter="url(#lk-relief)"
+          transform="translate(-10 -14)"
+        />
+
+        {/* Waldflächen mit Kronensignatur */}
+        <g>
           {FORESTS.map((forest) => (
-            <path key={forest.id} d={toSmoothPath(forest.points)} />
+            <g key={forest.id}>
+              <path d={toSmoothPath(forest.points)} fill={MAP_PALETTE.forest} fillOpacity="0.85" />
+              <path d={toSmoothPath(forest.points)} fill="url(#lk-trees)" />
+            </g>
           ))}
         </g>
 
@@ -253,12 +307,21 @@ export function BaseMap() {
         <path d={wetlands} fill={MAP_PALETTE.marsh} fillOpacity="0.85" />
         <path d={wetlands} fill="url(#lk-marsh)" />
 
-        {/* Siedlungsflächen */}
+        {/* Siedlungsflächen als Baublockraster, weich auslaufend */}
         <g>
           {URBAN_AREAS.map((area) => {
             const [x, y] = toViewBox(...area.center);
+            const r = area.radius * 130;
             return (
-              <circle key={area.id} cx={x} cy={y} r={area.radius * 130} fill="url(#lk-urban)" />
+              <rect
+                key={area.id}
+                x={x - r}
+                y={y - r}
+                width={r * 2}
+                height={r * 2}
+                fill="url(#lk-blocks)"
+                mask={`url(#lk-urban-${area.id})`}
+              />
             );
           })}
         </g>
@@ -331,7 +394,7 @@ export function BaseMap() {
       <path
         d={keys}
         fill="none"
-        stroke={MAP_PALETTE.landLow}
+        stroke={MAP_PALETTE.landMid}
         strokeOpacity="0.95"
         strokeWidth="7"
         strokeLinecap="round"
@@ -343,8 +406,8 @@ export function BaseMap() {
         d={coast}
         fill="none"
         stroke={MAP_PALETTE.coast}
-        strokeOpacity="0.65"
-        strokeWidth="1.4"
+        strokeOpacity="0.8"
+        strokeWidth="1.6"
         strokeLinejoin="round"
       />
 

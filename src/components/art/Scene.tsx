@@ -30,28 +30,175 @@ export function motifForSlug(slug: string): SceneVariant {
   return variants[sum % variants.length];
 }
 
-const BUILDINGS = [
-  { x: 40, w: 70, h: 210, windows: 5 },
-  { x: 118, w: 46, h: 300, windows: 7 },
-  { x: 170, w: 92, h: 168, windows: 4 },
-  { x: 268, w: 54, h: 258, windows: 6 },
-  { x: 328, w: 74, h: 350, windows: 8 },
-  { x: 408, w: 44, h: 196, windows: 5 },
-  { x: 458, w: 108, h: 268, windows: 6 },
-  { x: 572, w: 58, h: 410, windows: 9 },
-  { x: 636, w: 80, h: 232, windows: 5 },
-  { x: 722, w: 50, h: 320, windows: 7 },
-  { x: 778, w: 96, h: 186, windows: 4 },
-  { x: 880, w: 62, h: 292, windows: 7 },
-  { x: 948, w: 86, h: 224, windows: 5 },
-  { x: 1040, w: 48, h: 372, windows: 8 },
-  { x: 1094, w: 78, h: 200, windows: 5 },
-  { x: 1178, w: 56, h: 286, windows: 6 },
-  { x: 1240, w: 100, h: 172, windows: 4 },
-  { x: 1346, w: 52, h: 248, windows: 6 },
-  { x: 1404, w: 88, h: 316, windows: 7 },
-  { x: 1498, w: 64, h: 204, windows: 5 },
+/**
+ * Silhouetten der Skyline.
+ *
+ * Drei Tiefenebenen: `fern` liegt im Dunst und ist niedrig kontrastiert,
+ * `mitte` traegt die Masse, `nah` steht scharf im Vordergrund. Jedes Gebaeude
+ * bekommt eine Form (Rueckstaffelung, Krone, Antenne), damit keine Reihe
+ * gleicher Rechtecke entsteht.
+ */
+type BuildingSpec = {
+  x: number;
+  w: number;
+  h: number;
+  /** flach | zurueckgestaffelt | mit Krone | mit Antenne */
+  form: "flach" | "staffel" | "krone" | "antenne";
+  windows: number;
+};
+
+const SKYLINE_FAR: BuildingSpec[] = [
+  { x: 20, w: 58, h: 168, form: "flach", windows: 4 },
+  { x: 92, w: 40, h: 232, form: "antenne", windows: 6 },
+  { x: 146, w: 74, h: 140, form: "flach", windows: 3 },
+  { x: 236, w: 46, h: 268, form: "staffel", windows: 7 },
+  { x: 300, w: 62, h: 186, form: "flach", windows: 4 },
+  { x: 382, w: 38, h: 300, form: "krone", windows: 8 },
+  { x: 436, w: 86, h: 152, form: "flach", windows: 3 },
+  { x: 540, w: 44, h: 246, form: "antenne", windows: 6 },
+  { x: 604, w: 68, h: 178, form: "flach", windows: 4 },
+  { x: 692, w: 40, h: 288, form: "staffel", windows: 7 },
+  { x: 752, w: 78, h: 160, form: "flach", windows: 4 },
+  { x: 848, w: 48, h: 264, form: "krone", windows: 6 },
+  { x: 914, w: 70, h: 146, form: "flach", windows: 3 },
+  { x: 1002, w: 42, h: 296, form: "antenne", windows: 8 },
+  { x: 1062, w: 82, h: 172, form: "flach", windows: 4 },
+  { x: 1162, w: 46, h: 254, form: "staffel", windows: 6 },
+  { x: 1226, w: 74, h: 138, form: "flach", windows: 3 },
+  { x: 1318, w: 40, h: 282, form: "krone", windows: 7 },
+  { x: 1376, w: 88, h: 164, form: "flach", windows: 4 },
+  { x: 1482, w: 52, h: 236, form: "antenne", windows: 6 },
 ];
+
+const SKYLINE_MID: BuildingSpec[] = [
+  { x: 0, w: 84, h: 244, form: "flach", windows: 6 },
+  { x: 96, w: 54, h: 352, form: "staffel", windows: 9 },
+  { x: 164, w: 106, h: 196, form: "flach", windows: 5 },
+  { x: 284, w: 62, h: 300, form: "krone", windows: 8 },
+  { x: 360, w: 88, h: 410, form: "antenne", windows: 11 },
+  { x: 462, w: 50, h: 226, form: "flach", windows: 6 },
+  { x: 526, w: 124, h: 312, form: "staffel", windows: 8 },
+  { x: 664, w: 66, h: 470, form: "antenne", windows: 12 },
+  { x: 744, w: 92, h: 268, form: "flach", windows: 7 },
+  { x: 850, w: 58, h: 372, form: "krone", windows: 10 },
+  { x: 922, w: 110, h: 214, form: "flach", windows: 5 },
+  { x: 1046, w: 72, h: 336, form: "staffel", windows: 9 },
+  { x: 1132, w: 98, h: 256, form: "flach", windows: 6 },
+  { x: 1244, w: 56, h: 428, form: "antenne", windows: 11 },
+  { x: 1314, w: 90, h: 230, form: "flach", windows: 6 },
+  { x: 1418, w: 64, h: 328, form: "krone", windows: 9 },
+  { x: 1496, w: 104, h: 208, form: "flach", windows: 5 },
+];
+
+const SKYLINE_NEAR: BuildingSpec[] = [
+  { x: -30, w: 150, h: 190, form: "flach", windows: 4 },
+  { x: 140, w: 96, h: 132, form: "flach", windows: 3 },
+  { x: 1180, w: 118, h: 148, form: "flach", windows: 3 },
+  { x: 1330, w: 170, h: 202, form: "staffel", windows: 4 },
+];
+
+/** Erzeugt den Umriss eines Gebaeudes samt Aufbau. */
+function buildingPath(b: BuildingSpec, groundY: number): string {
+  const top = groundY - b.h;
+  const parts = [`M${b.x} ${groundY} L${b.x} ${top} L${b.x + b.w} ${top} L${b.x + b.w} ${groundY} Z`];
+
+  if (b.form === "staffel") {
+    const inset = b.w * 0.22;
+    const extra = b.h * 0.16;
+    parts.push(
+      `M${b.x + inset} ${top} L${b.x + inset} ${top - extra} L${b.x + b.w - inset} ${top - extra} L${b.x + b.w - inset} ${top} Z`,
+    );
+  }
+  if (b.form === "krone") {
+    const mid = b.x + b.w / 2;
+    parts.push(`M${b.x + 3} ${top} L${mid} ${top - b.w * 0.62} L${b.x + b.w - 3} ${top} Z`);
+  }
+  if (b.form === "antenne") {
+    const mid = b.x + b.w / 2;
+    parts.push(`M${mid - 2.2} ${top} L${mid - 2.2} ${top - 54} L${mid + 2.2} ${top - 54} L${mid + 2.2} ${top} Z`);
+  }
+  return parts.join(" ");
+}
+
+/** Beleuchtete Fenster eines Gebaeudes – deterministisch verteilt. */
+function windowRects(b: BuildingSpec, groundY: number, seed: number) {
+  const cols = Math.max(1, Math.floor((b.w - 14) / 20));
+  const rows = b.windows;
+  const cells: { x: number; y: number }[] = [];
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      // Pseudozufall aus festen Werten: gleiche Ausgabe auf Server und Client.
+      if ((row * 7 + col * 13 + seed + b.x) % 5 < 2) continue;
+      cells.push({
+        x: b.x + 9 + col * 20,
+        y: groundY - b.h + 20 + row * 26,
+      });
+    }
+  }
+  return cells;
+}
+
+/** Zeichnet eine Skyline-Ebene inklusive Fensterlicht. */
+function SkylineLayer({
+  buildings,
+  groundY,
+  fill,
+  windowFill,
+  windowOpacity = 0.8,
+  seed = 0,
+  opacity = 1,
+  lit,
+}: {
+  buildings: BuildingSpec[];
+  groundY: number;
+  fill: string;
+  windowFill?: string;
+  windowOpacity?: number;
+  seed?: number;
+  opacity?: number;
+  /** Farbe des Streiflichts auf den Fassaden. */
+  lit?: string;
+}) {
+  return (
+    <g opacity={opacity}>
+      <g fill={fill}>
+        {buildings.map((b) => (
+          <path key={b.x} d={buildingPath(b, groundY)} />
+        ))}
+      </g>
+      {/* Fassaden: leichte Aufhellung nach oben und eine belichtete Kante zur
+          Lichtquelle hin. Ohne das bleiben es flache Silhouetten. */}
+      {lit ? (
+        <>
+          <g fill={lit} opacity="0.14">
+            {buildings.map((b) => (
+              <rect key={`f-${b.x}`} x={b.x} y={groundY - b.h} width={b.w} height={b.h * 0.55} />
+            ))}
+          </g>
+          <g fill={lit} opacity="0.3">
+            {buildings.map((b) => (
+              <rect key={`e-${b.x}`} x={b.x} y={groundY - b.h} width="2.5" height={b.h} />
+            ))}
+          </g>
+          <g fill="#000000" opacity="0.22">
+            {buildings.map((b) => (
+              <rect key={`s-${b.x}`} x={b.x + b.w - 4} y={groundY - b.h} width="4" height={b.h} />
+            ))}
+          </g>
+        </>
+      ) : null}
+      {windowFill ? (
+        <g fill={windowFill} opacity={windowOpacity}>
+          {buildings.flatMap((b) =>
+            windowRects(b, groundY, seed).map((cell) => (
+              <rect key={`${b.x}-${cell.x}-${cell.y}`} x={cell.x} y={cell.y} width="7" height="11" />
+            )),
+          )}
+        </g>
+      ) : null}
+    </g>
+  );
+}
 
 /** Palmensilhouette. `flip` spiegelt sie, `lean` neigt den Stamm. */
 function Palm({
@@ -129,13 +276,15 @@ function SharedDefs({ skyId }: { skyId: string }) {
         <stop offset="100%" stopColor="#f0913e" />
       </linearGradient>
 
-      <linearGradient id="sc-sky" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#0b2035" />
-        <stop offset="34%" stopColor="#4a3a6b" />
-        <stop offset="58%" stopColor="#c05a7d" />
-        <stop offset="76%" stopColor="#e8578c" />
-        <stop offset="88%" stopColor="#f0913e" />
-        <stop offset="100%" stopColor="#ffc978" />
+      <linearGradient id="sc-sky" x1="0" y1="0" x2="0.15" y2="1">
+        <stop offset="0%" stopColor="#0a1b30" />
+        <stop offset="18%" stopColor="#2b2a55" />
+        <stop offset="38%" stopColor="#6b3f74" />
+        <stop offset="55%" stopColor="#a94f79" />
+        <stop offset="70%" stopColor="#d95f78" />
+        <stop offset="83%" stopColor="#f2874f" />
+        <stop offset="93%" stopColor="#f9b25e" />
+        <stop offset="100%" stopColor="#ffe0a3" />
       </linearGradient>
 
       <linearGradient id="sc-night" x1="0" y1="0" x2="0" y2="1">
@@ -145,10 +294,11 @@ function SharedDefs({ skyId }: { skyId: string }) {
       </linearGradient>
 
       <linearGradient id="sc-sea" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#f7ad5c" />
-        <stop offset="18%" stopColor="#b06a72" />
-        <stop offset="52%" stopColor="#17a2a2" />
-        <stop offset="100%" stopColor="#0d6f75" />
+        <stop offset="0%" stopColor="#f7b96a" />
+        <stop offset="12%" stopColor="#c07a72" />
+        <stop offset="34%" stopColor="#5c6d8e" />
+        <stop offset="62%" stopColor="#15707f" />
+        <stop offset="100%" stopColor="#062b3a" />
       </linearGradient>
 
       <linearGradient id="sc-lagoon" x1="0" y1="0" x2="0" y2="1">
@@ -184,6 +334,29 @@ function SharedDefs({ skyId }: { skyId: string }) {
         <feGaussianBlur stdDeviation="14" />
       </filter>
 
+      {/* Streulicht um Lichtquellen – nimmt der Flaeche das Plakative. */}
+      <filter id="sc-bloom" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="22" />
+      </filter>
+
+      {/* Dunst zwischen den Tiefenebenen: unten dicht, oben offen. */}
+      <linearGradient id="sc-haze" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0%" stopColor="#f6a978" stopOpacity="0.5" />
+        <stop offset="55%" stopColor="#d4738c" stopOpacity="0.22" />
+        <stop offset="100%" stopColor="#d4738c" stopOpacity="0" />
+      </linearGradient>
+      <linearGradient id="sc-haze-night" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0%" stopColor="#1d4a6b" stopOpacity="0.55" />
+        <stop offset="60%" stopColor="#123049" stopOpacity="0.2" />
+        <stop offset="100%" stopColor="#123049" stopOpacity="0" />
+      </linearGradient>
+
+      {/* Randabdunklung, damit die Flaeche nicht wie ein Sticker wirkt. */}
+      <radialGradient id="sc-vignette" cx="0.5" cy="0.46" r="0.78">
+        <stop offset="55%" stopColor="#000000" stopOpacity="0" />
+        <stop offset="100%" stopColor="#000000" stopOpacity="0.42" />
+      </radialGradient>
+
       <clipPath id={skyId}>
         <rect width="1600" height="1000" />
       </clipPath>
@@ -193,93 +366,95 @@ function SharedDefs({ skyId }: { skyId: string }) {
 
 /** Sonnenuntergang über der Skyline – der Aufmacher-Klassiker. */
 function SkylineSunset() {
+  const horizon = 640;
   return (
     <>
       <rect width="1600" height="1000" fill="url(#sc-sky)" />
 
-      {/* Wolkenbänder */}
-      <g fill="#e8578c" opacity="0.4">
-        <ellipse cx="300" cy="210" rx="230" ry="18" />
-        <ellipse cx="420" cy="258" rx="150" ry="12" />
-        <ellipse cx="1180" cy="170" rx="270" ry="20" />
-        <ellipse cx="1020" cy="228" rx="160" ry="13" />
+      {/* Sonnenschein hinter der Stadt */}
+      <circle cx="800" cy="470" r="330" fill="#ffb45c" opacity="0.28" filter="url(#sc-bloom)" />
+      <BandedSun cx={800} cy={470} r={196} />
+
+      {/* Wolkenbänder, nach hinten hin feiner */}
+      <g fill="#e8578c" opacity="0.34">
+        <ellipse cx="300" cy="196" rx="250" ry="15" />
+        <ellipse cx="1200" cy="158" rx="290" ry="17" />
       </g>
-      <g fill="#ffc978" opacity="0.32">
-        <ellipse cx="880" cy="300" rx="320" ry="16" />
-        <ellipse cx="520" cy="340" rx="200" ry="11" />
+      <g fill="#ffc978" opacity="0.28">
+        <ellipse cx="470" cy="262" rx="190" ry="10" />
+        <ellipse cx="980" cy="238" rx="260" ry="12" />
+        <ellipse cx="700" cy="316" rx="330" ry="13" />
       </g>
 
-      <BandedSun cx={800} cy={430} r={210} />
+      {/* Ferne Skyline im Dunst */}
+      <SkylineLayer
+        buildings={SKYLINE_FAR}
+        groundY={horizon}
+        fill="#6a4a6e"
+        windowFill="#ffd9a0"
+        windowOpacity={0.35}
+        seed={3}
+        opacity={0.55}
+        lit="#ffc38a"
+      />
+      {/* Dunstschleier zwischen den Ebenen */}
+      <rect y={horizon - 210} width="1600" height="210" fill="url(#sc-haze)" />
+
+      {/* Mittlere Skyline – die Masse der Stadt */}
+      <SkylineLayer
+        buildings={SKYLINE_MID}
+        groundY={horizon}
+        fill="#231a33"
+        windowFill="#ffcf87"
+        windowOpacity={0.85}
+        seed={1}
+        lit="#ffb26b"
+      />
+      {/* Lichtschein über den Fenstern */}
+      <g filter="url(#sc-bloom)" opacity="0.5">
+        <SkylineLayer buildings={SKYLINE_MID} groundY={horizon} fill="none" windowFill="#ffc978" seed={1} />
+      </g>
 
       {/* Meer */}
-      <rect y="600" width="1600" height="400" fill="url(#sc-sea)" />
-      {/* Sonnenspiegelung */}
-      <g fill="#ffc978" opacity="0.55">
-        {[615, 638, 664, 694, 728, 766, 808, 854, 904, 958].map((y, index) => (
+      <rect y={horizon} width="1600" height={1000 - horizon} fill="url(#sc-sea)" />
+      <rect y={horizon} width="1600" height="6" fill="#140d1e" opacity="0.7" />
+
+      {/* Spiegelung der Sonne, nach unten breiter und unruhiger */}
+      <g fill="#ffc978" opacity="0.5">
+        {[652, 672, 696, 724, 756, 792, 832, 876, 924, 976].map((y, index) => (
           <rect
             key={y}
-            x={800 - (26 + index * 13)}
+            x={800 - (24 + index * 15)}
             y={y}
-            width={52 + index * 26}
-            height={4 + index * 0.9}
+            width={48 + index * 30}
+            height={3 + index * 0.85}
             rx="2"
           />
         ))}
       </g>
-
-      {/* Skyline */}
-      <g fill="#071523">
-        {BUILDINGS.map((building) => (
-          <rect
-            key={building.x}
-            x={building.x}
-            y={600 - building.h}
-            width={building.w}
-            height={building.h}
-          />
+      {/* Spiegelung der Stadtlichter */}
+      <g fill="#ffcf87" opacity="0.16">
+        {[664, 692, 728, 772, 824, 884].map((y, index) => (
+          <rect key={y} x={120 + index * 18} y={y} width={1360 - index * 40} height={2 + index * 0.6} />
         ))}
-        {/* Antennen */}
-        <rect x="595" y="150" width="4" height="46" />
-        <rect x="1060" y="196" width="4" height="36" />
-      </g>
-      {/* Beleuchtete Fenster */}
-      <g fill="#ffc978" opacity="0.75">
-        {BUILDINGS.flatMap((building) =>
-          Array.from({ length: building.windows }, (_, row) =>
-            Array.from({ length: Math.max(2, Math.round(building.w / 26)) }, (_, col) => {
-              const wx = building.x + 9 + col * 22;
-              const wy = 600 - building.h + 24 + row * 30;
-              if (wx > building.x + building.w - 12) return null;
-              // Deterministisches Muster statt Zufall.
-              if ((row + col + building.windows) % 3 === 0) return null;
-              return (
-                <rect
-                  key={`${building.x}-${row}-${col}`}
-                  x={wx}
-                  y={wy}
-                  width="8"
-                  height="12"
-                />
-              );
-            }),
-          ),
-        )}
       </g>
 
-      {/* Uferlinie */}
-      <rect y="596" width="1600" height="8" fill="#050d17" opacity="0.6" />
+      {/* Naher Uferstreifen */}
+      <SkylineLayer buildings={SKYLINE_NEAR} groundY={1000} fill="#0d0a16" opacity={0.92} />
 
       {/* Palmen im Vordergrund */}
-      <Palm x={150} y={1010} scale={1.5} lean={-5} />
-      <Palm x={310} y={1030} scale={1.05} lean={4} flip />
-      <Palm x={1420} y={1015} scale={1.6} lean={6} flip />
-      <Palm x={1270} y={1035} scale={1.0} lean={-4} />
+      <Palm x={168} y={1020} scale={1.62} lean={-5} fill="#0a0712" />
+      <Palm x={352} y={1046} scale={1.08} lean={5} flip fill="#0a0712" />
+      <Palm x={1418} y={1026} scale={1.7} lean={6} flip fill="#0a0712" />
+      <Palm x={1236} y={1050} scale={1.02} lean={-4} fill="#0a0712" />
 
       {/* Vögel */}
-      <g stroke="#071523" strokeWidth="3" fill="none" opacity="0.65">
-        <path d="M420 180 q14 -12 28 0 q14 -12 28 0" />
-        <path d="M1140 250 q10 -9 20 0 q10 -9 20 0" />
+      <g stroke="#2a1a33" strokeWidth="3" fill="none" opacity="0.6">
+        <path d="M430 172 q15 -13 30 0 q15 -13 30 0" />
+        <path d="M1128 236 q11 -10 22 0 q11 -10 22 0" />
       </g>
+
+      <rect width="1600" height="1000" fill="url(#sc-vignette)" />
     </>
   );
 }
@@ -289,145 +464,162 @@ function CoastRoad() {
   return (
     <>
       <rect width="1600" height="1000" fill="url(#sc-sky)" />
-      <BandedSun cx={860} cy={470} r={165} />
+      <circle cx="860" cy="500" r="280" fill="#ffb45c" opacity="0.24" filter="url(#sc-bloom)" />
+      <BandedSun cx={860} cy={500} r={158} />
 
-      <g fill="#e8578c" opacity="0.35">
-        <ellipse cx="380" cy="230" rx="240" ry="16" />
-        <ellipse cx="1260" cy="200" rx="220" ry="14" />
+      <g fill="#e8578c" opacity="0.3">
+        <ellipse cx="380" cy="214" rx="250" ry="14" />
+        <ellipse cx="1270" cy="186" rx="230" ry="13" />
       </g>
 
-      {/* Landstreifen */}
-      <rect y="600" width="1600" height="400" fill="#2c3a2a" />
-      <rect y="600" width="1600" height="60" fill="#7d7260" opacity="0.5" />
+      {/* Ferne Skyline am Horizont */}
+      <SkylineLayer
+        buildings={SKYLINE_FAR}
+        groundY={604}
+        fill="#7a5570"
+        windowFill="#ffd9a0"
+        windowOpacity={0.25}
+        seed={5}
+        opacity={0.4}
+      />
+
+      {/* Land */}
+      <rect y="600" width="1600" height="400" fill="#2f3b2c" />
+      <rect y="600" width="1600" height="46" fill="#8a7a5e" opacity="0.45" />
+      <rect y="600" width="1600" height="180" fill="url(#sc-haze)" opacity="0.5" />
 
       {/* Straße in Fluchtperspektive */}
-      <path d="M700 600 L900 600 L1320 1000 L280 1000 Z" fill="url(#sc-asphalt)" />
-      {/* Mittelmarkierung */}
+      <path d="M700 600 L900 600 L1360 1000 L240 1000 Z" fill="url(#sc-asphalt)" />
+      <path d="M700 600 L900 600 L940 640 L660 640 Z" fill="#8a7a5e" opacity="0.25" />
       <g fill="#f8f2e6" opacity="0.85">
-        <path d="M792 604 L808 604 L812 640 L788 640 Z" />
-        <path d="M786 664 L814 664 L820 716 L780 716 Z" />
-        <path d="M776 748 L824 748 L832 826 L768 826 Z" />
-        <path d="M762 866 L838 866 L850 984 L750 984 Z" />
+        <path d="M793 604 L807 604 L811 638 L789 638 Z" />
+        <path d="M787 662 L813 662 L819 714 L781 714 Z" />
+        <path d="M777 746 L823 746 L831 824 L769 824 Z" />
+        <path d="M763 864 L837 864 L849 982 L751 982 Z" />
       </g>
-      {/* Fahrbahnränder */}
-      <path d="M700 600 L280 1000 L318 1000 L716 600 Z" fill="#f8f2e6" opacity="0.35" />
-      <path d="M900 600 L1320 1000 L1282 1000 L884 600 Z" fill="#f8f2e6" opacity="0.35" />
+      <path d="M700 600 L240 1000 L282 1000 L718 600 Z" fill="#f8f2e6" opacity="0.3" />
+      <path d="M900 600 L1360 1000 L1318 1000 L882 600 Z" fill="#f8f2e6" opacity="0.3" />
 
       {/* Motelschild */}
       <g>
-        <rect x="1120" y="330" width="14" height="290" fill="#241f16" />
-        <rect x="1046" y="250" width="162" height="120" rx="6" fill="#c8412a" />
-        <rect x="1058" y="262" width="138" height="96" rx="4" fill="none" stroke="#ffc978" strokeWidth="4" />
+        <rect x="1122" y="330" width="12" height="290" fill="#1c1710" />
+        <rect x="1044" y="244" width="166" height="126" rx="5" fill="#c8412a" />
+        <rect x="1056" y="256" width="142" height="102" rx="3" fill="none" stroke="#ffc978" strokeWidth="4" />
         <g fill="#fdfaf3">
-          <rect x="1074" y="286" width="106" height="9" rx="4" />
-          <rect x="1074" y="308" width="78" height="9" rx="4" />
-          <rect x="1074" y="330" width="94" height="9" rx="4" />
+          <rect x="1072" y="282" width="110" height="9" rx="4" />
+          <rect x="1072" y="304" width="80" height="9" rx="4" />
+          <rect x="1072" y="326" width="96" height="9" rx="4" />
         </g>
-        <circle cx="1127" cy="238" r="13" fill="#ffc978" filter="url(#sc-glow)" />
-        <circle cx="1127" cy="238" r="9" fill="#fff0b8" />
+        <circle cx="1127" cy="230" r="18" fill="#ffc978" filter="url(#sc-bloom)" />
+        <circle cx="1127" cy="230" r="9" fill="#fff6d8" />
       </g>
 
-      {/* Palmenallee */}
-      <Palm x={210} y={1000} scale={1.45} lean={-4} />
-      <Palm x={430} y={880} scale={0.85} lean={3} />
-      <Palm x={560} y={800} scale={0.55} lean={-3} />
-      <Palm x={1420} y={1010} scale={1.5} lean={5} flip />
-      <Palm x={1210} y={880} scale={0.85} lean={-3} flip />
-      <Palm x={1046} y={798} scale={0.55} lean={4} flip />
+      {/* Palmenallee, nach hinten kleiner und blasser */}
+      <Palm x={200} y={1010} scale={1.5} lean={-4} fill="#0f1610" />
+      <Palm x={432} y={884} scale={0.86} lean={3} fill="#16211a" />
+      <Palm x={566} y={800} scale={0.54} lean={-3} fill="#1d2a22" />
+      <Palm x={1428} y={1018} scale={1.55} lean={5} flip fill="#0f1610" />
+      <Palm x={1206} y={884} scale={0.86} lean={-3} flip fill="#16211a" />
+      <Palm x={1042} y={798} scale={0.54} lean={4} flip fill="#1d2a22" />
 
       {/* Hitzeflimmern über dem Asphalt */}
-      <g stroke="#fdfaf3" strokeWidth="3" fill="none" opacity="0.18">
-        <path d="M660 690 q40 -10 80 0 q40 10 80 0 q40 -10 80 0" />
-        <path d="M620 730 q46 -12 92 0 q46 12 92 0 q46 -12 92 0" />
+      <g stroke="#fdfaf3" strokeWidth="3" fill="none" opacity="0.16">
+        <path d="M650 700 q42 -10 84 0 q42 10 84 0 q42 -10 84 0" />
+        <path d="M606 744 q48 -12 96 0 q48 12 96 0 q48 -12 96 0" />
       </g>
+
+      <rect width="1600" height="1000" fill="url(#sc-vignette)" />
     </>
   );
 }
 
 /** Nachtviertel mit Neon – Nachtleben und Recherche. */
 function NightDistrict() {
+  const horizon = 660;
   return (
     <>
       <rect width="1600" height="1000" fill="url(#sc-night)" />
 
-      {/* Sterne */}
-      <g fill="#f8f2e6" opacity="0.5">
+      <g fill="#f8f2e6" opacity="0.45">
         {[
-          [120, 90],
-          [300, 150],
-          [520, 70],
-          [760, 130],
-          [980, 88],
-          [1220, 160],
-          [1420, 96],
-          [640, 210],
-          [1100, 230],
+          [120, 88],
+          [304, 148],
+          [522, 68],
+          [764, 126],
+          [982, 86],
+          [1224, 158],
+          [1418, 94],
+          [642, 206],
+          [1104, 226],
+          [396, 112],
+          [1330, 268],
         ].map(([x, y]) => (
-          <circle key={`${x}-${y}`} cx={x} cy={y} r="2.5" />
+          <circle key={`${x}-${y}`} cx={x} cy={y} r="2.2" />
         ))}
       </g>
-      <circle cx="1330" cy="180" r="62" fill="#f1e8d7" opacity="0.9" />
-      <circle cx="1305" cy="164" r="62" fill="#050d17" />
+      <circle cx="1332" cy="176" r="66" fill="#f1e8d7" opacity="0.16" filter="url(#sc-bloom)" />
+      <circle cx="1332" cy="176" r="52" fill="#f1e8d7" opacity="0.92" />
+      <circle cx="1308" cy="160" r="52" fill="#08111d" />
 
-      {/* Skyline mit Leuchtreklamen */}
-      <g fill="#071523">
-        {BUILDINGS.map((building) => (
-          <rect
-            key={building.x}
-            x={building.x}
-            y={640 - building.h}
-            width={building.w}
-            height={building.h}
-          />
-        ))}
-      </g>
-      <g fill="#67d9cf" opacity="0.8">
-        {BUILDINGS.flatMap((building) =>
-          Array.from({ length: building.windows }, (_, row) =>
-            Array.from({ length: Math.max(2, Math.round(building.w / 26)) }, (_, col) => {
-              const wx = building.x + 9 + col * 22;
-              const wy = 640 - building.h + 24 + row * 30;
-              if (wx > building.x + building.w - 12) return null;
-              if ((row * 2 + col + building.windows) % 4 === 0) return null;
-              return (
-                <rect key={`${building.x}-${row}-${col}`} x={wx} y={wy} width="8" height="12" />
-              );
-            }),
-          ),
-        )}
+      {/* Ferne Skyline im Nachtdunst */}
+      <SkylineLayer
+        buildings={SKYLINE_FAR}
+        groundY={horizon}
+        fill="#12233a"
+        windowFill="#8fd8ff"
+        windowOpacity={0.3}
+        seed={2}
+        opacity={0.7}
+      />
+      <rect y={horizon - 240} width="1600" height="240" fill="url(#sc-haze-night)" />
+
+      <SkylineLayer
+        buildings={SKYLINE_MID}
+        groundY={horizon}
+        fill="#050c16"
+        windowFill="#7fe3dc"
+        windowOpacity={0.8}
+        seed={4}
+        lit="#3f7fa8"
+      />
+      <g filter="url(#sc-bloom)" opacity="0.45">
+        <SkylineLayer buildings={SKYLINE_MID} groundY={horizon} fill="none" windowFill="#2bbdb6" seed={4} />
       </g>
 
-      {/* Neonschriftzüge */}
-      <g filter="url(#sc-glow)" opacity="0.85">
-        <rect x="230" y="300" width="170" height="14" rx="7" fill="#e8578c" />
-        <rect x="230" y="330" width="110" height="14" rx="7" fill="#e8578c" />
-        <rect x="1150" y="360" width="150" height="14" rx="7" fill="#2bbdb6" />
-        <rect x="1150" y="390" width="96" height="14" rx="7" fill="#2bbdb6" />
-        <circle cx="700" cy="330" r="46" fill="none" stroke="#f0913e" strokeWidth="12" />
+      {/* Leuchtreklamen */}
+      <g filter="url(#sc-bloom)" opacity="0.9">
+        <rect x="232" y="322" width="172" height="13" rx="6" fill="#e8578c" />
+        <rect x="232" y="350" width="112" height="13" rx="6" fill="#e8578c" />
+        <rect x="1150" y="378" width="152" height="13" rx="6" fill="#2bbdb6" />
+        <rect x="1150" y="406" width="96" height="13" rx="6" fill="#2bbdb6" />
+        <circle cx="700" cy="348" r="44" fill="none" stroke="#f0913e" strokeWidth="13" />
       </g>
       <g>
-        <rect x="230" y="300" width="170" height="14" rx="7" fill="#f47aa7" />
-        <rect x="230" y="330" width="110" height="14" rx="7" fill="#f47aa7" />
-        <rect x="1150" y="360" width="150" height="14" rx="7" fill="#a8ebe3" />
-        <rect x="1150" y="390" width="96" height="14" rx="7" fill="#a8ebe3" />
-        <circle cx="700" cy="330" r="46" fill="none" stroke="#ffc978" strokeWidth="5" />
+        <rect x="232" y="322" width="172" height="13" rx="6" fill="#ffa7c8" />
+        <rect x="232" y="350" width="112" height="13" rx="6" fill="#ffa7c8" />
+        <rect x="1150" y="378" width="152" height="13" rx="6" fill="#c6f5ee" />
+        <rect x="1150" y="406" width="96" height="13" rx="6" fill="#c6f5ee" />
+        <circle cx="700" cy="348" r="44" fill="none" stroke="#ffdca8" strokeWidth="5" />
       </g>
 
-      {/* Nasse Straße mit Spiegelungen */}
-      <rect y="640" width="1600" height="360" fill="#0b2035" />
-      <g opacity="0.4">
-        <rect x="230" y="700" width="170" height="120" fill="#e8578c" filter="url(#sc-glow)" />
-        <rect x="1150" y="740" width="150" height="140" fill="#2bbdb6" filter="url(#sc-glow)" />
-        <rect x="654" y="690" width="92" height="160" fill="#f0913e" filter="url(#sc-glow)" />
+      {/* Nasse Straße */}
+      <rect y={horizon} width="1600" height={1000 - horizon} fill="#071523" />
+      <g opacity="0.35">
+        <rect x="232" y="700" width="172" height="150" fill="#e8578c" filter="url(#sc-bloom)" />
+        <rect x="1150" y="740" width="152" height="170" fill="#2bbdb6" filter="url(#sc-bloom)" />
+        <rect x="656" y="690" width="88" height="190" fill="#f0913e" filter="url(#sc-bloom)" />
       </g>
-      <g fill="#f8f2e6" opacity="0.16">
-        {[680, 730, 790, 860, 940].map((y, index) => (
+      <g fill="#c6f5ee" opacity="0.1">
+        {[688, 730, 782, 846, 922].map((y, index) => (
           <rect key={y} x={0} y={y} width="1600" height={2 + index} />
         ))}
       </g>
 
-      <Palm x={180} y={1010} scale={1.4} lean={-6} fill="#050d17" />
-      <Palm x={1450} y={1020} scale={1.5} lean={5} flip fill="#050d17" />
+      <SkylineLayer buildings={SKYLINE_NEAR} groundY={1000} fill="#03080f" opacity={0.95} />
+      <Palm x={186} y={1020} scale={1.46} lean={-6} fill="#03080f" />
+      <Palm x={1452} y={1030} scale={1.54} lean={5} flip fill="#03080f" />
+
+      <rect width="1600" height="1000" fill="url(#sc-vignette)" />
     </>
   );
 }
