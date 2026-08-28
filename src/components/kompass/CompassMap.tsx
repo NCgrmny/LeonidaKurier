@@ -212,29 +212,33 @@ export function CompassMap({
                     scale: `${1 / transform.scale}`,
                   }}
                 >
+                  {/* Ortssignatur: Ring mit Kern, wie in gedruckten Karten. */}
                   <span
                     aria-hidden
                     className={cx(
                       "block rounded-full transition-transform group-hover:scale-125",
-                      isUnplaced
-                        ? "size-3.5 border-2 border-dashed bg-transparent"
-                        : "size-3 border-2 border-ink-950",
-                      isSelected &&
-                        "scale-125 ring-2 ring-lagoon-300 ring-offset-2 ring-offset-ink-950",
+                      isUnplaced ? "size-3.5 border-2 border-dashed" : "size-3.5 border-2",
+                      isSelected && "scale-125",
                     )}
-                    style={
-                      isUnplaced
-                        ? { borderColor: definition.accent }
-                        : { backgroundColor: definition.accent }
-                    }
+                    style={{
+                      borderColor: definition.accent,
+                      backgroundColor: isUnplaced ? "transparent" : "#0b0f16",
+                      boxShadow: isUnplaced
+                        ? "none"
+                        : `inset 0 0 0 2px ${definition.accent}, 0 0 0 3px rgba(7,10,15,0.85)`,
+                    }}
                   />
+                  {/* Kartenbeschriftung mit Freistellung statt Chip-Hintergrund. */}
                   <span
                     className={cx(
-                      "pointer-events-none absolute left-1/2 top-4 w-max max-w-[10rem] -translate-x-1/2 rounded px-1.5 py-0.5 text-center font-mono text-[9px] uppercase tracking-[0.12em] transition-colors",
-                      "bg-ink-950/75 backdrop-blur-[2px]",
-                      isSelected ? "text-lagoon-300" : "text-paper-200",
-                      isUnplaced && "italic text-paper-500",
+                      "pointer-events-none absolute left-1/2 top-4 w-max max-w-[11rem] -translate-x-1/2 text-center font-mono text-[10px] uppercase tracking-[0.14em] transition-colors",
+                      isSelected ? "text-lagoon-300" : "text-paper-50",
+                      isUnplaced && "text-[9px] italic text-paper-400",
                     )}
+                    style={{
+                      textShadow:
+                        "0 0 4px #070a0f, 0 0 4px #070a0f, 0 1px 2px #070a0f, 0 0 8px rgba(7,10,15,0.9)",
+                    }}
                   >
                     {marker.title}
                     {isUnplaced ? " · unbelegt" : ""}
