@@ -1,0 +1,301 @@
+// ---------------------------------------------------------------------------
+// Leonida Kurier – Datenbankschema (Phase 2)
+//
+// Dieses Schema bildet das Domänenmodell aus `src/lib/types.ts` in PostgreSQL
+// ab. Es ist bewusst noch NICHT aktiv: Die Plattform läuft in Phase 1 über die
+// versionierte Seed-Schicht (`src/content`) hinter dem Repository-Interface
+// (`src/lib/content/repository.ts`). Sobald `DATABASE_URL` gesetzt ist, kann
+// eine Prisma-Implementierung desselben Interfaces eingehängt werden, ohne dass
+// Seiten oder Komponenten angepasst werden müssen.
+//
+// Aktivierung: `npm i -D prisma && npm i @prisma/client && npx prisma migrate dev`
+// ---------------------------------------------------------------------------
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RadarStatus {
+  BESTAETIGT
+  WAHRSCHEINLICH
+  HINWEIS
+  SPEKULATION
+  WIDERLEGT
+}
+
+enum SourceTier {
+  OFFIZIELL
+  MEDIEN
+  COMMUNITY
+  EIGENE
+}
+
+enum EntityType {
+  ARTICLE
+  REGION
+  LOCATION
+  CHARACTER
+  VEHICLE
+  MISSION
+  BUSINESS
+  COLLECTIBLE
+  ACTIVITY
+  WEAPON
+  THEORY
+  MAP_MARKER
+}
+
+enum PositionPrecision {
+  PLATZHALTER
+  GROB
+  GENAU
+}
+
+model Source {
+  id          String       @id @default(cuid())
+  title       String
+  publisher   String
+  tier        SourceTier
+  url         String?
+  publishedAt DateTime?
+  note        String?
+  createdAt   DateTime     @default(now())
+  links       SourceLink[]
+}
+
+/// Verknüpft eine beliebige Entität mit einer Quelle (polymorph über Typ+ID).
+model SourceLink {
+  id         String     @id @default(cuid())
+  sourceId   String
+  source     Source     @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  entityType EntityType
+  entityId   String
+
+  @@unique([sourceId, entityType, entityId])
+  @@index([entityType, entityId])
+}
+
+/// Gerichtete Beziehung zwischen zwei Entitäten (Artikel ↔ Ort ↔ Marker ...).
+model EntityRelation {
+  id         String     @id @default(cuid())
+  fromType   EntityType
+  fromId     String
+  toType     EntityType
+  toId       String
+
+  @@unique([fromType, fromId, toType, toId])
+  @@index([toType, toId])
+}
+
+model Article {
+  id                String      @id @default(cuid())
+  slug              String      @unique
+  title             String
+  standfirst        String
+  summary           String
+  category          String
+  author            String
+  status            RadarStatus
+  /// Blockstruktur des Artikeltextes – kein HTML im Content.
+  body              Json
+  facts             String[]
+  assessment        String?
+  communityReaction String?
+  lead              Boolean     @default(false)
+  demo              Boolean     @default(false)
+  readingMinutes    Int         @default(3)
+  publishedAt       DateTime
+  updatedAt         DateTime    @updatedAt
+
+  @@index([publishedAt])
+  @@index([status])
+}
+
+model Region {
+  id        String      @id @default(cuid())
+  slug      String      @unique
+  title     String
+  summary   String
+  kind      String
+  status    RadarStatus
+  parentId  String?
+  parent    Region?     @relation("RegionHierarchy", fields: [parentId], references: [id])
+  children  Region[]    @relation("RegionHierarchy")
+  locations Location[]
+  updatedAt DateTime    @updatedAt
+}
+
+model Location {
+  id          String             @id @default(cuid())
+  slug        String             @unique
+  title       String
+  summary     String
+  category    String
+  status      RadarStatus
+  regionId    String?
+  region      Region?            @relation(fields: [regionId], references: [id])
+  markerX     Float?
+  markerY     Float?
+  precision   PositionPrecision?
+  updatedAt   DateTime           @updatedAt
+  mapMarkers  MapMarker[]
+
+  @@index([regionId])
+  @@index([status])
+}
+
+model Character {
+  id        String      @id @default(cuid())
+  slug      String      @unique
+  title     String
+  summary   String
+  role      String?
+  status    RadarStatus
+  updatedAt DateTime    @updatedAt
+}
+
+model Vehicle {
+  id           String      @id @default(cuid())
+  slug         String      @unique
+  title        String
+  summary      String
+  vehicleClass String?
+  status       RadarStatus
+  updatedAt    DateTime    @updatedAt
+}
+
+model Mission {
+  id        String      @id @default(cuid())
+  slug      String      @unique
+  title     String
+  summary   String
+  chapter   String?
+  status    RadarStatus
+  updatedAt DateTime    @updatedAt
+}
+
+model Business {
+  id           String      @id @default(cuid())
+  slug         String      @unique
+  title        String
+  summary      String
+  businessType String?
+  status       RadarStatus
+  updatedAt    DateTime    @updatedAt
+}
+
+model Collectible {
+  id              String      @id @default(cuid())
+  slug            String      @unique
+  title           String
+  summary         String
+  collectibleType String?
+  count           Int?
+  status          RadarStatus
+  updatedAt       DateTime    @updatedAt
+}
+
+model Weapon {
+  id        String      @id @default(cuid())
+  slug      String      @unique
+  title     String
+  summary   String
+  status    RadarStatus
+  updatedAt DateTime    @updatedAt
+}
+
+model Activity {
+  id        String      @id @default(cuid())
+  slug      String      @unique
+  title     String
+  summary   String
+  status    RadarStatus
+  updatedAt DateTime    @updatedAt
+}
+
+model Theory {
+  id        String      @id @default(cuid())
+  slug      String      @unique
+  title     String
+  summary   String
+  claim     String
+  pro       String[]
+  contra    String[]
+  status    RadarStatus
+  updatedAt DateTime    @updatedAt
+}
+
+model MapMarker {
+  id         String            @id @default(cuid())
+  slug       String            @unique
+  title      String
+  summary    String
+  layer      String
+  status     RadarStatus
+  x          Float
+  y          Float
+  precision  PositionPrecision @default(PLATZHALTER)
+  locationId String?
+  location   Location?         @relation(fields: [locationId], references: [id])
+  updatedAt  DateTime          @updatedAt
+
+  @@index([layer])
+}
+
+model TimelineEntry {
+  id            String      @id @default(cuid())
+  date          DateTime
+  datePrecision String
+  title         String
+  summary       String
+  status        RadarStatus
+  createdAt     DateTime    @default(now())
+
+  @@index([date])
+}
+
+/// Beobachtetes Signal, bevor es redaktionell geprüft ist.
+model RadarSignal {
+  id         String      @id @default(cuid())
+  title      String
+  summary    String
+  status     RadarStatus
+  channel    String
+  observedAt DateTime
+  demo       Boolean     @default(false)
+
+  @@index([observedAt])
+}
+
+/// Community-Einreichungen (Phase 3) – vor Veröffentlichung immer moderiert.
+model CommunitySubmission {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String
+  markerX     Float?
+  markerY     Float?
+  /// pending | approved | rejected
+  moderation  String   @default("pending")
+  submittedBy String?
+  createdAt   DateTime @default(now())
+
+  @@index([moderation])
+}
+
+model Screenshot {
+  id         String     @id @default(cuid())
+  /// Nur eigene bzw. eindeutig freigegebene Bilder.
+  url        String
+  caption    String?
+  entityType EntityType
+  entityId   String
+  createdAt  DateTime   @default(now())
+
+  @@index([entityType, entityId])
+}

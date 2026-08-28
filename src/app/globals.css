@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Leonida Kurier – Designsystem
+   Dunkel, editorial, mit zurückhaltender Florida-Anmutung: Tiefseeblau als
+   Grundton, Sonnenuntergangs-Koralle als Leitfarbe, Lagunen-Türkis für den
+   Kompass. Typografie trägt die Hierarchie, nicht die Dekoration.
+---------------------------------------------------------------------------- */
+
+@theme {
+  --color-ink-950: #070a0f;
+  --color-ink-900: #0b0f16;
+  --color-ink-850: #0f141d;
+  --color-ink-800: #141b26;
+  --color-ink-700: #1d2634;
+  --color-ink-600: #2b3648;
+
+  --color-paper-50: #f4f6f8;
+  --color-paper-200: #d5dbe3;
+  --color-paper-400: #9aa6b6;
+  --color-paper-500: #7b8798;
+
+  --color-coral-300: #ff9a7d;
+  --color-coral-400: #ff7a55;
+  --color-coral-500: #f2603a;
+
+  --color-lagoon-300: #6fe3d4;
+  --color-lagoon-400: #35c4b4;
+  --color-lagoon-500: #1ea294;
+
+  --color-sand-300: #f0d79a;
+  --color-sand-400: #e2bd6b;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-serif: var(--font-source-serif), ui-serif, Georgia, "Times New Roman",
+    serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular",
+    Menlo, monospace;
+}
+
+:root {
+  --status-bestaetigt: #34d399;
+  --status-wahrscheinlich: #38bdf8;
+  --status-hinweis: #fbbf24;
+  --status-spekulation: #a78bfa;
+  --status-widerlegt: #f87171;
+
+  --rule: color-mix(in oklab, var(--color-paper-400) 16%, transparent);
+  --surface: color-mix(in oklab, var(--color-ink-850) 92%, transparent);
+}
+
+* {
+  border-color: var(--rule);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-ink-950);
+  color: var(--color-paper-50);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv01", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Ruhiger, tiefer Hintergrund: zwei sehr weiche Lichtquellen statt Farbverlauf
+   über die ganze Fläche – hält großflächige Bereiche kontrolliert. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      60rem 40rem at 12% -10%,
+      color-mix(in oklab, var(--color-coral-500) 12%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      55rem 38rem at 92% 4%,
+      color-mix(in oklab, var(--color-lagoon-500) 12%, transparent),
+      transparent 62%
+    );
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-coral-400) 35%, transparent);
+  color: var(--color-paper-50);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-lagoon-300);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Typografische Grundbausteine ------------------------------------------- */
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-paper-400);
+}
+
+.headline {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.standfirst {
+  color: var(--color-paper-200);
+  text-wrap: pretty;
+}
+
+.rule-top {
+  border-top: 1px solid var(--rule);
+}
+
+/* Artikelfließtext */
+.prose-kurier > * + * {
+  margin-top: 1.15em;
+}
+.prose-kurier p {
+  color: var(--color-paper-200);
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+.prose-kurier h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-paper-50);
+  margin-top: 2.2em;
+  line-height: 1.2;
+}
+.prose-kurier ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.prose-kurier li {
+  position: relative;
+  padding-left: 1.4rem;
+  color: var(--color-paper-200);
+  line-height: 1.6;
+}
+.prose-kurier li::before {
+  content: "";
+  position: absolute;
+  left: 0.15rem;
+  top: 0.65em;
+  width: 0.45rem;
+  height: 1px;
+  background: var(--color-coral-400);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
