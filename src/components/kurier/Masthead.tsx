@@ -33,9 +33,13 @@ export function Masthead({
 
         {/* Wortmarke */}
         <div className="order-1 sm:order-2">
-          <h1 className="masthead flex items-center justify-center gap-1 text-center text-[clamp(2.9rem,12vw,7.5rem)] text-ink-900 sm:gap-2">
-            <span>Leonida</span>
-            <PalmGlyph className="h-[0.78em] w-auto shrink-0 text-coral-600" />
+          {/* Umbricht auf schmalen Viewports in zwei Zeilen; die Glyphe bleibt
+              beim ersten Wort, damit sie nie allein steht. */}
+          <h1 className="masthead flex flex-wrap items-center justify-center gap-x-1 gap-y-0 text-center text-[clamp(2.4rem,11vw,7.5rem)] text-ink-900 sm:gap-x-2">
+            <span className="inline-flex items-center gap-1 sm:gap-2">
+              Leonida
+              <PalmGlyph className="h-[0.78em] w-auto shrink-0 text-coral-600" />
+            </span>
             <span>Kurier</span>
           </h1>
           <p className="mt-2 text-center font-mono text-[9px] font-bold uppercase tracking-[0.32em] text-ink-600 sm:text-[11px]">
