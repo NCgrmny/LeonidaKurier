@@ -166,7 +166,7 @@ export function CompassMap({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <div className="relative overflow-hidden rounded-2xl border border-[var(--rule)] bg-ink-950">
+      <div className="relative overflow-hidden rounded-2xl border border-lagoon-400/25 bg-[#0d6b7d]">
         <div
           ref={viewportRef}
           role="application"
@@ -222,22 +222,23 @@ export function CompassMap({
                     )}
                     style={{
                       borderColor: definition.accent,
-                      backgroundColor: isUnplaced ? "transparent" : "#0b0f16",
+                      backgroundColor: isUnplaced ? "rgba(253,244,226,0.75)" : "#123038",
                       boxShadow: isUnplaced
                         ? "none"
-                        : `inset 0 0 0 2px ${definition.accent}, 0 0 0 3px rgba(7,10,15,0.85)`,
+                        : `inset 0 0 0 2px ${definition.accent}, 0 0 0 3px rgba(253,244,226,0.95)`,
                     }}
                   />
                   {/* Kartenbeschriftung mit Freistellung statt Chip-Hintergrund. */}
                   <span
                     className={cx(
                       "pointer-events-none absolute left-1/2 top-4 w-max max-w-[11rem] -translate-x-1/2 text-center font-mono text-[10px] uppercase tracking-[0.14em] transition-colors",
-                      isSelected ? "text-lagoon-300" : "text-paper-50",
-                      isUnplaced && "text-[9px] italic text-paper-400",
+                      isSelected ? "text-[#0b4f5e]" : "text-[#123038]",
+                      isUnplaced && "text-[9px] italic",
                     )}
                     style={{
+                      // Freistellung gegen den hellen Kartengrund.
                       textShadow:
-                        "0 0 4px #070a0f, 0 0 4px #070a0f, 0 1px 2px #070a0f, 0 0 8px rgba(7,10,15,0.9)",
+                        "0 0 3px #fdf4e2, 0 0 3px #fdf4e2, 0 0 6px #fdf4e2, 0 1px 0 rgba(253,244,226,0.9)",
                     }}
                   >
                     {marker.title}
@@ -424,7 +425,7 @@ function MapButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="grid size-9 place-items-center rounded-md border border-[var(--rule)] bg-ink-900/85 text-paper-200 backdrop-blur transition-colors hover:border-lagoon-400/40 hover:text-lagoon-300"
+      className="grid size-9 place-items-center rounded-md border border-[#123038]/15 bg-[#fdf4e2]/90 text-[#123038] shadow-sm transition-colors hover:bg-[#fdf4e2] hover:text-[#ff6a55]"
     >
       <span aria-hidden>{children}</span>
     </button>

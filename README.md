@@ -124,12 +124,20 @@ Die Kartenmechanik ist eigenentwickelt (`src/components/kompass/`): Zoom,
 Verschieben per Zeiger und Tastatur, umschaltbare Ebenen, Markerauswahl mit
 Verknüpfung in die Datenbank, Deep-Link über `/kompass?marker=<slug>`.
 
-**Grundkarte:** Gezeichnet wird die vereinfachte reale Küstenlinie Floridas
-(`src/content/geography.ts`) – Festland, Inselkette, Binnensee und reale
-Verkehrsachsen, dazu Maßstabsleiste und Nordpfeil. Das ist öffentlich bekannte
+**Grundkarte:** Gezeichnet wird die vereinfachte reale Geografie Floridas
+(`src/content/geography.ts`) – Küstenlinie mit Bézier-Glättung, Inselkette,
+Binnensee, Feuchtgebiet, Waldflächen, Flüsse, Verkehrsnetz und Siedlungsflächen,
+dazu Maßstabsleiste, Nordpfeil und Kartenrahmen. Das ist öffentlich bekannte
 Realgeografie, kein nachgezeichnetes Spielmaterial und kein fremdes Kartenasset.
-Leonida ist erkennbar an Florida angelehnt, deshalb dient die reale Küste als
+Leonida ist erkennbar an Florida angelehnt, deshalb dient die reale Geografie als
 geografische Orientierung.
+
+**Anmutung:** Die Karte ist hell gehalten – Türkis für das Wasser, Sand für das
+Land, Koralle für die Achsen, Magenta für die Ballungsräume – und liegt als
+eigene Fläche in der ansonsten dunklen Oberfläche, wie eine gedruckte Karte auf
+dem Tisch. Sämtliche Farbwerte stehen gebündelt in `MAP_PALETTE`
+(`src/components/kompass/BaseMap.tsx`); die Anmutung lässt sich dort ändern,
+ohne die Geometrie anzufassen.
 
 **Was die Karte nicht behauptet:** Rockstar Games hat die Spielkarte nicht
 veröffentlicht. Verortet werden deshalb nur Einträge mit nachvollziehbarem realem
@@ -144,12 +152,18 @@ Stelle der Florida-Umrisse; die Kartenmechanik bleibt unverändert.
 
 ## Zeitungslayout
 
-Der Kurier tritt als Zeitungsseite auf: Zeitungskopf mit Kennzeile und
-Ausgabedatum (`src/components/kurier/Masthead.tsx`), Ressortband, dreispaltige
-Titelseite mit „Kurz gemeldet“-Schiene, zentriertem Aufmacher, Initial und
-Spaltenlinien, darunter der Fließsatz weiterer Beiträge. Die Satzregeln stehen
-gebündelt in `globals.css` unter „Zeitungssatz“. Die Bedienoberfläche ringsum
-bleibt bewusst modern.
+Der Kurier liegt als heller Zeitungsbogen in der ansonsten dunklen Oberfläche –
+wie eine aufgeschlagene Zeitung auf dem Tisch. Zeitungskopf mit Kennzeile und
+Ausgabedatum (`src/components/kurier/Masthead.tsx`, Variante `paper`),
+Ressortband, dreispaltige Titelseite mit „Kurz gemeldet“-Schiene, zentriertem
+Aufmacher, Initial, Blocksatz mit Silbentrennung, Spaltenlinien und
+Statusschlüssel, darunter der Fließsatz weiterer Beiträge.
+
+Der Statuspunkt ersetzt auf Papier die farbige Badge-Fläche
+(`src/components/kurier/PaperStatus.tsx`) – dieselben Statusfarben, nur
+zurückhaltender gesetzt. Alle Papierregeln stehen gebündelt in `globals.css`
+unter „Papierbogen“; sie gelten lokal innerhalb von `.paper`, der Rest der
+Oberfläche bleibt dunkel.
 
 Das Ausgabedatum im Kopf ist das Datum des jüngsten Beitrags – der Kopf
 behauptet damit keine Aktualität, die die Redaktion nicht hat.

@@ -243,3 +243,125 @@ body::before {
   break-inside: avoid;
   -webkit-column-break-inside: avoid;
 }
+
+/* ---------------------------------------------------------------------------
+   Papierbogen
+   Der Kurier liegt als heller Zeitungsbogen in der ansonsten dunklen
+   Oberfläche – wie eine aufgeschlagene Zeitung auf dem Tisch. Alle Farben
+   werden innerhalb von `.paper` lokal umgestellt.
+---------------------------------------------------------------------------- */
+
+.paper {
+  --paper-bg: #f2ece0;
+  --paper-ink: #16130e;
+  --paper-muted: #5c5445;
+  --paper-faint: #857b68;
+  --paper-rule: #16130e26;
+  --paper-rule-strong: #16130e6b;
+  --paper-accent: #c2412a;
+
+  position: relative;
+  background-color: var(--paper-bg);
+  color: var(--paper-ink);
+  font-family: var(--font-serif);
+  box-shadow:
+    0 1px 0 #ffffff80 inset,
+    0 24px 60px -20px #000000a6;
+}
+
+/* Papierstruktur: feines Korn, damit die Fläche nicht digital wirkt. */
+.paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.31 0 0 0 0 0.22 0 0 0 0.32 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.paper > * {
+  position: relative;
+}
+
+.paper .kicker {
+  color: var(--paper-muted);
+}
+
+/* Kennzeile, Zwischenlinien, Ressortköpfe */
+.paper-hairline {
+  border-top: 1px solid var(--paper-rule);
+}
+.paper-rule-strong {
+  border-top: 1px solid var(--paper-rule-strong);
+}
+.paper-rule-double {
+  border-top: 3px solid var(--paper-rule-strong);
+  border-bottom: 1px solid var(--paper-rule);
+  height: 4px;
+}
+
+.paper-ressort {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--paper-ink);
+  border-bottom: 2px solid var(--paper-ink);
+  padding-bottom: 0.35rem;
+}
+
+/* Enger Spaltensatz mit Blocksatz und Silbentrennung – wie im Druck. */
+.paper-columns {
+  column-gap: 1.6rem;
+  column-rule: 1px solid var(--paper-rule);
+}
+@media (min-width: 640px) {
+  .paper-columns-2 {
+    column-count: 2;
+  }
+}
+@media (min-width: 1024px) {
+  .paper-columns-3 {
+    column-count: 3;
+  }
+  .paper-columns-4 {
+    column-count: 4;
+  }
+}
+
+.paper-body p {
+  color: var(--paper-ink);
+  font-size: 0.9375rem;
+  line-height: 1.62;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+.paper-body p + p {
+  margin-top: 0;
+  text-indent: 1.15em;
+}
+
+.paper-dropcap::first-letter {
+  float: left;
+  font-family: var(--font-serif);
+  font-size: 3.9em;
+  line-height: 0.76;
+  padding-right: 0.08em;
+  padding-top: 0.07em;
+  color: var(--paper-accent);
+  font-weight: 700;
+}
+
+/* Statusauszeichnung auf Papier: Punkt plus Versalien statt Farbfläche. */
+.paper-status {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}

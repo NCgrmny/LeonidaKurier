@@ -14,6 +14,39 @@ import {
 } from "@/content/geography";
 
 /**
+ * Farbwelt der Karte: Sonnenuntergang über der Küste – Türkis für das Wasser,
+ * Sand für das Land, Koralle für die Achsen, Magenta für die Ballungsräume.
+ *
+ * Die Karte ist bewusst hell und liegt als eigene Fläche in der ansonsten
+ * dunklen Oberfläche, wie eine gedruckte Karte auf einem Tisch. Alle Werte an
+ * einer Stelle, damit sich die Anmutung ohne Eingriff in die Geometrie ändern
+ * lässt.
+ */
+export const MAP_PALETTE = {
+  waterDeep: "#127f92",
+  waterMid: "#1f9aa8",
+  waterShelf: "#4cc2c4",
+  waterShallow: "#8fdedb",
+  landHigh: "#f6e6c8",
+  landMid: "#efd9b1",
+  landLow: "#e8cfa4",
+  beach: "#fdf4e2",
+  forest: "#b7cf9c",
+  marsh: "#9ecab4",
+  marshLine: "#4f9c8a",
+  river: "#2f9fb4",
+  roadMajor: "#ff6a55",
+  roadMinor: "#ff9b76",
+  roadCasing: "#fff6ea",
+  urban: "#ff5fa2",
+  coast: "#ffffff",
+  frame: "#0f6b7a",
+  label: "#0c5f70",
+  /** Dunkle Schrift auf hellem Grund – für Marker und Kartenzubehör. */
+  ink: "#123038",
+} as const;
+
+/**
  * Grundkarte des Leonida Kompass.
  *
  * Gezeichnet wird die vereinfachte reale Geografie Floridas – öffentlich
@@ -27,7 +60,7 @@ import {
  * Verkehrsnetz, Küstenlinie, Kartenrahmen.
  */
 export function BaseMap() {
-  // Geringe Spannung: Die Kueste laeuft rund, gerade Grenzen bleiben gerade.
+  // Geringe Spannung: Die Küste läuft rund, gerade Grenzen bleiben gerade.
   const coast = toSmoothPath(MAINLAND, true, 0.32);
   const keys = toSmoothPath(KEYS_CHAIN, false, 0.4);
   const lake = toSmoothPath(INLAND_LAKE);
@@ -41,32 +74,31 @@ export function BaseMap() {
       aria-hidden
     >
       <defs>
-        <linearGradient id="lk-water" x1="0.15" y1="0" x2="0.8" y2="1">
-          <stop offset="0%" stopColor="#020a11" />
-          <stop offset="45%" stopColor="#04121c" />
-          <stop offset="100%" stopColor="#020810" />
+        <linearGradient id="lk-water" x1="0.1" y1="0" x2="0.85" y2="1">
+          <stop offset="0%" stopColor={MAP_PALETTE.waterMid} />
+          <stop offset="55%" stopColor={MAP_PALETTE.waterDeep} />
+          <stop offset="100%" stopColor="#0d6b7d" />
         </linearGradient>
 
-        <linearGradient id="lk-land" x1="0.2" y1="0" x2="0.75" y2="1">
-          <stop offset="0%" stopColor="#4a5539" />
-          <stop offset="35%" stopColor="#414c32" />
-          <stop offset="70%" stopColor="#3b4632" />
-          <stop offset="100%" stopColor="#364235" />
+        <linearGradient id="lk-land" x1="0.15" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor={MAP_PALETTE.landHigh} />
+          <stop offset="45%" stopColor={MAP_PALETTE.landMid} />
+          <stop offset="100%" stopColor={MAP_PALETTE.landLow} />
         </linearGradient>
 
-        {/* Warmer Küstensaum: Strand- und Sandzone am Landrand. */}
+        {/* Sandsaum, der vom Strand nach innen ausläuft. */}
         <linearGradient id="lk-shore" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#e2bd6b" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#e2bd6b" stopOpacity="0.12" />
+          <stop offset="0%" stopColor={MAP_PALETTE.beach} stopOpacity="0.9" />
+          <stop offset="100%" stopColor={MAP_PALETTE.beach} stopOpacity="0.35" />
         </linearGradient>
 
         <radialGradient id="lk-urban">
-          <stop offset="0%" stopColor="#ffb08e" stopOpacity="0.3" />
-          <stop offset="45%" stopColor="#ff8a63" stopOpacity="0.11" />
-          <stop offset="100%" stopColor="#ff7a55" stopOpacity="0" />
+          <stop offset="0%" stopColor={MAP_PALETTE.urban} stopOpacity="0.5" />
+          <stop offset="45%" stopColor={MAP_PALETTE.urban} stopOpacity="0.2" />
+          <stop offset="100%" stopColor={MAP_PALETTE.urban} stopOpacity="0" />
         </radialGradient>
 
-        {/* Feinkörnige Landtextur – nimmt der Fläche das Vektorhafte. */}
+        {/* Feinkörnige Papiertextur – nimmt der Fläche das Vektorhafte. */}
         <filter id="lk-grain" x="0%" y="0%" width="100%" height="100%">
           <feTurbulence
             type="fractalNoise"
@@ -78,15 +110,15 @@ export function BaseMap() {
           <feColorMatrix
             in="noise"
             type="matrix"
-            values="0 0 0 0 0.55 0 0 0 0 0.58 0 0 0 0 0.42 0 0 0 0.5 0"
+            values="0 0 0 0 0.35 0 0 0 0 0.28 0 0 0 0 0.16 0 0 0 0.45 0"
           />
         </filter>
 
         <filter id="lk-deep" x="-25%" y="-25%" width="150%" height="150%">
-          <feGaussianBlur stdDeviation="26" />
+          <feGaussianBlur stdDeviation="24" />
         </filter>
         <filter id="lk-shelf" x="-25%" y="-25%" width="150%" height="150%">
-          <feGaussianBlur stdDeviation="9" />
+          <feGaussianBlur stdDeviation="8" />
         </filter>
         <filter id="lk-inner" x="-25%" y="-25%" width="150%" height="150%">
           <feGaussianBlur stdDeviation="3" />
@@ -100,8 +132,24 @@ export function BaseMap() {
           patternUnits="userSpaceOnUse"
           patternTransform="rotate(35)"
         >
-          <line x1="0" y1="3" x2="9" y2="3" stroke="#6fe3d4" strokeOpacity="0.13" strokeWidth="0.8" />
-          <line x1="0" y1="6.5" x2="4" y2="6.5" stroke="#6fe3d4" strokeOpacity="0.07" strokeWidth="0.8" />
+          <line
+            x1="0"
+            y1="3"
+            x2="9"
+            y2="3"
+            stroke={MAP_PALETTE.marshLine}
+            strokeOpacity="0.5"
+            strokeWidth="0.8"
+          />
+          <line
+            x1="0"
+            y1="6.5"
+            x2="4"
+            y2="6.5"
+            stroke={MAP_PALETTE.marshLine}
+            strokeOpacity="0.3"
+            strokeWidth="0.8"
+          />
         </pattern>
 
         <clipPath id="lk-landclip">
@@ -109,7 +157,13 @@ export function BaseMap() {
         </clipPath>
 
         <pattern id="lk-graticule" width="65" height="65" patternUnits="userSpaceOnUse">
-          <path d="M65 0H0V65" fill="none" stroke="#9aa6b6" strokeOpacity="0.05" strokeWidth="1" />
+          <path
+            d="M65 0H0V65"
+            fill="none"
+            stroke="#ffffff"
+            strokeOpacity="0.1"
+            strokeWidth="1"
+          />
         </pattern>
       </defs>
 
@@ -118,10 +172,34 @@ export function BaseMap() {
 
       {/* Tiefenzonen: drei Säume um die Landmasse, von tief nach flach. */}
       <g fill="none" strokeLinejoin="round">
-        <path d={coast} stroke="#062230" strokeWidth="64" filter="url(#lk-deep)" opacity="0.55" />
-        <path d={coast} stroke="#0b3a4a" strokeWidth="26" filter="url(#lk-shelf)" opacity="0.55" />
-        <path d={coast} stroke="#14596a" strokeWidth="7" filter="url(#lk-inner)" opacity="0.4" />
-        <path d={keys} stroke="#0b3a4a" strokeWidth="30" filter="url(#lk-shelf)" opacity="0.45" />
+        <path
+          d={coast}
+          stroke={MAP_PALETTE.waterShelf}
+          strokeWidth="58"
+          filter="url(#lk-deep)"
+          opacity="0.32"
+        />
+        <path
+          d={coast}
+          stroke={MAP_PALETTE.waterShallow}
+          strokeWidth="20"
+          filter="url(#lk-shelf)"
+          opacity="0.42"
+        />
+        <path
+          d={coast}
+          stroke="#b6ece5"
+          strokeWidth="5"
+          filter="url(#lk-inner)"
+          opacity="0.38"
+        />
+        <path
+          d={keys}
+          stroke={MAP_PALETTE.waterShallow}
+          strokeWidth="24"
+          filter="url(#lk-shelf)"
+          opacity="0.45"
+        />
       </g>
 
       <rect width="100%" height="100%" fill="url(#lk-graticule)" />
@@ -129,8 +207,8 @@ export function BaseMap() {
       {/* Beschriftung der Wasserflächen */}
       <g
         style={{ fontFamily: "var(--font-serif), Georgia, serif" }}
-        fill="#4d8092"
-        fillOpacity="0.55"
+        fill={MAP_PALETTE.label}
+        fillOpacity="0.65"
         textAnchor="middle"
       >
         {WATER_LABELS.map((label) => {
@@ -155,18 +233,24 @@ export function BaseMap() {
 
       <g clipPath="url(#lk-landclip)">
         {/* Strandsaum: heller Streifen unmittelbar an der Küste */}
-        <path d={coast} fill="none" stroke="#c9bb87" strokeOpacity="0.32" strokeWidth="4.5" />
-        <path d={coast} fill="none" stroke="url(#lk-shore)" strokeWidth="22" opacity="0.55" />
+        <path
+          d={coast}
+          fill="none"
+          stroke={MAP_PALETTE.beach}
+          strokeOpacity="0.85"
+          strokeWidth="5"
+        />
+        <path d={coast} fill="none" stroke="url(#lk-shore)" strokeWidth="22" opacity="0.7" />
 
         {/* Waldflächen */}
-        <g fill="#2b3a22" fillOpacity="0.65">
+        <g fill={MAP_PALETTE.forest} fillOpacity="0.8">
           {FORESTS.map((forest) => (
             <path key={forest.id} d={toSmoothPath(forest.points)} />
           ))}
         </g>
 
         {/* Feuchtgebiet mit Schraffursignatur */}
-        <path d={wetlands} fill="#233a2f" fillOpacity="0.8" />
+        <path d={wetlands} fill={MAP_PALETTE.marsh} fillOpacity="0.85" />
         <path d={wetlands} fill="url(#lk-marsh)" />
 
         {/* Siedlungsflächen */}
@@ -174,46 +258,52 @@ export function BaseMap() {
           {URBAN_AREAS.map((area) => {
             const [x, y] = toViewBox(...area.center);
             return (
-              <circle
-                key={area.id}
-                cx={x}
-                cy={y}
-                r={area.radius * 130}
-                fill="url(#lk-urban)"
-              />
+              <circle key={area.id} cx={x} cy={y} r={area.radius * 130} fill="url(#lk-urban)" />
             );
           })}
         </g>
 
         {/* Flüsse */}
-        <g fill="none" stroke="#2a6274" strokeOpacity="0.6" strokeWidth="1.8" strokeLinecap="round">
+        <g
+          fill="none"
+          stroke={MAP_PALETTE.river}
+          strokeOpacity="0.8"
+          strokeWidth="2"
+          strokeLinecap="round"
+        >
           {RIVERS.map((river) => (
             <path key={river.id} d={toSmoothPath(river.points, false)} />
           ))}
         </g>
 
         {/* Binnensee */}
-        <path d={lake} fill="#08202e" stroke="#2f7f92" strokeOpacity="0.6" strokeWidth="1.6" />
+        <path
+          d={lake}
+          fill={MAP_PALETTE.waterMid}
+          stroke={MAP_PALETTE.waterDeep}
+          strokeOpacity="0.5"
+          strokeWidth="1.6"
+        />
 
-        {/* Landtextur ganz oben in der Landgruppe */}
+        {/* Papiertextur ganz oben in der Landgruppe */}
         <rect
           width="100%"
           height="100%"
           filter="url(#lk-grain)"
-          opacity="0.1"
-          style={{ mixBlendMode: "overlay" }}
+          opacity="0.12"
+          style={{ mixBlendMode: "multiply" }}
         />
       </g>
 
       {/* --- Verkehrsnetz ----------------------------------------------------- */}
       <g fill="none" strokeLinecap="round" strokeLinejoin="round">
-        {/* Dunkles Casing zuerst, damit die Achsen sich vom Untergrund lösen. */}
+        {/* Helles Casing zuerst, damit die Achsen auf dem Sand stehen. */}
         {HIGHWAYS.map((road) => (
           <path
             key={`casing-${road.id}`}
             d={toSmoothPath(road.points, false)}
-            stroke="#10180f"
-            strokeOpacity="0.75"
+            stroke={MAP_PALETTE.roadCasing}
+            strokeOpacity="0.9"
             strokeWidth={road.rank === 1 ? 5.5 : 4}
           />
         ))}
@@ -221,9 +311,9 @@ export function BaseMap() {
           <path
             key={`core-${road.id}`}
             d={toSmoothPath(road.points, false)}
-            stroke={road.rank === 1 ? "#f5e2b0" : "#cdb27a"}
-            strokeOpacity={road.rank === 1 ? 0.78 : 0.5}
-            strokeWidth={road.rank === 1 ? 2.2 : 1.4}
+            stroke={road.rank === 1 ? MAP_PALETTE.roadMajor : MAP_PALETTE.roadMinor}
+            strokeOpacity={road.rank === 1 ? 0.95 : 0.8}
+            strokeWidth={road.rank === 1 ? 2.4 : 1.5}
           />
         ))}
       </g>
@@ -232,33 +322,34 @@ export function BaseMap() {
       <path
         d={keys}
         fill="none"
-        stroke="#3b4632"
-        strokeWidth="9"
+        stroke={MAP_PALETTE.beach}
+        strokeWidth="10"
         strokeLinecap="round"
         strokeLinejoin="round"
+        strokeOpacity="0.9"
       />
       <path
         d={keys}
         fill="none"
-        stroke="#c9bb87"
-        strokeOpacity="0.55"
-        strokeWidth="10"
+        stroke={MAP_PALETTE.landLow}
+        strokeOpacity="0.95"
+        strokeWidth="7"
         strokeLinecap="round"
-        strokeDasharray="1.5 8"
+        strokeDasharray="2 7"
       />
 
       {/* --- Küstenlinie ------------------------------------------------------ */}
       <path
         d={coast}
         fill="none"
-        stroke="#8fd8cb"
-        strokeOpacity="0.4"
-        strokeWidth="1.1"
+        stroke={MAP_PALETTE.coast}
+        strokeOpacity="0.65"
+        strokeWidth="1.4"
         strokeLinejoin="round"
       />
 
       {/* --- Kartenrahmen mit Teilung ----------------------------------------- */}
-      <g stroke="#9aa6b6" strokeOpacity="0.25" fill="none">
+      <g stroke={MAP_PALETTE.frame} strokeOpacity="0.4" fill="none">
         <rect
           x="6"
           y="6"
@@ -294,47 +385,37 @@ export function BaseMap() {
 /** Maßstabsleiste und Nordpfeil – Standardausstattung einer Karte. */
 export function MapFurniture({ scale }: { scale: number }) {
   // Der Ausschnitt ist rund 890 km breit; die Leiste zeigt 100 km davon und
-  // waechst mit dem Zoom, weil dieselbe Strecke dann mehr Flaeche einnimmt.
+  // wächst mit dem Zoom, weil dieselbe Strecke dann mehr Fläche einnimmt.
   const barWidth = Math.min(38, (100 / 890) * 100 * scale);
 
   return (
     <div className="pointer-events-none absolute inset-0">
       <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
         <div className="min-w-0">
-          <div className="inline-block rounded-md bg-ink-950/75 px-2.5 py-2 backdrop-blur">
+          <div className="inline-block rounded-md bg-[#fdf4e2]/90 px-2.5 py-2 shadow-sm">
             <div
-              className="relative h-1.5 border-x border-b border-paper-400/70"
+              className="relative h-1.5 border-x border-b border-[#123038]/70"
               style={{ width: `${barWidth}vw`, maxWidth: "9rem", minWidth: "2.5rem" }}
             />
-            <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-paper-400">
+            <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#123038]/80">
               ca. 100 km
             </p>
           </div>
           {/* Auf schmalen Viewports weggelassen: Der Hinweis steht dort ohnehin
-              direkt ueber der Karte und wuerde Marker verdecken. */}
-          <p className="mt-1.5 hidden max-w-[20rem] rounded-md bg-ink-950/75 px-2.5 py-1.5 font-mono text-[9px] leading-relaxed uppercase tracking-[0.1em] text-paper-500 backdrop-blur sm:block">
+              direkt über der Karte und würde Marker verdecken. */}
+          <p className="mt-1.5 hidden max-w-[20rem] rounded-md bg-[#fdf4e2]/90 px-2.5 py-1.5 font-mono text-[9px] leading-relaxed uppercase tracking-[0.1em] text-[#123038]/75 shadow-sm sm:block">
             Geografische Basis: reale Küste Floridas · Spielkarte unveröffentlicht
           </p>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <span className="grid size-9 place-items-center rounded-md bg-ink-950/75 backdrop-blur">
+          <span className="grid size-9 place-items-center rounded-md bg-[#fdf4e2]/90 shadow-sm">
             <svg viewBox="0 0 24 24" className="size-5" aria-hidden>
-              <path d="M12 2.5 L15.2 13 L12 10.8 L8.8 13 Z" fill="#ff7a55" />
-              <path d="M12 21.5 L8.8 13 L12 15.2 L15.2 13 Z" fill="#9aa6b6" opacity="0.45" />
-              <text
-                x="12"
-                y="7.6"
-                textAnchor="middle"
-                fontSize="5"
-                fill="#0b0f16"
-                style={{ fontFamily: "var(--font-mono), monospace" }}
-              >
-                N
-              </text>
+              <path d="M12 2.5 L15.2 13 L12 10.8 L8.8 13 Z" fill="#ff6a55" />
+              <path d="M12 21.5 L8.8 13 L12 15.2 L15.2 13 Z" fill="#123038" opacity="0.4" />
             </svg>
           </span>
-          <p className="rounded-md bg-ink-950/75 px-2.5 py-1.5 font-mono text-[10px] text-paper-500 backdrop-blur">
+          <p className="rounded-md bg-[#fdf4e2]/90 px-2.5 py-1.5 font-mono text-[10px] text-[#123038]/80 shadow-sm">
             {Math.round(scale * 100)} %
           </p>
         </div>

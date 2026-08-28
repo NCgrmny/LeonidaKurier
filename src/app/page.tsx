@@ -4,6 +4,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ArticleCard, LeadArticle } from "@/components/kurier/ArticleCard";
 import { Masthead } from "@/components/kurier/Masthead";
 import { BaseMap } from "@/components/kompass/BaseMap";
+import { MAP_VIEWBOX } from "@/content/geography";
 import { RadarBoard } from "@/components/radar/RadarBoard";
 import { Timeline } from "@/components/archiv/Timeline";
 import { content } from "@/lib/content";
@@ -144,50 +145,44 @@ export default async function HomePage() {
           <SectionHeading
             kicker="Leonida Kompass"
             title="Die interaktive Karte"
-            description="Jeder Marker ist mit der Datenbank verbunden. Positionen sind derzeit Platzhalter – offizielle Geodaten liegen nicht vor."
+            description="Grundlage ist die reale Geografie Floridas. Verortet wird nur, wo ein reales Vorbild nachvollziehbar ist – alles andere steht sichtbar getrennt."
             action={{ href: "/kompass", label: "Kompass öffnen" }}
           />
           <Link
             href="/kompass"
-            className="group mt-6 block overflow-hidden rounded-2xl border border-[var(--rule)] bg-ink-950"
+            className="group mt-6 grid gap-6 overflow-hidden rounded-2xl border border-[var(--rule)] bg-ink-900/60 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-10"
           >
-            <div className="relative grid gap-8 p-6 sm:p-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
-              {/* Echte Grundkarte als Vorschau, nicht als Dekoration. */}
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-60 transition-opacity group-hover:opacity-80"
-              >
-                <BaseMap />
-              </div>
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-gradient-to-r from-ink-950 via-ink-950/85 to-ink-950/35"
-              />
-              <div className="relative">
-                <p className="kicker">leonidakompass.de</p>
-                <h3 className="headline mt-3 text-2xl text-paper-50 sm:text-3xl">
-                  Vom Marker direkt in die Datenbank
-                </h3>
-                <p className="standfirst mt-3 max-w-md text-sm">
-                  Ebenen für Orte, Regionen, Geschäfte und Geheimnisse. Jeder Marker führt
-                  zu Beschreibung, Quelle und verknüpften Beiträgen.
-                </p>
-                <span className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-lagoon-300">
-                  Karte öffnen <span aria-hidden>→</span>
-                </span>
-              </div>
-              <ul className="relative grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-[var(--rule)] bg-[var(--rule)]">
+            <div>
+              <p className="kicker">leonidakompass.de</p>
+              <h3 className="headline mt-3 text-2xl text-paper-50 sm:text-3xl">
+                Vom Marker direkt in die Datenbank
+              </h3>
+              <p className="standfirst mt-3 max-w-md text-sm">
+                Ebenen für Orte, Regionen, Geschäfte und Geheimnisse. Jeder Marker führt
+                zu Beschreibung, Quelle und verknüpften Beiträgen.
+              </p>
+              <ul className="mt-5 flex flex-wrap gap-2">
                 {["Orte", "Regionen", "Geschäfte", "Geheimnisse"].map((layer) => (
                   <li
                     key={layer}
-                    className="bg-ink-900/85 px-4 py-4 font-mono text-[11px] uppercase tracking-[0.14em] text-paper-400"
+                    className="rounded-full border border-[var(--rule)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-paper-400"
                   >
                     {layer}
                   </li>
                 ))}
               </ul>
+              <span className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-lagoon-300">
+                Karte öffnen <span aria-hidden>→</span>
+              </span>
             </div>
-          </Link>
+
+            {/* Kartenvorschau im echten Seitenverhältnis, nicht als Deko-Fläche. */}
+            <div
+              className="relative overflow-hidden rounded-xl border border-lagoon-400/25 shadow-[0_20px_50px_-24px_rgba(0,0,0,0.9)] transition-transform duration-500 group-hover:scale-[1.015]"
+              style={{ aspectRatio: `${MAP_VIEWBOX.width} / ${MAP_VIEWBOX.height}` }}
+            >
+              <BaseMap />
+            </div>          </Link>
         </section>
       </Container>
 
