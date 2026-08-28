@@ -177,3 +177,69 @@ body::before {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Zeitungssatz
+   Der Kurier tritt als Zeitungsseite auf: Zeitungskopf, Datumszeile,
+   Spaltensatz mit Spaltenlinien und Initial. Die UI ringsum bleibt modern.
+---------------------------------------------------------------------------- */
+
+.masthead-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  font-variant-ligatures: none;
+}
+
+/* Doppellinie unter dem Zeitungskopf, wie im Druck. */
+.rule-double {
+  border-top: 3px solid color-mix(in oklab, var(--color-paper-400) 45%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--color-paper-400) 28%, transparent);
+  height: 4px;
+}
+
+.newspaper-columns {
+  column-gap: 2.25rem;
+  column-rule: 1px solid var(--rule);
+}
+@media (min-width: 640px) {
+  .newspaper-columns-2 {
+    column-count: 2;
+  }
+}
+@media (min-width: 1024px) {
+  .newspaper-columns-3 {
+    column-count: 3;
+  }
+}
+
+.newspaper-columns p {
+  color: var(--color-paper-200);
+  line-height: 1.7;
+  text-wrap: pretty;
+  hyphens: auto;
+}
+.newspaper-columns p + p {
+  margin-top: 0.85em;
+  text-indent: 1.1em;
+}
+
+/* Initial am Textanfang. */
+.dropcap::first-letter {
+  float: left;
+  font-family: var(--font-serif);
+  font-size: 3.6em;
+  line-height: 0.8;
+  padding-right: 0.09em;
+  padding-top: 0.06em;
+  color: var(--color-coral-400);
+  font-weight: 600;
+}
+
+/* Verhindert Umbrüche innerhalb eines Zeitungsartikels im Spaltensatz. */
+.column-item {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+}

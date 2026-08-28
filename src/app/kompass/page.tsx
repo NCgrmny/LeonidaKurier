@@ -65,21 +65,25 @@ export default async function KompassPage({
         </p>
       </header>
 
-      {/* Genauigkeitshinweis: kurz und immer sichtbar, Details ausklappbar. */}
+      {/* Grundlage der Karte offenlegen: real vs. unveroeffentlicht. */}
       <details className="group mb-4 rounded-xl border border-sand-400/25 bg-sand-400/5 px-4 py-3 sm:px-5">
         <summary className="cursor-pointer list-none text-sm leading-relaxed text-paper-200 marker:content-['']">
-          <strong className="font-medium text-sand-300">Positionen sind Platzhalter.</strong>{" "}
-          Zu Leonida liegen keine offiziellen Geodaten vor.
+          <strong className="font-medium text-sand-300">
+            Grundkarte: reale Geografie Floridas.
+          </strong>{" "}
+          Die Spielkarte von GTA VI ist unveröffentlicht.
           <span className="ml-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-paper-500 group-open:hidden">
             Mehr
           </span>
         </summary>
         <p className="mt-2.5 text-sm leading-relaxed text-paper-400">
-          Die Grundfläche ist ein neutrales Koordinatenraster, keine nachgezeichnete
-          Spielwelt. Jede Position trägt eine Genauigkeitsangabe; sie lautet derzeit
-          durchgängig <span className="font-mono text-xs">Platzhalter</span> und dient
-          ausschließlich dem Betrieb der Kartenarchitektur. Belegte Positionen werden erst
-          übernommen, wenn sie mit einer Quelle nachvollziehbar sind.
+          Leonida ist erkennbar an Florida angelehnt. Als Orientierung zeigt der Kompass
+          deshalb die vereinfachte reale Küstenlinie Floridas – öffentlich bekannte
+          Realgeografie, kein nachgezeichnetes Spielmaterial und kein fremdes Kartenasset.
+          Verortet werden nur Einträge mit nachvollziehbarem realem Vorbild; die
+          Begründung steht an jedem Marker. Alles Übrige liegt sichtbar getrennt unter
+          „ohne belegte Position“. Sobald die Spielkarte belegbar ist, tritt eine eigene
+          Leonida-Geometrie an diese Stelle.
         </p>
       </details>
 

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ArticleCard, LeadArticle } from "@/components/kurier/ArticleCard";
+import { Masthead } from "@/components/kurier/Masthead";
+import { BaseMap } from "@/components/kompass/BaseMap";
 import { RadarBoard } from "@/components/radar/RadarBoard";
 import { Timeline } from "@/components/archiv/Timeline";
 import { content } from "@/lib/content";
@@ -39,57 +41,52 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Kopfbereich: Marke, Anspruch, Einstiege ---------------------------- */}
-      <section className="relative overflow-hidden">
-        <Container width="wide">
-          <div className="grid gap-10 py-14 sm:py-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
-            <div>
-              <p className="kicker">Unabhängige Plattform zur Welt von GTA VI</p>
-              <h1 className="headline mt-4 text-[2.6rem] leading-[1.02] text-paper-50 sm:text-6xl lg:text-7xl">
-                Leonida
-                <span className="block text-coral-400">Kurier</span>
-              </h1>
-              <p className="standfirst mt-6 max-w-xl text-lg sm:text-xl">
-                {SITE.tagline} Meldungen, Karte, Datenbank und Archiv – mit sichtbarem
-                Status hinter jeder Information.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href="/kompass"
-                  className="rounded-md bg-coral-500 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-950 transition-colors hover:bg-coral-400"
-                >
-                  Kompass öffnen
-                </Link>
-                <Link
-                  href="/kurier"
-                  className="rounded-md border border-[var(--rule)] px-5 py-3 font-mono text-[11px] uppercase tracking-[0.16em] text-paper-200 transition-colors hover:border-paper-400/40 hover:text-paper-50"
-                >
-                  Zum Kurier
-                </Link>
-              </div>
-            </div>
+      {/* Zeitungskopf ------------------------------------------------------ */}
+      <Container width="wide">
+        <Masthead editionDate={lead?.publishedAt ?? new Date().toISOString()} />
 
-            {/* Informationsarchitektur als Leitfragen */}
-            <ul className="grid gap-px overflow-hidden rounded-xl border border-[var(--rule)] bg-[var(--rule)] sm:grid-cols-2 lg:grid-cols-1">
-              {MAIN_NAV.map((item) => (
-                <li key={item.href} className="bg-ink-900/80">
-                  <Link
-                    href={item.href}
-                    className="group flex items-baseline justify-between gap-4 px-4 py-3.5 transition-colors hover:bg-ink-850"
-                  >
-                    <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-paper-50">
-                      {item.label}
-                    </span>
-                    <span className="text-right text-xs text-paper-500 group-hover:text-lagoon-300">
-                      {item.question}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+        {/* Leitfragen-Leiste direkt unter dem Kopf, wie ein Ressortband. */}
+        <nav aria-label="Bereiche" className="border-b border-[var(--rule)]">
+          <ul className="grid grid-cols-2 gap-px bg-[var(--rule)] sm:grid-cols-3 lg:grid-cols-5">
+            {MAIN_NAV.map((item) => (
+              <li key={item.href} className="bg-ink-950">
+                <Link
+                  href={item.href}
+                  className="group flex h-full flex-col gap-1 px-3 py-3.5 transition-colors hover:bg-ink-900"
+                >
+                  <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-paper-50">
+                    {item.label}
+                  </span>
+                  <span className="text-xs text-paper-500 group-hover:text-lagoon-300">
+                    {item.question}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="flex flex-wrap items-center justify-between gap-4 py-5">
+          <p className="standfirst max-w-xl text-sm sm:text-base">
+            Meldungen, Karte, Datenbank und Archiv – mit sichtbarem Status hinter jeder
+            Information.
+          </p>
+          <div className="flex flex-wrap gap-2.5">
+            <Link
+              href="/kompass"
+              className="rounded-md bg-coral-500 px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-950 transition-colors hover:bg-coral-400"
+            >
+              Kompass öffnen
+            </Link>
+            <Link
+              href="/kurier"
+              className="rounded-md border border-[var(--rule)] px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.16em] text-paper-200 transition-colors hover:border-paper-400/40 hover:text-paper-50"
+            >
+              Zum Kurier
+            </Link>
           </div>
-        </Container>
-      </section>
+        </div>
+      </Container>
 
       {/* Heute in Leonida -------------------------------------------------- */}
       {lead ? (
@@ -155,18 +152,16 @@ export default async function HomePage() {
             className="group mt-6 block overflow-hidden rounded-2xl border border-[var(--rule)] bg-ink-950"
           >
             <div className="relative grid gap-8 p-6 sm:p-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
+              {/* Echte Grundkarte als Vorschau, nicht als Dekoration. */}
               <div
                 aria-hidden
-                className="absolute inset-0 opacity-70 transition-opacity group-hover:opacity-100"
-                style={{
-                  backgroundImage: [
-                    "linear-gradient(to right, rgba(154,166,182,0.07) 1px, transparent 1px)",
-                    "linear-gradient(to bottom, rgba(154,166,182,0.07) 1px, transparent 1px)",
-                    "radial-gradient(60% 60% at 30% 70%, rgba(30,162,148,0.18), transparent 70%)",
-                    "radial-gradient(45% 45% at 80% 20%, rgba(242,96,58,0.14), transparent 70%)",
-                  ].join(","),
-                  backgroundSize: "3rem 3rem, 3rem 3rem, 100% 100%, 100% 100%",
-                }}
+                className="absolute inset-0 opacity-60 transition-opacity group-hover:opacity-80"
+              >
+                <BaseMap />
+              </div>
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-r from-ink-950 via-ink-950/85 to-ink-950/35"
               />
               <div className="relative">
                 <p className="kicker">leonidakompass.de</p>

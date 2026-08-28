@@ -171,7 +171,14 @@ export interface Theory extends BaseEntity {
 export interface MapMarkerPosition {
   x: number;
   y: number;
+  /**
+   * `platzhalter` – keine belegbare Position, wird auf der Karte gesondert
+   * behandelt. `grob` – Verortung nach einem nachvollziehbaren realen Vorbild.
+   * `genau` – erst nach verifizierten In-Game-Daten zulaessig.
+   */
   precision: "platzhalter" | "grob" | "genau";
+  /** Begruendung der Verortung. Pflicht, sobald `precision` nicht `platzhalter` ist. */
+  note?: string;
 }
 
 export type MapLayerId =

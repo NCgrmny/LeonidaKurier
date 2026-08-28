@@ -5,8 +5,10 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { statusDefinition } from "@/lib/status";
 import { cx } from "@/lib/format";
 import { entityHref } from "@/lib/content/collections";
+import { MAP_VIEWBOX } from "@/content/geography";
 import type { MapLayerId, MapMarker } from "@/lib/types";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { BaseMap, MapFurniture } from "./BaseMap";
 
 export interface MapLayerDefinition {
   id: MapLayerId;
@@ -40,10 +42,11 @@ interface Transform {
 /**
  * Interaktive Kartenfläche des Leonida Kompass.
  *
- * Bewusst ohne Kartenbibliothek und ohne fremde Kartenassets: Die Basisfläche
- * ist ein neutrales Koordinatenraster. Es liegen keine offiziellen Geodaten zu
- * Leonida vor – jede Position trägt deshalb eine Genauigkeitsangabe, und
- * Platzhalterpositionen werden als solche ausgewiesen.
+ * Bewusst ohne Kartenbibliothek und ohne fremde Kartenassets: Die Grundkarte
+ * ist die reale Küstenlinie Floridas (siehe `src/content/geography.ts`), auf
+ * die Leonida erkennbar zurückgeht. Verortet wird nur, wo ein reales Vorbild
+ * nachvollziehbar ist; alles Übrige liegt sichtbar getrennt im Bereich „ohne
+ * belegte Position“, statt eine Position zu behaupten.
  */
 export function CompassMap({
   markers,
@@ -54,6 +57,7 @@ export function CompassMap({
 }) {
   const [transform, setTransform] = useState<Transform>({ scale: 1, x: 0, y: 0 });
   const [activeLayers, setActiveLayers] = useState<MapLayerId[]>(["orte", "regionen"]);
+  const [showUnplaced, setShowUnplaced] = useState(false);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(
     initialMarkerSlug ?? null,
   );
@@ -68,6 +72,18 @@ export function CompassMap({
     [markers, activeLayers],
   );
 
+  /** Verortet: Position beruht auf einem nachvollziehbaren Vorbild. */
+  const placed = useMemo(
+    () => visibleMarkers.filter((marker) => marker.position.precision !== "platzhalter"),
+    [visibleMarkers],
+  );
+
+  /** Unbelegt: keine Position behauptet – gesondert ausgewiesen. */
+  const unplaced = useMemo(
+    () => visibleMarkers.filter((marker) => marker.position.precision === "platzhalter"),
+    [visibleMarkers],
+  );
+
   const selected = useMemo(
     () => markers.find((marker) => marker.slug === selectedSlug) ?? null,
     [markers, selectedSlug],
@@ -76,7 +92,7 @@ export function CompassMap({
   const clamp = useCallback((next: Transform): Transform => {
     const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, next.scale));
     const box = viewportRef.current?.getBoundingClientRect();
-    // Verschiebung so begrenzen, dass die Fläche das Sichtfenster stets füllt.
+    // Verschiebung so begrenzen, dass die Karte das Sichtfenster stets füllt.
     const limitX = box ? (box.width * (scale - 1)) / 2 : 0;
     const limitY = box ? (box.height * (scale - 1)) / 2 : 0;
     return {
@@ -88,9 +104,7 @@ export function CompassMap({
 
   const zoomBy = useCallback(
     (factor: number) =>
-      setTransform((current) =>
-        clamp({ ...current, scale: current.scale * factor }),
-      ),
+      setTransform((current) => clamp({ ...current, scale: current.scale * factor })),
     [clamp],
   );
 
@@ -115,11 +129,7 @@ export function CompassMap({
     const drag = dragState.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
     setTransform((current) =>
-      clamp({
-        ...current,
-        x: event.clientX - drag.startX,
-        y: event.clientY - drag.startY,
-      }),
+      clamp({ ...current, x: event.clientX - drag.startX, y: event.clientY - drag.startY }),
     );
   };
 
@@ -152,20 +162,25 @@ export function CompassMap({
       current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id],
     );
 
+  const onMapMarkers = showUnplaced ? [...placed, ...unplaced] : placed;
+
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="relative overflow-hidden rounded-2xl border border-[var(--rule)] bg-ink-950">
         <div
           ref={viewportRef}
           role="application"
-          aria-label="Interaktive Karte von Leonida. Verschieben mit Pfeiltasten, Zoom mit Plus und Minus."
+          aria-label="Interaktive Karte. Verschieben mit den Pfeiltasten, Zoom mit Plus und Minus, Zurücksetzen mit Null."
           tabIndex={0}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
           onKeyDown={onKeyDown}
-          className="relative aspect-[4/5] w-full cursor-grab touch-none select-none overflow-hidden active:cursor-grabbing sm:aspect-[16/10]"
+          // Seitenverhältnis der Grundkarte, damit Marker exakt auf der
+          // Geometrie sitzen und nichts beschnitten wird.
+          style={{ aspectRatio: `${MAP_VIEWBOX.width} / ${MAP_VIEWBOX.height}` }}
+          className="relative w-full cursor-grab touch-none select-none overflow-hidden active:cursor-grabbing"
         >
           <div
             className="absolute inset-0 origin-center"
@@ -174,17 +189,19 @@ export function CompassMap({
               transition: isDragging ? "none" : "transform 180ms ease-out",
             }}
           >
-            <MapBaseLayer />
-            {visibleMarkers.map((marker) => {
+            <BaseMap />
+
+            {onMapMarkers.map((marker) => {
               const definition = statusDefinition(marker.status);
               const isSelected = marker.slug === selectedSlug;
+              const isUnplaced = marker.position.precision === "platzhalter";
               return (
                 <button
                   key={marker.id}
                   type="button"
                   onClick={() => setSelectedSlug(marker.slug)}
                   // Ohne dies startet die Kartenflaeche einen Drag und faengt den
-                  // Zeiger ab – der Klick auf den Marker wuerde verloren gehen.
+                  // Zeiger ab – der Klick auf den Marker ginge verloren.
                   onPointerDown={(event) => event.stopPropagation()}
                   aria-pressed={isSelected}
                   className="group absolute -translate-x-1/2 -translate-y-1/2"
@@ -198,32 +215,36 @@ export function CompassMap({
                   <span
                     aria-hidden
                     className={cx(
-                      "block size-3 rounded-full border-2 border-ink-950 transition-transform group-hover:scale-125",
-                      isSelected && "scale-125 ring-2 ring-lagoon-300 ring-offset-1 ring-offset-ink-950",
+                      "block rounded-full transition-transform group-hover:scale-125",
+                      isUnplaced
+                        ? "size-3.5 border-2 border-dashed bg-transparent"
+                        : "size-3 border-2 border-ink-950",
+                      isSelected &&
+                        "scale-125 ring-2 ring-lagoon-300 ring-offset-2 ring-offset-ink-950",
                     )}
-                    style={{ backgroundColor: definition.accent }}
+                    style={
+                      isUnplaced
+                        ? { borderColor: definition.accent }
+                        : { backgroundColor: definition.accent }
+                    }
                   />
                   <span
                     className={cx(
-                      "pointer-events-none absolute left-1/2 top-4 w-max max-w-[9rem] -translate-x-1/2 rounded bg-ink-950/85 px-1.5 py-0.5 text-center font-mono text-[9px] uppercase tracking-[0.1em] text-paper-200 opacity-0 transition-opacity group-hover:opacity-100",
-                      isSelected && "opacity-100",
+                      "pointer-events-none absolute left-1/2 top-4 w-max max-w-[10rem] -translate-x-1/2 rounded px-1.5 py-0.5 text-center font-mono text-[9px] uppercase tracking-[0.12em] transition-colors",
+                      "bg-ink-950/75 backdrop-blur-[2px]",
+                      isSelected ? "text-lagoon-300" : "text-paper-200",
+                      isUnplaced && "italic text-paper-500",
                     )}
                   >
                     {marker.title}
+                    {isUnplaced ? " · unbelegt" : ""}
                   </span>
                 </button>
               );
             })}
           </div>
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3">
-            <p className="rounded-md bg-ink-950/80 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-paper-500">
-              Basiskarte: Platzhalterraster · keine offiziellen Geodaten
-            </p>
-            <p className="rounded-md bg-ink-950/80 px-2.5 py-1.5 font-mono text-[10px] text-paper-500">
-              {Math.round(transform.scale * 100)} %
-            </p>
-          </div>
+          <MapFurniture scale={transform.scale} />
         </div>
 
         <div className="absolute right-3 top-3 flex flex-col gap-1.5">
@@ -271,14 +292,50 @@ export function CompassMap({
               );
             })}
           </ul>
-          <p className="mt-3 text-[11px] leading-relaxed text-paper-500">
-            Ebenen ohne Einträge sind deaktiviert, solange keine belegten Daten vorliegen.
-          </p>
         </section>
+
+        {unplaced.length > 0 ? (
+          <section className="rounded-xl border border-[var(--rule)] bg-ink-900/50 p-4">
+            <h3 className="kicker mb-2">Ohne belegte Position ({unplaced.length})</h3>
+            <p className="mb-3 text-[11px] leading-relaxed text-paper-500">
+              Offiziell benannt, aber nicht verortbar. Diese Einträge werden nicht auf der
+              Karte platziert, solange ihre Lage nicht belegt ist.
+            </p>
+            <ul className="grid gap-1">
+              {unplaced.map((marker) => (
+                <li key={marker.id}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSlug(marker.slug)}
+                    className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-ink-850"
+                  >
+                    <span
+                      aria-hidden
+                      className="size-2 shrink-0 rounded-full border border-dashed"
+                      style={{ borderColor: statusDefinition(marker.status).accent }}
+                    />
+                    <span className="text-sm text-paper-200">{marker.title}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <label className="mt-3 flex cursor-pointer items-center gap-2.5 border-t border-[var(--rule)] pt-3">
+              <input
+                type="checkbox"
+                checked={showUnplaced}
+                onChange={(event) => setShowUnplaced(event.target.checked)}
+                className="size-3.5 accent-[var(--color-lagoon-400)]"
+              />
+              <span className="text-[11px] leading-tight text-paper-400">
+                Trotzdem auf der Karte einblenden (gestrichelt, ohne Aussagewert)
+              </span>
+            </label>
+          </section>
+        ) : null}
 
         <section className="flex-1 rounded-xl border border-[var(--rule)] bg-ink-900/50 p-4">
           <h3 className="kicker mb-3">
-            {selected ? "Auswahl" : `Marker (${visibleMarkers.length})`}
+            {selected ? "Auswahl" : `Verortet (${placed.length})`}
           </h3>
 
           {selected ? (
@@ -293,6 +350,15 @@ export function CompassMap({
               <p className="mt-2 text-sm leading-relaxed text-paper-400">
                 {selected.summary}
               </p>
+              {selected.position.note ? (
+                <p className="mt-3 border-l-2 border-sand-400/40 pl-3 text-xs leading-relaxed text-paper-500">
+                  {selected.position.note}
+                </p>
+              ) : (
+                <p className="mt-3 border-l-2 border-paper-400/25 pl-3 text-xs leading-relaxed text-paper-500">
+                  Zur Lage dieses Eintrags liegt nichts Belegtes vor.
+                </p>
+              )}
               {selected.target ? (
                 <Link
                   href={entityHref(selected.target.type, selected.target.slug)}
@@ -311,7 +377,7 @@ export function CompassMap({
             </div>
           ) : (
             <ul className="grid gap-1">
-              {visibleMarkers.map((marker) => (
+              {placed.map((marker) => (
                 <li key={marker.id}>
                   <button
                     type="button"
@@ -327,9 +393,9 @@ export function CompassMap({
                   </button>
                 </li>
               ))}
-              {visibleMarkers.length === 0 ? (
+              {placed.length === 0 ? (
                 <li className="rounded-lg border border-dashed border-[var(--rule)] px-3 py-6 text-center text-xs text-paper-500">
-                  Keine Ebene aktiv.
+                  Keine verortete Ebene aktiv.
                 </li>
               ) : null}
             </ul>
@@ -358,30 +424,5 @@ function MapButton({
     >
       <span aria-hidden>{children}</span>
     </button>
-  );
-}
-
-/**
- * Neutrale Basisfläche: Koordinatenraster statt nachgezeichneter Geografie.
- * Es wird bewusst keine Landmasse dargestellt, solange dazu nichts belegt ist.
- */
-function MapBaseLayer() {
-  return (
-    <div
-      aria-hidden
-      className="absolute inset-0"
-      style={{
-        backgroundColor: "#070d14",
-        backgroundImage: [
-          "linear-gradient(to right, rgba(154,166,182,0.09) 1px, transparent 1px)",
-          "linear-gradient(to bottom, rgba(154,166,182,0.09) 1px, transparent 1px)",
-          "linear-gradient(to right, rgba(154,166,182,0.04) 1px, transparent 1px)",
-          "linear-gradient(to bottom, rgba(154,166,182,0.04) 1px, transparent 1px)",
-          "radial-gradient(70% 55% at 45% 60%, rgba(30,162,148,0.16), transparent 70%)",
-          "radial-gradient(45% 40% at 78% 18%, rgba(242,96,58,0.12), transparent 70%)",
-        ].join(","),
-        backgroundSize: "10% 10%, 10% 10%, 2% 2%, 2% 2%, 100% 100%, 100% 100%",
-      }}
-    />
   );
 }

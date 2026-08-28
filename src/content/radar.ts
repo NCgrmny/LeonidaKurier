@@ -1,3 +1,4 @@
+import { fromGeo } from "./geography";
 import type { MapMarker, RadarSignal } from "@/lib/types";
 
 /**
@@ -73,9 +74,11 @@ export const radarSignals: RadarSignal[] = [
 /**
  * Kartenmarker für den Leonida Kompass.
  *
- * Wichtig: Es liegen keine offiziellen Geodaten zu Leonida vor. Alle Positionen
- * sind daher als `platzhalter` gekennzeichnet und dienen ausschließlich dazu,
- * die Kartenarchitektur zu betreiben. Die Oberfläche weist das sichtbar aus.
+ * Zur Spielkarte von Grand Theft Auto VI gibt es keine offiziellen Geodaten.
+ * Verortet wird deshalb nur dort, wo ein reales Vorbild nachvollziehbar ist –
+ * mit `precision: "grob"` und einer Begründung im Feld `note`. Alles andere
+ * bleibt `platzhalter` und wird auf der Karte gesondert ausgewiesen, statt eine
+ * Position zu behaupten.
  */
 export const mapMarkers: MapMarker[] = [
   {
@@ -87,7 +90,11 @@ export const mapMarkers: MapMarker[] = [
     status: "bestaetigt",
     sourceIds: ["src-rockstar-gta6"],
     updatedAt: "2026-08-01",
-    position: { x: 0.44, y: 0.62, precision: "platzhalter" },
+    position: {
+      ...fromGeo(-80.19, 25.77),
+      precision: "grob",
+      note: "Verortet nach dem realen Vorbild Miami. Rockstar Games hat keine Kartenposition veröffentlicht.",
+    },
     target: { type: "location", slug: "vice-city" },
   },
   {
@@ -99,7 +106,11 @@ export const mapMarkers: MapMarker[] = [
     status: "bestaetigt",
     sourceIds: ["src-rockstar-gta6"],
     updatedAt: "2026-08-01",
-    position: { x: 0.38, y: 0.86, precision: "platzhalter" },
+    position: {
+      ...fromGeo(-81.1, 24.72),
+      precision: "grob",
+      note: "Verortet nach dem realen Vorbild der Florida Keys, auf die der Name verweist.",
+    },
     target: { type: "location", slug: "leonida-keys" },
   },
   {
@@ -111,7 +122,7 @@ export const mapMarkers: MapMarker[] = [
     status: "bestaetigt",
     sourceIds: ["src-rockstar-gta6"],
     updatedAt: "2026-08-01",
-    position: { x: 0.28, y: 0.34, precision: "platzhalter" },
+    position: { x: 0.3, y: 0.34, precision: "platzhalter" },
     target: { type: "location", slug: "port-gellhorn" },
   },
   {

@@ -120,19 +120,39 @@ Detailseite, Sitemap-Eintrag und Verlinkung entstehen daraus automatisch.
 
 ## Karte (Leonida Kompass)
 
-Die Kartenmechanik ist eigenentwickelt (`src/components/kompass/CompassMap.tsx`):
-Zoom, Verschieben per Zeiger und Tastatur, umschaltbare Ebenen, Markerauswahl mit
+Die Kartenmechanik ist eigenentwickelt (`src/components/kompass/`): Zoom,
+Verschieben per Zeiger und Tastatur, umschaltbare Ebenen, Markerauswahl mit
 Verknüpfung in die Datenbank, Deep-Link über `/kompass?marker=<slug>`.
 
-**Bewusste Entscheidung zur Redlichkeit:** Zu Leonida liegen keine offiziellen
-Geodaten vor. Die Basisfläche ist ein neutrales Koordinatenraster, keine
-nachgezeichnete Spielwelt, und es werden keine fremden Kartenassets verwendet.
-Jede Position trägt eine Genauigkeitsangabe (`platzhalter | grob | genau`); derzeit
-sind alle Positionen Platzhalter, was in der Oberfläche sichtbar ausgewiesen ist.
-Ein Test in `tests/content-integrity.test.ts` hält das fest – er darf erst gelockert
-werden, wenn belegte Positionen mit Quelle vorliegen.
+**Grundkarte:** Gezeichnet wird die vereinfachte reale Küstenlinie Floridas
+(`src/content/geography.ts`) – Festland, Inselkette, Binnensee und reale
+Verkehrsachsen, dazu Maßstabsleiste und Nordpfeil. Das ist öffentlich bekannte
+Realgeografie, kein nachgezeichnetes Spielmaterial und kein fremdes Kartenasset.
+Leonida ist erkennbar an Florida angelehnt, deshalb dient die reale Küste als
+geografische Orientierung.
 
----
+**Was die Karte nicht behauptet:** Rockstar Games hat die Spielkarte nicht
+veröffentlicht. Verortet werden deshalb nur Einträge mit nachvollziehbarem realem
+Vorbild (`precision: "grob"`, mit Begründung im Feld `note` – etwa Vice City nach
+dem Vorbild Miami). Alles Übrige bleibt `platzhalter`, wird **nicht** auf der
+Karte platziert und steht sichtbar getrennt unter „ohne belegte Position“; es
+lässt sich optional gestrichelt einblenden. Die Stufe `genau` ist erst nach
+verifizierten In-Game-Daten zulässig – ein Test hält das fest.
+
+Sobald die Spielkarte belegbar ist, tritt eine eigene Leonida-Geometrie an die
+Stelle der Florida-Umrisse; die Kartenmechanik bleibt unverändert.
+
+## Zeitungslayout
+
+Der Kurier tritt als Zeitungsseite auf: Zeitungskopf mit Kennzeile und
+Ausgabedatum (`src/components/kurier/Masthead.tsx`), Ressortband, dreispaltige
+Titelseite mit „Kurz gemeldet“-Schiene, zentriertem Aufmacher, Initial und
+Spaltenlinien, darunter der Fließsatz weiterer Beiträge. Die Satzregeln stehen
+gebündelt in `globals.css` unter „Zeitungssatz“. Die Bedienoberfläche ringsum
+bleibt bewusst modern.
+
+Das Ausgabedatum im Kopf ist das Datum des jüngsten Beitrags – der Kopf
+behauptet damit keine Aktualität, die die Redaktion nicht hat.
 
 ## Domains
 

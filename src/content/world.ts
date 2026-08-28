@@ -1,3 +1,4 @@
+import { fromGeo } from "./geography";
 import type {
   Business,
   Character,
@@ -47,7 +48,11 @@ export const locations: GameLocation[] = [
     status: "bestaetigt",
     sourceIds: ["src-rockstar-gta6", "src-trailer-1"],
     updatedAt: "2026-08-01",
-    marker: { x: 0.44, y: 0.62, precision: "platzhalter" },
+    marker: {
+      ...fromGeo(-80.19, 25.77),
+      precision: "grob",
+      note: "Verortet nach dem realen Vorbild Miami.",
+    },
     related: [
       { type: "region", slug: "leonida" },
       { type: "character", slug: "lucia-caminos" },
@@ -64,7 +69,11 @@ export const locations: GameLocation[] = [
     status: "bestaetigt",
     sourceIds: ["src-rockstar-gta6"],
     updatedAt: "2026-08-01",
-    marker: { x: 0.38, y: 0.86, precision: "platzhalter" },
+    marker: {
+      ...fromGeo(-81.1, 24.72),
+      precision: "grob",
+      note: "Verortet nach dem realen Vorbild der Florida Keys.",
+    },
     related: [{ type: "region", slug: "leonida" }],
   },
   {

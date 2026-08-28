@@ -108,13 +108,21 @@ describe("Kartenmarker", () => {
     }
   });
 
-  it("behaupten keine Genauigkeit ohne offizielle Geodaten", async () => {
-    // Solange keine verifizierbaren Geodaten vorliegen, muss jede Position als
-    // Platzhalter ausgewiesen sein. Dieser Test darf erst gelockert werden,
-    // wenn belegte Positionen samt Quelle vorliegen.
+  it("behaupten keine Genauigkeit ohne verifizierte In-Game-Daten", async () => {
+    // `genau` ist erst nach verifizierten In-Game-Daten zulaessig. Solange das
+    // Spiel nicht veroeffentlicht ist, darf kein Marker diese Stufe fuehren.
     const markers = await content.listMapMarkers();
     for (const marker of markers) {
-      expect(marker.position.precision).toBe("platzhalter");
+      expect(marker.position.precision).not.toBe("genau");
+    }
+  });
+
+  it("begruenden jede Verortung, die keine Platzhalterposition ist", async () => {
+    // Wer eine Position behauptet, muss sagen, worauf sie beruht.
+    const markers = await content.listMapMarkers();
+    for (const marker of markers) {
+      if (marker.position.precision === "platzhalter") continue;
+      expect(marker.position.note, `Marker ${marker.slug} ohne Begruendung`).toBeTruthy();
     }
   });
 
