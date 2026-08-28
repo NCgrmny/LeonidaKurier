@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Masthead } from "@/components/kurier/Masthead";
 import { BriefItem, HeroStory, StoryCard } from "@/components/kurier/ArticleCard";
+import { SourceDesk } from "@/components/kurier/SourceDesk";
 import { RadarTicker } from "@/components/radar/RadarTicker";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import { BaseMap } from "@/components/kompass/BaseMap";
@@ -32,7 +33,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function HomePage() {
-  const [lead, latest, signals, timeline, counts, locations, characters] =
+  const [lead, latest, signals, timeline, counts, locations, characters, allSources] =
     await Promise.all([
       content.getLeadArticle(),
       content.listArticles(),
@@ -41,6 +42,7 @@ export default async function HomePage() {
       collectionCounts(),
       content.listLocations(),
       content.listCharacters(),
+      content.listSources(),
     ]);
 
   const rest = latest.filter((article) => article.slug !== lead?.slug);
@@ -49,6 +51,20 @@ export default async function HomePage() {
   const leadSource = lead ? (await content.getSources(lead.sourceIds))[0] : null;
   const recentTimeline = [...timeline].reverse().slice(0, 3);
   const discoveries = [...locations.slice(0, 3), ...characters.slice(0, 1)];
+
+  // Quellenlage: juengste datierte Primaerquelle, Umfang des offiziellen
+  // Registers und die ausgewiesene Herkunft der Kartenrekonstruktion.
+  const officialSources = allSources.filter((source) => source.tier === "offiziell");
+  const newestPrimary = officialSources
+    .filter((source) => source.publishedAt)
+    // Bei gleichem Datum bleibt die Reihenfolge des Quellenregisters erhalten,
+    // damit die Newswire-Meldung vor der Videoseite steht.
+    .sort((a, b) => b.publishedAt!.localeCompare(a.publishedAt!))[0];
+  const mapSource = allSources.find((source) => source.id === "src-state-of-leonida");
+  const checkedAt = [lead?.updatedAt, ...latest.map((a) => a.updatedAt)]
+    .filter(Boolean)
+    .sort()
+    .at(-1)!;
 
   return (
     <>
@@ -69,6 +85,12 @@ export default async function HomePage() {
         <Container width="wide">
           <div className="mt-6">
             <HeroStory article={lead} sourceLabel={leadSource?.publisher} />
+            <SourceDesk
+              checkedAt={checkedAt}
+              primary={newestPrimary}
+              officialCount={officialSources.length}
+              mapSource={mapSource}
+            />
           </div>
         </Container>
       ) : null}

@@ -10,6 +10,228 @@ import type { Article } from "@/lib/types";
  */
 export const articles: Article[] = [
   {
+    id: "art-extended-look",
+    slug: "extended-look-jetzt-verfuegbar",
+    motif: "skyline-sonnenuntergang",
+    title: "Der Extended Look ist da: Was Rockstar jetzt wirklich zeigt",
+    standfirst:
+      "Rockstar Games hat am 27. August einen neuen ausführlichen Blick auf Grand Theft Auto VI veröffentlicht. Wir trennen die neuen Bilder von dem, was daraus erst noch abgeleitet wird.",
+    summary:
+      "Der Extended Look erweitert den belegbaren Wissensstand zu Jason, Lucia und Leonida.",
+    category: "meldung",
+    author: "Redaktion Leonida Kurier",
+    publishedAt: "2026-08-27",
+    updatedAt: "2026-08-28",
+    status: "bestaetigt",
+    lead: true,
+    readingMinutes: 4,
+    demo: false,
+    sourceIds: [
+      "src-extended-look",
+      "src-extended-look-watch",
+      "src-rockstar-gta6",
+      "src-rockstar-screenshots",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        text: "Der neue Extended Look ist offizielles Rockstar-Material. Was darin klar gezeigt oder von Rockstar benannt wird, kann der Leonida Kurier als bestätigt führen. Interpretationen einzelner Einstellungen bleiben Hinweise, bis ein weiterer Beleg hinzukommt.",
+      },
+      { type: "heading", text: "Was sich sicher sagen lässt" },
+      {
+        type: "list",
+        items: [
+          "Rockstar veröffentlichte den Extended Look am 27. August 2026.",
+          "Rockstar kennzeichnet das Material vollständig als In-Game-Aufnahmen von PlayStation 5.",
+          "Die Veröffentlichung ist über Rockstars GTA-VI-Seite sowie den offiziellen YouTube-Kanal erreichbar.",
+          "Die offizielle Seite nennt weiterhin den 19. November 2026 für PlayStation 5 und Xbox Series X|S.",
+        ],
+      },
+      { type: "heading", text: "Vom Bild in die Datenbank" },
+      {
+        type: "paragraph",
+        text: "Orte, Figuren, Fahrzeuge und Geschäfte werden einzeln erfasst, mit dem offiziellen Material verknüpft und – wo möglich – der Community-Kartenrekonstruktion gegenübergestellt.",
+      },
+      {
+        type: "quote",
+        text: "Offizielles Bild bedeutet: Das Gezeigte existiert. Es bedeutet noch nicht automatisch, dass jede vermutete Funktion oder Kartenposition stimmt.",
+        attribution: "Redaktionsgrundsatz",
+      },
+    ],
+    facts: [
+      "Der Extended Look erschien am 27. August 2026.",
+      "Das gezeigte Material wurde laut Rockstar vollständig im Spiel auf PlayStation 5 aufgenommen.",
+      "Rockstar nennt den 19. November 2026 als Erscheinungstermin.",
+      "Offizielle Screenshots stehen im Rockstar-Medienbereich bereit.",
+    ],
+    assessment:
+      "Das Material ist die derzeit wichtigste Primärquelle. Detailanalysen müssen trotzdem zwischen sichtbarem Beleg und Interpretation unterscheiden.",
+    communityReaction:
+      "Die Mapping-Community gleicht neue Einstellungen bereits mit ihrer bestehenden Rekonstruktion ab. Diese Zuordnungen starten im Radar als Community-Hinweis.",
+    related: [
+      { type: "character", slug: "lucia-caminos" },
+      { type: "character", slug: "jason-duval" },
+      { type: "location", slug: "vice-city" },
+    ],
+  },
+  {
+    id: "art-community-karte",
+    slug: "die-community-karte-von-leonida",
+    motif: "inselkette",
+    title: "Leonida ist längst kartiert – nur noch nicht von Rockstar",
+    standfirst:
+      "Die GTA VI Mapping Community rekonstruiert Straßen, Inseln und Orte aus offiziellen Bildern. Der Kompass bindet diese Arbeit ein, ohne sie als endgültige Spielkarte auszugeben.",
+    summary:
+      "Einordnung der State-of-Leonida-Karte und der Beleglage dahinter.",
+    category: "hintergrund",
+    author: "Redaktion Leonida Kurier",
+    publishedAt: "2026-08-28",
+    updatedAt: "2026-08-28",
+    status: "hinweis",
+    readingMinutes: 5,
+    demo: false,
+    sourceIds: [
+      "src-state-of-leonida",
+      "src-gtaforums-mapping",
+      "src-mapping-discord",
+      "src-rockstar-screenshots",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        text: "Die vollständige offizielle Spielkarte ist noch nicht veröffentlicht. Trotzdem beginnt die Recherche nicht bei null: Die GTA VI Mapping Community rekonstruiert Leonida aus offiziellen Trailern, Screenshots, realen Vorbildern und räumlichen Vergleichen.",
+      },
+      { type: "heading", text: "Was State of Leonida leistet" },
+      {
+        type: "paragraph",
+        text: "State of Leonida macht diese Recherche interaktiv zugänglich. Die Karte zeigt Orte, Landmarken und Bildpositionen und verbindet sie mit Material sowie realen Vergleichspunkten. Sie ist eine Community-Arbeit und keine offizielle Rockstar-Veröffentlichung.",
+      },
+      {
+        type: "list",
+        items: [
+          "Offizielle Ortsnamen werden von rekonstruierten Positionen getrennt.",
+          "Neue Trailer und Screenshots verändern den Kartenstand fortlaufend.",
+          "Unsichere Flächen sind kein Beleg dafür, dass dort im Spiel nichts existiert.",
+        ],
+      },
+      { type: "heading", text: "Die Rolle des Leonida Kompass" },
+      {
+        type: "paragraph",
+        text: "Der Kurier kopiert die fremde Kartendatenbank nicht. Er stellt die Community-Karte mit sichtbarer Urhebernennung bereit und baut daneben eine eigene deutsche Quellen- und Erklärungsebene auf.",
+      },
+    ],
+    facts: [
+      "State of Leonida ist eine interaktive Karte der Mapping Community.",
+      "Die vollständige offizielle GTA-VI-Karte ist nicht veröffentlicht.",
+      "Die Rekonstruktion wird mit neuem offiziellen Material fortlaufend überarbeitet.",
+    ],
+    assessment:
+      "Die Community-Karte ist die beste verfügbare Arbeitsgrundlage, aber keine Primärquelle für die endgültige Geografie.",
+    communityReaction:
+      "Die Kartierung wird öffentlich im Mapping-Discord und in GTAForums diskutiert; einzelne Positionen besitzen unterschiedliche Belastbarkeit.",
+    related: [
+      { type: "region", slug: "leonida" },
+      { type: "location", slug: "leonida-keys" },
+      { type: "location", slug: "vice-city" },
+    ],
+  },
+  {
+    id: "art-offizielle-screenshots",
+    slug: "70-offizielle-screenshots",
+    motif: "kuestenstrasse",
+    title: "70 offizielle Screenshots: Die wichtigste Bildquelle für Leonida",
+    standfirst:
+      "Rockstars Medienbereich liefert überprüfbare Namen und Schauplätze. So wird aus Bildern eine belastbare Datenbasis.",
+    summary: "Wie offizielle Screenshots als Primärquelle ausgewertet werden.",
+    category: "analyse",
+    author: "Redaktion Leonida Kurier",
+    publishedAt: "2026-08-28",
+    updatedAt: "2026-08-28",
+    status: "bestaetigt",
+    readingMinutes: 3,
+    demo: false,
+    sourceIds: ["src-rockstar-screenshots", "src-rockstar-gta6"],
+    body: [
+      {
+        type: "paragraph",
+        text: "Rockstars offizieller Medienbereich führt derzeit 70 GTA-VI-Screenshots. Die Motive sind nach Figuren und Regionen benannt und bilden eine Primärquelle für die bereits vorgestellte Welt.",
+      },
+      { type: "heading", text: "Was ein Screenshot belegt" },
+      {
+        type: "list",
+        items: [
+          "Das offiziell benannte Motiv gehört zum veröffentlichten Material.",
+          "Sichtbare Gebäude, Fahrzeuge und Landschaften können beschrieben werden.",
+          "Eine exakte Kartenposition oder Spielmechanik folgt daraus nicht automatisch.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Jedes verwendete Bild erhält im Kurier eine sichtbare Bildquelle. Damit bleibt unterscheidbar, was Rockstar gezeigt hat und welche Einordnung von der Redaktion stammt.",
+      },
+    ],
+    facts: [
+      "Rockstars Screenshot-Bereich führt 70 Bilder.",
+      "Der Medienbereich bietet die Sammlung zum Download an.",
+    ],
+    assessment:
+      "Die Sammlung ist die beste visuelle Primärquelle vor Release, ersetzt aber keine offizielle Gesamtkarte.",
+    related: [
+      { type: "location", slug: "vice-city" },
+      { type: "location", slug: "grassrivers" },
+    ],
+  },
+  {
+    id: "art-vorbestellung",
+    slug: "vorbestellung-preis-release",
+    motif: "nachtviertel",
+    title: "Vorbestellung, Preis, Termin: Was offiziell bestätigt ist",
+    standfirst:
+      "Vorbestellungen laufen, der Termin steht bei November und Take-Two nennt den Preis der Standard Edition. Die Eckdaten ohne Händlergerüchte.",
+    summary:
+      "Die offiziellen Angaben zu Release, Plattformen, Vorbestellung und Editionen.",
+    category: "einordnung",
+    author: "Redaktion Leonida Kurier",
+    publishedAt: "2026-06-24",
+    updatedAt: "2026-08-28",
+    status: "bestaetigt",
+    readingMinutes: 4,
+    demo: false,
+    sourceIds: [
+      "src-preorder-newswire",
+      "src-taketwo-preorder",
+      "src-rockstar-gta6",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        text: "Rockstar Games und Take-Two haben die Vorbestellung offiziell angekündigt. Damit lassen sich Termin, Plattformen und Editionen aus Primärquellen berichten, ohne auf Shop-Leaks zurückzugreifen.",
+      },
+      { type: "heading", text: "Die bestätigten Eckdaten" },
+      {
+        type: "list",
+        items: [
+          "Veröffentlichung: 19. November 2026.",
+          "Plattformen: PlayStation 5 und Xbox Series X|S.",
+          "Standard Edition: 79,99 US-Dollar laut Take-Two.",
+          "Vorbestellungen starteten am 25. Juni 2026.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Regionale Preise und Händlerangebote können abweichen. Nicht angekündigte Plattformen oder Editionen bleiben unbestätigt.",
+      },
+    ],
+    facts: [
+      "Release am 19. November 2026.",
+      "Bestätigt für PlayStation 5 und Xbox Series X|S.",
+      "79,99 US-Dollar für die Standard Edition laut Take-Two.",
+    ],
+    assessment:
+      "Die Eckdaten sind offiziell; weitere Plattformbehauptungen sind es nicht.",
+    related: [{ type: "region", slug: "leonida" }],
+  },
+  {
     id: "art-leonida-gesichert",
     slug: "was-ueber-leonida-gesichert-ist",
     motif: "skyline-sonnenuntergang",
@@ -23,7 +245,6 @@ export const articles: Article[] = [
     publishedAt: "2026-08-20",
     updatedAt: "2026-08-20",
     status: "bestaetigt",
-    lead: true,
     demo: true,
     readingMinutes: 4,
     sourceIds: ["src-rockstar-gta6", "src-trailer-1", "src-trailer-2"],

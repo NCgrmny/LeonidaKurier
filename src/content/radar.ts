@@ -35,14 +35,40 @@ export const radarSignals: RadarSignal[] = [
     related: [{ type: "character", slug: "lucia-caminos" }],
   },
   {
+    id: "sig-extended-look",
+    title: "Extended Look offiziell veröffentlicht",
+    summary:
+      "Rockstar Games hat das neue Langformat am 27. August veröffentlicht. Gezeigte Inhalte werden nun einzeln in Kurier, Datenbank und Kompass ausgewertet.",
+    status: "bestaetigt",
+    channel: "Rockstar Newswire",
+    observedAt: "2026-08-27",
+    sourceIds: ["src-extended-look", "src-extended-look-watch"],
+    related: [{ type: "article", slug: "extended-look-jetzt-verfuegbar" }],
+  },
+  {
+    id: "sig-vorbestellung",
+    title: "Vorbestellung und Release bestätigt",
+    summary:
+      "Rockstar und Take-Two nennen den 19. November 2026, PlayStation 5 und Xbox Series X|S sowie 79,99 US-Dollar für die Standard Edition.",
+    status: "bestaetigt",
+    channel: "Rockstar / Take-Two",
+    observedAt: "2026-06-24",
+    sourceIds: ["src-preorder-newswire", "src-taketwo-preorder"],
+    related: [{ type: "article", slug: "vorbestellung-preis-release" }],
+  },
+  {
     id: "sig-kartenrekonstruktion",
     title: "Community-Kartenrekonstruktionen gewinnen an Reichweite",
     summary:
-      "Mapping-Projekte veröffentlichen laufend Entwürfe der Spielwelt, die aus Trailermaterial abgeleitet sind. Als Recherchehinweis relevant, als Beleg nicht belastbar.",
+      "State of Leonida und die GTA VI Mapping Community aktualisieren ihre Rekonstruktion mit neuem offiziellen Material. Die Karte ist relevant, aber nicht offiziell.",
     status: "hinweis",
     channel: "Community-Mapping",
-    observedAt: "2026-08-12",
-    sourceIds: ["src-community-signal"],
+    observedAt: "2026-08-28",
+    sourceIds: [
+      "src-state-of-leonida",
+      "src-gtaforums-mapping",
+      "src-mapping-discord",
+    ],
     demo: true,
     related: [{ type: "theory", slug: "wie-gross-wird-leonida" }],
   },
