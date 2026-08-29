@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { SITE } from "@/lib/site";
+import { activeProgrammes } from "@/lib/partners";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -11,6 +12,8 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function RechtlichesPage() {
+  const programmes = activeProgrammes();
+
   return (
     <Container width="narrow">
       <div className="py-12 sm:py-16">
@@ -43,6 +46,31 @@ export default function RechtlichesPage() {
             Status jeder Information ist auf der Plattform ausgewiesen. Für Vollständigkeit
             und Richtigkeit kann keine Gewähr übernommen werden.
           </p>
+
+          <h2>Werbung und Provisionslinks</h2>
+          {programmes.length > 0 ? (
+            <>
+              <p>
+                Diese Plattform verwendet Provisionslinks. Wird über einen solchen Link
+                gekauft, erhält der Leonida Kurier eine Provision vom Händler. Der Preis
+                ändert sich dadurch nicht. Beteiligt sind derzeit:{" "}
+                {programmes.join(", ")}.
+              </p>
+              <p>
+                Jeder betroffene Link ist unmittelbar mit dem Wort „Provisionslink“
+                gekennzeichnet und trägt das Attribut <code>rel=&quot;sponsored&quot;</code>.
+                Welche Bezugsquelle aufgeführt wird, entscheidet die Redaktion. Die Höhe
+                einer Provision hat auf Auswahl, Reihenfolge und Bewertung keinen
+                Einfluss, und redaktionelle Beiträge werden nicht danach ausgerichtet.
+              </p>
+            </>
+          ) : (
+            <p>
+              Diese Plattform verwendet derzeit keine Provisionslinks. Sollten künftig
+              welche hinzukommen, werden sie unmittelbar am Link mit dem Wort
+              „Provisionslink“ gekennzeichnet und hier offengelegt.
+            </p>
+          )}
 
           <h2>Betrieb</h2>
           <p>
