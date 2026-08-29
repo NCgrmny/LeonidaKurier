@@ -62,7 +62,9 @@ export function Bezugsquellen({ compact = false }: { compact?: boolean }) {
                 </span>
               ) : null}
             </span>
-            <span className="meta shrink-0">
+            {/* Kein shrink-0: Auf schmalen Viewports muss die Plattformzeile
+                umbrechen duerfen, sonst schiebt sie die Seite auf. */}
+            <span className="meta">
               {offer.edition} · {offer.platform}
             </span>
           </li>

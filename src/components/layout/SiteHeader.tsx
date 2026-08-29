@@ -54,6 +54,32 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Suche als Symbol: nimmt in der Leiste keinen Platz, fuehrt aber
+                auf eine vollwertige Seite und funktioniert ohne JavaScript. */}
+            <Link
+              href="/suche"
+              aria-label="Suche"
+              title="Suche"
+              className="inline-flex size-9 items-center justify-center border border-ink-900/25 text-ink-900 transition-colors hover:border-coral-500 hover:text-coral-600"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true" className="size-4">
+                <circle
+                  cx="8.5"
+                  cy="8.5"
+                  r="5.25"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.9"
+                />
+                <path
+                  d="M12.6 12.6 17 17"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.9"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </Link>
             <Link
               href="/kompass"
               className="hidden bg-night-900 px-3.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-paper-100 transition-colors hover:bg-lagoon-700 sm:inline-block"
