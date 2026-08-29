@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { SITE } from "@/lib/site";
 import { activeProgrammes } from "@/lib/partners";
@@ -74,9 +75,10 @@ export default function RechtlichesPage() {
 
           <h2>Betrieb</h2>
           <p>
-            Betrieben wird das Projekt von {SITE.operator}. Ein vollständiges Impressum
-            sowie eine Datenschutzerklärung nach den geltenden Vorgaben werden vor dem
-            öffentlichen Start ergänzt.
+            Betrieben wird das Projekt von {SITE.operator}. Die Anbieterkennzeichnung
+            steht im <Link href="/impressum">Impressum</Link>, der Umgang mit
+            personenbezogenen Daten in der{" "}
+            <Link href="/datenschutz">Datenschutzerklärung</Link>.
           </p>
         </div>
       </div>

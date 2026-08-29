@@ -88,5 +88,7 @@ export const MAIN_NAV: NavItem[] = [
 export const FOOTER_LINKS: { href: string; label: string }[] = [
   { href: "/kaufen", label: "GTA 6 kaufen" },
   { href: "/redaktion", label: "Redaktion & Standards" },
+  { href: "/impressum", label: "Impressum" },
+  { href: "/datenschutz", label: "Datenschutz" },
   { href: "/rechtliches", label: "Rechtliches" },
 ];
