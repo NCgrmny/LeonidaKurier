@@ -22,6 +22,28 @@ export const SITE_URL =
 export const COMPASS_HOST =
   process.env.NEXT_PUBLIC_COMPASS_HOST ?? "leonidakompass.de";
 
+/**
+ * Erscheinungstermin von Grand Theft Auto VI.
+ *
+ * Rockstar Games nennt den 19. November 2026 fuer PlayStation 5 und
+ * Xbox Series X|S. In Deutschland faellt der Start auf Mitternacht in der
+ * Nacht vom 18. auf den 19. November; der Vorabdownload ist ab dem
+ * 12. November moeglich. Die Angaben stehen an genau dieser Stelle, damit
+ * Countdown, Meldungen und Datenbank denselben Wert benutzen.
+ */
+export const RELEASE = {
+  /** Mitternacht deutscher Zeit (MEZ, UTC+1) zum 19. November 2026. */
+  isoUtc: "2026-11-18T23:00:00.000Z",
+  labelDe: "19. November 2026",
+  midnightNote:
+    "In Deutschland ab Mitternacht in der Nacht vom 18. auf den 19. November.",
+  preloadLabelDe: "12. November 2026",
+  platforms: ["PlayStation 5", "Xbox Series X|S"],
+  priceEur: "79,99 €",
+  priceUsd: "79,99 US-Dollar",
+  sourceIds: ["src-rockstar-gta6", "src-preorder-newswire", "src-taketwo-preorder"],
+} as const;
+
 export interface NavItem {
   href: string;
   label: string;

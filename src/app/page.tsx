@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Masthead } from "@/components/kurier/Masthead";
 import { BriefItem, HeroStory, StoryCard } from "@/components/kurier/ArticleCard";
 import { SourceDesk } from "@/components/kurier/SourceDesk";
+import { ReleaseCountdown } from "@/components/kurier/ReleaseCountdown";
 import { RadarTicker } from "@/components/radar/RadarTicker";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import { BaseMap } from "@/components/kompass/BaseMap";
@@ -71,6 +72,13 @@ export default async function HomePage() {
       {/* ================= Zeitungskopf ================= */}
       <Container width="wide">
         <Masthead editionDate={lead?.publishedAt ?? new Date().toISOString()} />
+      </Container>
+
+      {/* ================= Countdown ================= */}
+      <Container width="wide">
+        <div className="mt-4">
+          <ReleaseCountdown />
+        </div>
       </Container>
 
       {/* ================= Radar-Laufstreifen ================= */}
