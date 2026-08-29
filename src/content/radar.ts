@@ -57,6 +57,28 @@ export const radarSignals: RadarSignal[] = [
     related: [{ type: "article", slug: "vorbestellung-preis-release" }],
   },
   {
+    id: "sig-bildrate",
+    title: "30 Bilder pro Sekunde auf Konsole",
+    summary:
+      "Eine technische Analyse misst am offiziellen Material rund 30 Bilder pro Sekunde; ein Rockstar-Entwickler nennt gegenueber der Presse denselben Wert. Ein 60-Bild-Modus ist nicht angekuendigt.",
+    status: "wahrscheinlich",
+    channel: "Fachpresse / Digital Foundry",
+    observedAt: "2026-08-28",
+    sourceIds: ["src-presse-30fps", "src-digital-foundry"],
+    related: [{ type: "article", slug: "dreissig-bilder-pro-sekunde" }],
+  },
+  {
+    id: "sig-unautorisierte-videos",
+    title: "Unautorisierte Spielaufnahmen kursieren",
+    summary:
+      "Rockstar Games hat am 26. August die Echtheit verbreiteter Aufnahmen eingeraeumt; Take-Two hat Auskunftsersuchen eingereicht. Der Vorgang wird berichtet, das Material wird hier nicht gezeigt und nicht als Quelle gefuehrt.",
+    status: "bestaetigt",
+    channel: "Rockstar Games",
+    observedAt: "2026-08-26",
+    sourceIds: ["src-rockstar-leak-statement", "src-presse-leaks"],
+    related: [{ type: "article", slug: "warum-hier-keine-leaks-stehen" }],
+  },
+  {
     id: "sig-kartenrekonstruktion",
     title: "Community-Kartenrekonstruktionen gewinnen an Reichweite",
     summary:

@@ -10,6 +10,210 @@ import type { Article } from "@/lib/types";
  */
 export const articles: Article[] = [
   {
+    id: "art-was-der-extended-look-zeigt",
+    slug: "was-der-extended-look-zeigt",
+    motif: "nachtviertel",
+    title: "26 Minuten Leonida: Was Rockstar im Extended Look tatsächlich zeigt",
+    standfirst:
+      "Figurenwechsel mitten im Auftrag, Autos, die aufgebrochen werden müssen, ein Überfall auf ein Waffelhaus. Eine Auswertung dessen, was im offiziellen Material sichtbar ist – und was daraus noch nicht folgt.",
+    summary:
+      "Auswertung der im offiziellen Extended Look gezeigten Spielmechaniken und Schauplätze.",
+    category: "analyse",
+    author: "Redaktion Leonida Kurier",
+    publishedAt: "2026-08-29",
+    updatedAt: "2026-08-29",
+    status: "bestaetigt",
+    lead: true,
+    demo: false,
+    readingMinutes: 6,
+    sourceIds: [
+      "src-extended-look",
+      "src-extended-look-watch",
+      "src-rockstar-gta6",
+      "src-digital-foundry",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        text: "Rund 26 Minuten lang zeigt Rockstar Games im Extended Look zusammenhängendes Spielmaterial. Die Premiere lief am 27. August auf Netflix, wenige Stunden später folgte der offizielle YouTube-Kanal. Rockstar weist das Material vollständig als Aufnahmen aus dem laufenden Spiel auf einer PlayStation 5 aus. Was darin zu sehen ist, kann der Kurier deshalb beschreiben. Was daraus über das fertige Spiel folgt, ist eine andere Frage.",
+      },
+      { type: "heading", text: "Zwei Figuren, ein Auftrag" },
+      {
+        type: "paragraph",
+        text: "Der auffälligste Eingriff in die bekannte Formel ist der Figurenwechsel innerhalb einer laufenden Mission. Jason und Lucia übernehmen unterschiedliche Teile derselben Situation; das Material zeigt einen Auftrag, der schiefgeht und in eine Schießerei übergeht. Deckung, Waffenverhalten und das Zusammenspiel der beiden werden dabei über mehrere Minuten am Stück gezeigt, nicht in Schnittfolgen.",
+      },
+      {
+        type: "paragraph",
+        text: "Auffällig ist außerdem, wie viel Zeit auf die Beziehung der beiden außerhalb von Aufträgen verwendet wird. Das ist eine Setzung, keine Mechanik – aber es ist die Setzung, die Rockstar in einer 26-minütigen Präsentation für wichtig genug gehalten hat.",
+      },
+      { type: "heading", text: "Was am Rand sichtbar wird" },
+      {
+        type: "list",
+        items: [
+          "Fahrzeuge werden aufgebrochen und kurzgeschlossen, statt sich wie bisher unmittelbar öffnen zu lassen.",
+          "Gezeigt werden kleine Überfälle – auf eine Tankstelle und auf ein Waffelrestaurant – neben den größeren Aufträgen der Geschichte.",
+          "Aktivitäten abseits der Handlung sind sichtbar, unter anderem Training im Fitnessstudio.",
+          "Passanten reagieren erkennbar auf Geschehen in ihrer Umgebung; das Material zeigt Verfolgungsfahrten, die Menschen ausweichen.",
+        ],
+      },
+      { type: "heading", text: "Wo die Auswertung aufhört" },
+      {
+        type: "paragraph",
+        text: "Ein gezeigter Vorgang belegt, dass es ihn gibt – nicht, wie er im fertigen Spiel funktioniert, wie oft er vorkommt oder ob er überall möglich ist. Ein Überfall auf ein Waffelrestaurant belegt einen Überfall auf ein Waffelrestaurant. Ob sich beliebige Geschäfte überfallen lassen, steht damit nicht fest. Solche Ableitungen führt der Kurier als Hinweis, nicht als Fakt.",
+      },
+      {
+        type: "quote",
+        text: "Präsentationsmaterial ist ausgewählt. Es zeigt, was funktioniert – nicht notwendigerweise, was üblich ist.",
+        attribution: "Redaktionsgrundsatz",
+      },
+    ],
+    facts: [
+      "Der Extended Look ist rund 26 Minuten lang.",
+      "Die Premiere lief am 27. August 2026 auf Netflix, danach auf dem offiziellen YouTube-Kanal.",
+      "Rockstar Games weist das Material als In-Game-Aufnahmen von einer PlayStation 5 aus.",
+      "Gezeigt werden unter anderem Figurenwechsel innerhalb einer Mission und das Aufbrechen von Fahrzeugen.",
+    ],
+    assessment:
+      "Der Extended Look ist die bislang aussagekräftigste offizielle Quelle zum Spielablauf. Er zeigt Mechaniken im Zusammenhang statt in Schnitten – bleibt aber ausgewähltes Präsentationsmaterial.",
+    communityReaction:
+      "In der Community werden einzelne Einstellungen bereits auf Kartenpositionen und Geschäftsmodelle hin ausgelegt. Solche Zuordnungen laufen im Radar als Hinweis, bis ein zweiter Beleg hinzukommt.",
+    related: [
+      { type: "character", slug: "lucia-caminos" },
+      { type: "character", slug: "jason-duval" },
+      { type: "location", slug: "vice-city" },
+      { type: "vehicle", slug: "airboat" },
+    ],
+  },
+  {
+    id: "art-bildrate",
+    slug: "dreissig-bilder-pro-sekunde",
+    motif: "kuestenstrasse",
+    title: "30 Bilder pro Sekunde: Was belegt ist und was nicht",
+    standfirst:
+      "Ein Rockstar-Entwickler nennt die Bildrate, eine technische Analyse misst sie nach – und ein 60-Bild-Modus bleibt trotzdem unbestätigt. Ein Faktencheck an einem Beispiel, an dem sich die fünf Statusstufen gut zeigen lassen.",
+    summary:
+      "Faktencheck zur Bildrate von Grand Theft Auto VI auf PlayStation 5 und Xbox Series X|S.",
+    category: "faktencheck",
+    author: "Redaktion Leonida Kurier",
+    publishedAt: "2026-08-29",
+    updatedAt: "2026-08-29",
+    status: "wahrscheinlich",
+    demo: false,
+    readingMinutes: 4,
+    sourceIds: [
+      "src-presse-30fps",
+      "src-digital-foundry",
+      "src-extended-look-watch",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        text: "Seit dem Extended Look kursiert eine Zahl: 30. Sie stimmt vermutlich – aber sie ist unterschiedlich gut belegt, je nachdem, worauf man sie bezieht. Genau dafür gibt es auf dieser Seite fünf Statusstufen.",
+      },
+      { type: "heading", text: "Was gemessen wurde" },
+      {
+        type: "paragraph",
+        text: "Die technische Analyse von Digital Foundry beschreibt das veröffentlichte Material als weitgehend stabile Ausgabe mit 30 Bildern pro Sekunde und nur vereinzelten Einbrüchen. Das ist eine Messung am offiziellen Video, nicht am fertigen Spiel – aber sie ist überprüfbar, weil jede und jeder dasselbe Video ansehen kann.",
+      },
+      { type: "heading", text: "Was gesagt wurde" },
+      {
+        type: "paragraph",
+        text: "Rob Nelson, Entwicklungsleiter bei Rockstar North, hat gegenüber einem Videoproduzenten erklärt, das Spiel laufe auf Konsole derzeit mit 30 Bildern pro Sekunde. Das ist eine Aussage aus dem Studio – sie ist aber über die Fachpresse überliefert und steht nicht auf einem offiziellen Rockstar-Kanal. Deshalb führt der Kurier den Punkt als wahrscheinlich und nicht als bestätigt.",
+      },
+      { type: "heading", text: "Was niemand gesagt hat" },
+      {
+        type: "paragraph",
+        text: "Ein nachgereichter Modus mit 60 Bildern pro Sekunde ist nicht angekündigt. Es gibt Einschätzungen von Analysten, dass er auf aktueller Konsolenhardware schwer zu erreichen wäre. Eine Einschätzung ist kein Beleg – weder für noch gegen. Der Punkt bleibt Spekulation, bis Rockstar sich äußert.",
+      },
+      {
+        type: "list",
+        items: [
+          "Das veröffentlichte Video läuft mit rund 30 Bildern pro Sekunde – gemessen, überprüfbar.",
+          "Das Spiel läuft laut einem Rockstar-Entwickler derzeit mit 30 Bildern pro Sekunde auf Konsole – überliefert, plausibel, nicht offiziell veröffentlicht.",
+          "Ein 60-Bild-Modus nach Erscheinen – unbelegt.",
+        ],
+      },
+    ],
+    facts: [
+      "Digital Foundry misst am offiziellen Material eine weitgehend stabile Ausgabe mit 30 Bildern pro Sekunde.",
+      "Rob Nelson von Rockstar North nennt gegenüber der Presse 30 Bilder pro Sekunde für die Konsolenfassung.",
+      "Ein Modus mit 60 Bildern pro Sekunde ist von Rockstar Games nicht angekündigt.",
+    ],
+    assessment:
+      "Die Bildrate des gezeigten Materials ist überprüfbar. Die Aussage über das fertige Spiel stammt aus zweiter Hand und bleibt deshalb eine Stufe unterhalb von „bestätigt“.",
+    related: [{ type: "article", slug: "was-der-extended-look-zeigt" }],
+  },
+  {
+    id: "art-keine-leaks",
+    slug: "warum-hier-keine-leaks-stehen",
+    motif: "sumpfland",
+    title: "Warum hier keine Leaks stehen, obwohl sie echt sind",
+    standfirst:
+      "Rockstar Games hat die Echtheit der kursierenden Aufnahmen bestätigt. Für den Leonida Kurier ändert das nichts – und der Grund ist nicht nur rechtlicher Natur.",
+    summary:
+      "Die redaktionelle Haltung des Leonida Kurier zu unautorisiert verbreitetem Material.",
+    category: "einordnung",
+    author: "Redaktion Leonida Kurier",
+    publishedAt: "2026-08-29",
+    updatedAt: "2026-08-29",
+    status: "bestaetigt",
+    demo: false,
+    readingMinutes: 4,
+    sourceIds: [
+      "src-rockstar-leak-statement",
+      "src-presse-leaks",
+      "src-redaktion",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        text: "Im August 2026 sind über mehr als eine Woche hinweg unautorisierte Spielaufnahmen zu Grand Theft Auto VI verbreitet worden. Am 26. August hat Rockstar Games sich dazu geäußert, die Echtheit des Materials eingeräumt und es als „heartbreaking for our team“ bezeichnet. Take-Two hat vor einem Bundesgericht Auskunftsersuchen gegen Microsoft und Discord eingereicht, um die Herkunft zu klären.",
+      },
+      {
+        type: "paragraph",
+        text: "Damit ist eine Frage entschieden, die vorher offen war: Das Material ist nicht gefälscht. Für die Arbeit dieser Seite ändert das trotzdem nichts.",
+      },
+      { type: "heading", text: "Was der Kurier nicht tut" },
+      {
+        type: "list",
+        items: [
+          "Kein Hosten unautorisierter Dateien, Videos oder Bilder.",
+          "Keine Verlinkung auf Seiten, die solches Material bereitstellen.",
+          "Keine Nacherzählung von Handlungsinhalten aus unautorisiertem Material.",
+          "Keine Aufnahme in die Datenbank, auch nicht mit einem niedrigen Status.",
+        ],
+      },
+      { type: "heading", text: "Warum nicht" },
+      {
+        type: "paragraph",
+        text: "Der offensichtliche Grund ist der rechtliche: Es ist fremdes, unautorisiert verbreitetes Material. Der zweite Grund wiegt für ein Angebot wie dieses schwerer. Der Leonida Kurier hat genau eine Zusage – dass bei jeder Information dransteht, wie gut sie belegt ist. Unautorisiertes Material lässt sich nicht prüfen: Es ist nicht datierbar, sein Stand ist unbekannt, und was daraus als Ausschnitt kursiert, ist von niemandem verantwortet. Es als Beleg zu führen, hieße, die eigene Zusage aufzugeben.",
+      },
+      {
+        type: "paragraph",
+        text: "Dass Rockstar die Echtheit bestätigt hat, macht daraus keine Primärquelle. Echt heißt: Es stammt aus dem Spiel. Es heißt nicht: Es zeigt den fertigen Stand, es ist vollständig, oder es ist so gemeint.",
+      },
+      { type: "heading", text: "Was der Kurier stattdessen tut" },
+      {
+        type: "paragraph",
+        text: "Über den Vorgang berichten – so wie hier. Dass unautorisiertes Material kursiert, ist eine überprüfbare Tatsache mit einer offiziellen Stellungnahme dazu. Der Vorgang gehört ins Radar. Sein Inhalt nicht.",
+      },
+      {
+        type: "quote",
+        text: "Echtheit und Belegbarkeit sind nicht dasselbe. Wir arbeiten mit dem Zweiten.",
+        attribution: "Redaktionsgrundsatz",
+      },
+    ],
+    facts: [
+      "Rockstar Games hat sich am 26. August 2026 zu den unautorisierten Aufnahmen geäußert.",
+      "Rockstar hat dabei eingeräumt, dass das Material echt ist.",
+      "Take-Two Interactive hat Auskunftsersuchen gegen Microsoft und Discord eingereicht.",
+      "Der Extended Look erschien einen Tag nach der Stellungnahme, am 27. August 2026.",
+    ],
+    assessment:
+      "Der Vorgang ist berichtenswert, sein Inhalt ist als Quelle unbrauchbar. Diese Trennung ist keine Vorsicht, sondern die Bedingung dafür, dass der Status neben einer Information überhaupt etwas bedeutet.",
+    related: [{ type: "article", slug: "die-community-karte-von-leonida" }],
+  },
+  {
     id: "art-extended-look",
     slug: "extended-look-jetzt-verfuegbar",
     motif: "skyline-sonnenuntergang",
@@ -23,7 +227,6 @@ export const articles: Article[] = [
     publishedAt: "2026-08-27",
     updatedAt: "2026-08-28",
     status: "bestaetigt",
-    lead: true,
     readingMinutes: 4,
     demo: false,
     sourceIds: [
@@ -351,115 +554,5 @@ export const articles: Article[] = [
       { type: "character", slug: "jason-duval" },
       { type: "location", slug: "leonida-keys" },
     ],
-  },
-  {
-    id: "art-kartenumfang",
-    slug: "wie-gross-wird-leonida",
-    motif: "kuestenstrasse",
-    title: "Wie groß wird Leonida?",
-    standfirst:
-      "Die meistdiskutierte Frage der Community lässt sich derzeit nicht beantworten. Warum die kursierenden Zahlen keine Grundlage haben.",
-    summary:
-      "Einordnung der Community-Schätzungen zur Größe der Spielwelt – und warum sie den Status „Spekulation“ tragen.",
-    category: "faktencheck",
-    author: "Redaktion Leonida Kurier",
-    publishedAt: "2026-08-14",
-    updatedAt: "2026-08-14",
-    status: "spekulation",
-    demo: true,
-    readingMinutes: 3,
-    sourceIds: ["src-community-signal", "src-redaktion", "src-rockstar-gta6"],
-    body: [
-      {
-        type: "paragraph",
-        text: "Kaum eine Frage wird häufiger gestellt: Wie groß ist die Spielwelt von Grand Theft Auto VI? In Umlauf sind konkrete Flächenangaben in Quadratkilometern. Belegt ist keine davon.",
-      },
-      { type: "heading", text: "Woher die Zahlen stammen" },
-      {
-        type: "paragraph",
-        text: "Die kursierenden Werte entstehen, indem Bildausschnitte aus Trailern mit bekannten Größen aus früheren Titeln verglichen werden. Das Verfahren setzt voraus, dass Brennweite, Perspektive und Maßstab bekannt sind – bei geschnittenem Marketingmaterial ist das nicht der Fall.",
-      },
-      {
-        type: "list",
-        items: [
-          "Rockstar Games hat keine Flächenangabe veröffentlicht.",
-          "Take-Two hat sich zum Umfang der Spielwelt nicht geäußert.",
-          "Die kursierenden Zahlen stammen aus Community-Rekonstruktionen.",
-        ],
-      },
-      {
-        type: "paragraph",
-        text: "Der Leonida Kurier führt die Frage deshalb als Theorie mit dem Status „Spekulation“. Sobald eine belastbare Angabe vorliegt, wird der Status im Radar geändert – nachvollziehbar und mit Datum.",
-      },
-    ],
-    facts: [
-      "Zur Fläche der Spielwelt existiert keine offizielle Angabe.",
-      "Die verbreiteten Zahlen beruhen auf Community-Rekonstruktionen aus Trailermaterial.",
-    ],
-    assessment:
-      "Solange keine Primärquelle eine Größenangabe macht, ist jede Zahl eine Schätzung. Der Status bleibt „Spekulation“.",
-    communityReaction:
-      "Das Thema erzeugt dauerhaft hohes Aufkommen auf Reddit und X. Die Redaktion wertet das als Interessenssignal, nicht als Bestätigung.",
-    related: [
-      { type: "theory", slug: "wie-gross-wird-leonida" },
-      { type: "region", slug: "leonida" },
-    ],
-  },
-  {
-    id: "art-standards",
-    slug: "wie-der-kurier-arbeitet",
-    motif: "sumpfland",
-    title: "Wie der Kurier arbeitet",
-    standfirst:
-      "Fünf Statusstufen, verlinkte Quellen, keine gespiegelten Fremdinhalte: Die redaktionellen Regeln dieser Plattform, offengelegt.",
-    summary:
-      "Die redaktionellen Standards des Leonida Kurier: Statusstufen, Umgang mit Quellen und Grenzen der Automatisierung.",
-    category: "hintergrund",
-    author: "Redaktion Leonida Kurier",
-    publishedAt: "2026-08-10",
-    updatedAt: "2026-08-10",
-    status: "bestaetigt",
-    demo: true,
-    readingMinutes: 3,
-    sourceIds: ["src-redaktion"],
-    body: [
-      {
-        type: "paragraph",
-        text: "Diese Plattform ist ein unabhängiges Fanprojekt. Sie hat keinen Zugang zu Rockstar Games und behauptet auch keinen. Was sie leisten kann, ist Ordnung: Jede Information bekommt einen Status, eine Quelle und ein Datum.",
-      },
-      { type: "heading", text: "Die fünf Statusstufen" },
-      {
-        type: "list",
-        items: [
-          "Bestätigt – offiziell bestätigt oder eindeutig gezeigt.",
-          "Wahrscheinlich – mehrere belastbare Hinweise, keine Bestätigung.",
-          "Hinweis – interessanter Fund, nicht ausreichend belegt.",
-          "Spekulation – Community-Theorie oder Interpretation.",
-          "Widerlegt – frühere Annahme hat sich erledigt.",
-        ],
-      },
-      { type: "heading", text: "Umgang mit Community-Quellen" },
-      {
-        type: "paragraph",
-        text: "Reddit, X und YouTube sind Signalquellen. Wenn dort ein Thema auffällig an Aufkommen gewinnt, landet es im Radar – als Beobachtung, nicht als Meldung. Erst nach der Quellenprüfung entsteht daraus ein Beitrag.",
-      },
-      {
-        type: "paragraph",
-        text: "Fremde Artikel und Community-Beiträge werden nicht gespiegelt, sondern verlinkt und eingeordnet. Geleaktes Material wird nicht gehostet und nicht ausgewertet.",
-      },
-      { type: "heading", text: "Grenzen der Automatisierung" },
-      {
-        type: "paragraph",
-        text: "Automatisierte Verfahren dürfen Signale sortieren und zusammenfassen. Sie dürfen keine unbelegte Behauptung als Fakt veröffentlichen. Jede Veröffentlichung wird redaktionell freigegeben.",
-      },
-    ],
-    facts: [
-      "Jede Information erhält einen von fünf Statuswerten.",
-      "Community-Plattformen gelten als Signalquelle, nicht als Beleg.",
-      "Automatisierte Entwürfe werden vor Veröffentlichung redaktionell freigegeben.",
-    ],
-    assessment:
-      "Die Statuslogik ist der Kern des Angebots. Sie macht sichtbar, wie belastbar eine Information ist – auch dann, wenn die Antwort „wissen wir nicht“ lautet.",
-    related: [{ type: "article", slug: "was-ueber-leonida-gesichert-ist" }],
   },
 ];
