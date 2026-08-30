@@ -1,12 +1,15 @@
 import type { Article } from "@/lib/types";
 
 /**
- * Redaktioneller Seed-Bestand.
+ * Redaktioneller Bestand.
  *
- * Alle Beiträge sind als `demo: true` markiert und werden in der Oberfläche
- * sichtbar als Beispielinhalt ausgewiesen. Inhaltlich beschränken sie sich auf
- * öffentlich belegte Aussagen und auf die Darstellung der eigenen Arbeitsweise
- * – es werden bewusst keine unbelegten Behauptungen aufgestellt.
+ * Jeder Beitrag trägt ausdrücklich `demo: false` – ein Test erzwingt, dass das
+ * Feld gesetzt ist, damit ein Platzhalter nie unbemerkt als Meldung gelesen
+ * wird. Derzeit gibt es keine Platzhalter mehr: Alle Beiträge sind
+ * recherchiert und über `sourceIds` an konkrete Quellen gebunden.
+ *
+ * Grundsatz bleibt, dass nur öffentlich belegte Aussagen aufgenommen werden.
+ * Unautorisiert verbreitetes Material wird weder ausgewertet noch verlinkt.
  */
 export const articles: Article[] = [
   {
@@ -448,121 +451,173 @@ export const articles: Article[] = [
     id: "art-leonida-gesichert",
     slug: "was-ueber-leonida-gesichert-ist",
     motif: "skyline-sonnenuntergang",
-    title: "Sechs Namen, ein Bundesstaat: Was über Leonida gesichert ist",
+    title: "Der Stand der Dinge: Was über Leonida wirklich belegt ist",
     standfirst:
-      "Rockstar Games hat den Schauplatz von Grand Theft Auto VI benannt – mehr aber auch nicht. Eine Bestandsaufnahme dessen, was tatsächlich belegt ist.",
+      "Sechs Gebiete, elf vorgestellte Figuren, ein Termin. Eine Bestandsaufnahme dessen, was Rockstar Games selbst gesagt hat – und wo die Beleglage endet.",
     summary:
-      "Bestandsaufnahme der offiziell bestätigten Schauplätze und Hauptfiguren von Grand Theft Auto VI – und der Grenzen dieses Wissensstands.",
+      "Alle offiziell bestätigten Gebiete, Figuren und Eckdaten zu Grand Theft Auto VI auf einen Blick.",
     category: "analyse",
     author: "Redaktion Leonida Kurier",
     publishedAt: "2026-08-20",
-    updatedAt: "2026-08-20",
+    updatedAt: "2026-08-30",
     status: "bestaetigt",
-    demo: true,
-    readingMinutes: 4,
-    sourceIds: ["src-rockstar-gta6", "src-trailer-1", "src-trailer-2"],
+    demo: false,
+    readingMinutes: 6,
+    sourceIds: [
+      "src-rockstar-gta6",
+      "src-rockstar-regionen",
+      "src-rockstar-charaktere",
+      "src-rockstar-screenshots",
+      "src-extended-look",
+    ],
     body: [
       {
         type: "paragraph",
-        text: "Der Bundesstaat Leonida ist der Schauplatz von Grand Theft Auto VI. Das ist keine Community-Interpretation, sondern eine Aussage, die Rockstar Games selbst getroffen hat – auf der offiziellen Seite zum Spiel und im ersten Trailer. Für eine Plattform, die zwischen Beleg und Vermutung unterscheiden will, ist genau diese Trennlinie der Ausgangspunkt.",
+        text: "Über Grand Theft Auto VI wird viel geschrieben. Belegt ist davon ein überschaubarer Teil – aber er ist inzwischen deutlich größer als noch vor einem Jahr. Diese Bestandsaufnahme führt nur auf, was Rockstar Games selbst veröffentlicht hat: auf der offiziellen Seite, in den Trailern, im Extended Look und in den offiziellen Figurenprofilen.",
       },
-      { type: "heading", text: "Was offiziell benannt ist" },
+      { type: "heading", text: "Die sechs Gebiete" },
       {
         type: "paragraph",
-        text: "Neben Vice City als Metropole hat Rockstar Games mehrere weitere Schauplätze im Bundesstaat namentlich genannt. Sie stehen in der Datenbank des Leonida Kurier mit dem Status „Bestätigt“ – nicht, weil wir sie für plausibel halten, sondern weil sie aus einer Primärquelle stammen.",
+        text: "Rockstar hat sechs Teile des Bundesstaates benannt und jedem eine eigene Beschreibung gegeben. Das ist mehr als eine Namensliste: Aus den Beschreibungen geht hervor, wovon die Orte leben.",
       },
       {
         type: "list",
         items: [
-          "Vice City – die Metropole des Bundesstaates",
-          "Leonida Keys – vorgelagerte Inselkette",
-          "Port Gellhorn",
-          "Ambrosia",
-          "Grassrivers",
-          "Mount Kalaga",
+          "Vice City – die Metropole, mit Ocean Beach, Little Cuba, dem Hafen VC Port und dem Flohmarkt Tisha-Wocka.",
+          "Leonida Keys – die südliche Inselkette. Hier steht die Wohnung, in der Jason und Lucia zu Beginn leben.",
+          "Grassrivers – die Feuchtgebiete im Südwesten. Dafür führt das Spiel Airboats als neue Fahrzeugklasse ein.",
+          "Port Gellhorn – Leonidas vergessene Küste: heruntergekommene Motels, leere Einkaufszeilen, ein arbeitender Hafen.",
+          "Ambrosia – am Lake Leonida. Die Zuckerraffinerie Allied Crystal stellt die Arbeitsplätze, fast alles Übrige die örtliche Rockergruppe.",
+          "Mount Kalaga – Nationalpark an der Nordgrenze, mit Wäldern, Schluchten und Flüssen.",
         ],
       },
-      { type: "heading", text: "Wo das Wissen endet" },
+      { type: "heading", text: "Die Figuren" },
       {
         type: "paragraph",
-        text: "Aus benannten Orten folgt kein Kartenbild. Weder die Fläche der Spielwelt noch die Lage der Schauplätze zueinander sind offiziell dokumentiert. Deshalb trägt jede Position im Leonida Kompass eine Genauigkeitsangabe: Verortet wird nur, wo ein reales Vorbild nachvollziehbar ist – alles Übrige bleibt unbelegt und wird gesondert ausgewiesen.",
+        text: "Neben Lucia Caminos und Jason Duval hat Rockstar mehrere Nebenfiguren mit eigenen Profilen vorgestellt. Auffällig ist, wie eng sie verknüpft sind: Brian Heder ist Vermieter von Jasons Wohnung und Verbindungsmann zu Cal Hampton. Boobie Ike und Dre'Quan Priest betreiben gemeinsam das Label Only Raw Records, bei dem The Real Dimez unter Vertrag stehen. Das ist kein loser Figurenkatalog, sondern ein Geflecht.",
+      },
+      {
+        type: "list",
+        items: [
+          "Lucia Caminos – geboren in Liberty City, saß im Leonida Penitentiary.",
+          "Jason Duval – Armeezeit, danach im Dienst örtlicher Drogenkuriere in den Keys.",
+          "Boobie Ike – vom Straßengeschäft zu Immobilien, Club und Tonstudio.",
+          "Dre'Quan Priest – Straßenhandel als Broterwerb, Musik als Ziel.",
+          "The Real Dimez – Bae-Luxe und Roxy, bei Only Raw Records unter Vertrag.",
+          "Brian Heder, Cal Hampton, Raul Bautista, Lori und der Rapper DWNPLY.",
+        ],
+      },
+      { type: "heading", text: "Die Eckdaten" },
+      {
+        type: "list",
+        items: [
+          "Erscheinen am 19. November 2026 für PlayStation 5 und Xbox Series X|S.",
+          "79,99 Euro für die Standard Edition im deutschen Handel, daneben eine Ultimate Edition.",
+          "Vorabdownload ab dem 12. November 2026.",
+          "Der Extended Look vom 27. August 2026 zeigt rund 26 Minuten Spielmaterial von einer PlayStation 5.",
+        ],
+      },
+      { type: "heading", text: "Wo es aufhört" },
+      {
+        type: "paragraph",
+        text: "Aus benannten Orten folgt kein Kartenbild. Weder die Fläche der Spielwelt noch die Lage der Gebiete zueinander sind offiziell dokumentiert. Deshalb trägt jede Position im Leonida Kompass eine Genauigkeitsangabe – verortet wird nur, wo ein reales Vorbild nachvollziehbar ist.",
+      },
+      {
+        type: "paragraph",
+        text: "Ebenso wenig belegt sind Namen von Bezirken oder Verwaltungseinheiten, die derzeit kursieren. Sie stammen überwiegend aus unautorisiert verbreitetem Material und werden hier weder aufgenommen noch wiedergegeben.",
       },
       {
         type: "quote",
         text: "Ein Ortsname ist ein Fakt. Seine Position auf einer Karte ist es erst, wenn sie belegt ist.",
         attribution: "Redaktionsgrundsatz",
       },
-      {
-        type: "paragraph",
-        text: "Diese Unterscheidung wirkt kleinlich, sie ist aber der Kern des Angebots: Der Kurier berichtet, das Radar bewertet, die Datenbank speichert – und jede Information trägt sichtbar, wie gut sie belegt ist.",
-      },
     ],
     facts: [
-      "Rockstar Games hat den Bundesstaat Leonida als Schauplatz offiziell bestätigt.",
-      "Vice City, Leonida Keys, Port Gellhorn, Ambrosia, Grassrivers und Mount Kalaga wurden offiziell benannt.",
-      "Lucia Caminos und Jason Duval sind die offiziell vorgestellten Hauptfiguren.",
+      "Rockstar Games hat sechs Gebiete des Bundesstaates benannt und beschrieben.",
+      "Elf Figuren sind mit eigenen Profilen offiziell vorgestellt.",
+      "Der Termin ist der 19. November 2026 für PlayStation 5 und Xbox Series X|S.",
+      "Zur Fläche der Spielwelt gibt es keine offizielle Angabe.",
     ],
     assessment:
-      "Der bestätigte Wissensstand ist schmaler, als der Umfang der öffentlichen Diskussion vermuten lässt. Ortsnamen sind belegt, Geografie und Spielmechanik sind es nicht.",
+      "Der belegte Wissensstand ist inzwischen breit genug für eine ernsthafte Datenbank – aber er endet abrupt dort, wo es um Geografie und Spielmechanik geht.",
     communityReaction:
-      "In Foren und auf sozialen Plattformen kursieren zahlreiche Kartenentwürfe. Sie beruhen auf Interpretationen von Trailerbildern und gelten hier als Signal, nicht als Beleg.",
+      "Ein großer Teil der öffentlichen Diskussion arbeitet mit Angaben aus unautorisierten Quellen. Der Kurier führt diese nicht.",
     related: [
       { type: "region", slug: "leonida" },
       { type: "location", slug: "vice-city" },
       { type: "character", slug: "lucia-caminos" },
+      { type: "article", slug: "warum-hier-keine-leaks-stehen" },
     ],
   },
   {
     id: "art-zwei-trailer",
     slug: "zwei-trailer-zwei-wissensstaende",
-    motif: "nachtviertel",
-    title: "Zwei Trailer, zwei Wissensstände",
+    motif: "kuestenstrasse",
+    title: "Zwei Trailer, zwei Wissensstände – und was der dritte Schritt änderte",
     standfirst:
-      "Zwischen dem ersten und dem zweiten offiziellen Trailer liegen rund anderthalb Jahre. Was sich am belegbaren Wissen tatsächlich geändert hat.",
+      "Zwischen dem ersten Trailer und heute liegen fast drei Jahre. Nicht die Bilder sind dabei das Interessante, sondern was jeweils überprüfbar wurde.",
     summary:
-      "Vergleich der beiden offiziellen Trailer und ihres jeweiligen Beitrags zum belegbaren Wissensstand.",
+      "Wie sich der belegbare Wissensstand zu Grand Theft Auto VI von Trailer 1 über Trailer 2 bis zum Extended Look entwickelt hat.",
     category: "einordnung",
     author: "Redaktion Leonida Kurier",
     publishedAt: "2026-08-18",
-    updatedAt: "2026-08-18",
+    updatedAt: "2026-08-30",
     status: "bestaetigt",
-    demo: true,
-    readingMinutes: 3,
-    sourceIds: ["src-trailer-1", "src-trailer-2", "src-rockstar-newswire"],
+    demo: false,
+    readingMinutes: 5,
+    sourceIds: [
+      "src-trailer-1",
+      "src-trailer-2",
+      "src-extended-look",
+      "src-rockstar-gta6",
+    ],
     body: [
       {
         type: "paragraph",
-        text: "Der erste Trailer zu Grand Theft Auto VI erschien im Dezember 2023 und etablierte Setting und Hauptfiguren. Der zweite folgte im Mai 2025 und zeigte weitere Schauplätze sowie mehr vom Umfeld der beiden Protagonisten.",
+        text: "Drei offizielle Veröffentlichungen haben den Wissensstand zu Grand Theft Auto VI geprägt: der erste Trailer im Dezember 2023, der zweite im Mai 2025 und der Extended Look im August 2026. Interessant ist weniger, was jeweils schön aussah, als was danach überprüfbar war.",
       },
-      { type: "heading", text: "Was Trailer als Quelle taugen" },
+      { type: "heading", text: "Dezember 2023: Ein Ort bekommt einen Namen" },
       {
         type: "paragraph",
-        text: "Trailer sind offizielle Quellen – aber sie sind geschnittenes Marketingmaterial. Sie belegen zuverlässig, dass etwas existiert, das gezeigt wurde. Sie belegen nicht, in welchem Umfang, an welcher Stelle oder mit welcher Funktion es im fertigen Spiel auftaucht.",
+        text: "Der erste Trailer stellte den Schauplatz vor und führte Lucia ein. Danach stand fest: Das Spiel spielt im Bundesstaat Leonida, Vice City ist die Metropole. Alles Weitere – Umfang, Struktur, Ablauf – war Interpretation von Bildmaterial.",
       },
+      { type: "heading", text: "Mai 2025: Aus einem Ort wird ein Bundesstaat" },
+      {
+        type: "paragraph",
+        text: "Der zweite Trailer, rund anderthalb Minuten lang, zeigte Jason als gleichwertige Hauptfigur und die beiden erstmals als funktionierendes Paar. Vor allem aber wurde aus einer Stadt eine Fläche: Inselkette, Feuchtgebiete, Hafenstadt, Landwirtschaft, Nationalpark. Die Gebiete bekamen Namen und eigene Beschreibungen.",
+      },
+      { type: "heading", text: "August 2026: Vom Bild zur Mechanik" },
+      {
+        type: "paragraph",
+        text: "Der Extended Look verschob die Beleggrenze erneut – diesmal von der Welt zum Spielen. Rund 26 Minuten zusammenhängendes Material zeigen Figurenwechsel innerhalb einer Mission, das Aufbrechen von Fahrzeugen und Aktivitäten abseits der Handlung. Was vorher als plausible Vermutung galt, ließ sich nun ansehen.",
+      },
+      { type: "heading", text: "Was sich nicht geändert hat" },
       {
         type: "list",
         items: [
-          "Belegt: gezeigte Figuren, Orte und Fahrzeuge existieren im Material.",
-          "Nicht belegt: Reihenfolge, Spielmechanik, Umfang, Kartenposition.",
-          "Nicht belegt: alles, was aus Bildausschnitten hochgerechnet wird.",
+          "Eine vollständige offizielle Karte gibt es weiterhin nicht.",
+          "Zur Fläche der Spielwelt existiert keine Angabe von Rockstar Games.",
+          "Die Lage der Gebiete zueinander ist nicht offiziell dokumentiert.",
+          "Bezirks- und Verwaltungsnamen, die kursieren, stammen nicht aus offiziellem Material.",
         ],
       },
       {
         type: "paragraph",
-        text: "Im Archiv des Leonida Kurier sind beide Trailer als Marker der Wissensentwicklung erfasst. So bleibt nachvollziehbar, ab wann eine Information überhaupt öffentlich verfügbar war.",
+        text: "Der Abstand zwischen dem, was gezeigt wurde, und dem, was daraus abgeleitet wird, ist über die drei Veröffentlichungen nicht kleiner geworden – er ist gewachsen, weil mehr Material mehr Deutungsfläche bietet. Genau dafür trägt hier jede Angabe einen Status.",
       },
     ],
     facts: [
-      "Trailer 1 erschien am 4. Dezember 2023.",
-      "Trailer 2 erschien im Mai 2025.",
+      "Trailer 1 erschien am 4. Dezember 2023, Trailer 2 am 6. Mai 2025.",
+      "Der Extended Look folgte am 27. August 2026 mit rund 26 Minuten Material.",
+      "Erst mit dem zweiten Trailer wurden die Gebiete außerhalb von Vice City benannt.",
+      "Eine offizielle Gesamtkarte ist bis heute nicht veröffentlicht.",
     ],
     assessment:
-      "Beide Trailer erweitern den Bestand an bestätigten Schauplätzen und Figuren. Aussagen über Spielmechanik lassen sich aus ihnen nicht ableiten.",
-    communityReaction:
-      "Nach beiden Veröffentlichungen stieg das Community-Aufkommen sprunghaft an – überwiegend mit Einzelbildanalysen, die die Redaktion als Hinweis, nicht als Beleg führt.",
+      "Jede Veröffentlichung hat die Beleggrenze verschoben, keine hat sie aufgehoben. Der Zuwachs an Material vergrößert auch die Fläche für Fehlschlüsse.",
     related: [
-      { type: "character", slug: "jason-duval" },
-      { type: "location", slug: "leonida-keys" },
+      { type: "article", slug: "was-der-extended-look-zeigt" },
+      { type: "region", slug: "leonida" },
+      { type: "location", slug: "vice-city" },
     ],
   },
 ];

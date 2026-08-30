@@ -66,12 +66,12 @@ export const locations: GameLocation[] = [
     motif: "inselkette",
     title: "Leonida Keys",
     summary:
-      "Die Inselkette im Süden des Bundesstaates. Hier liegt die Wohnung, in der Jason und Lucia zu Beginn leben.",
+      "Geboren in Liberty City, das Kämpfen vom Vater gelernt. Der Versuch, ihre Familie zu schützen, brachte sie ins Leonida Penitentiary – herausgekommen ist sie nur durch Glück. Eine der beiden Hauptfiguren.",
     category: "gebiet",
     regionSlug: "leonida",
     status: "bestaetigt",
-    sourceIds: ["src-rockstar-gta6"],
-    updatedAt: "2026-08-01",
+    sourceIds: ["src-rockstar-charaktere", "src-rockstar-gta6", "src-trailer-1"],
+    updatedAt: "2026-08-30",
     marker: {
       ...fromGeo(-81.1, 24.72),
       precision: "grob",
@@ -235,6 +235,20 @@ export const locations: GameLocation[] = [
       { type: "region", slug: "leonida" },
     ],
   },
+  {
+    id: "loc-leonida-penitentiary",
+    slug: "leonida-penitentiary",
+    motif: "sumpfland",
+    title: "Leonida Penitentiary",
+    summary:
+      "Strafanstalt des Bundesstaates. Lucia Caminos saß hier ein, bevor sie nach eigener Darstellung nur durch Glück wieder herauskam.",
+    category: "landmarke",
+    regionSlug: "leonida",
+    status: "bestaetigt",
+    sourceIds: ["src-rockstar-charaktere"],
+    updatedAt: "2026-08-30",
+    related: [{ type: "character", slug: "lucia-caminos" }],
+  },
 ];
 
 export const characters: Character[] = [
@@ -261,12 +275,12 @@ export const characters: Character[] = [
     motif: "kuestenstrasse",
     title: "Jason Duval",
     summary:
-      "Die zweite Hauptfigur von Grand Theft Auto VI, offiziell von Rockstar Games vorgestellt.",
+      "Aufgewachsen zwischen Trickbetrügern und Kleinkriminellen, danach eine Zeit bei der Armee, inzwischen in den Leonida Keys im Dienst örtlicher Drogenkuriere. Rockstar Games fasst ihn so: Er will ein einfaches Leben, aber es wird immer schwieriger.",
     role: "Hauptfigur",
     regionSlug: "leonida",
     status: "bestaetigt",
-    sourceIds: ["src-rockstar-gta6", "src-trailer-2"],
-    updatedAt: "2026-08-01",
+    sourceIds: ["src-rockstar-charaktere", "src-rockstar-gta6", "src-trailer-1"],
+    updatedAt: "2026-08-30",
     related: [
       { type: "character", slug: "lucia-caminos" },
       { type: "location", slug: "vice-city" },
@@ -278,7 +292,7 @@ export const characters: Character[] = [
     motif: "nachtviertel",
     title: "Boobie Ike",
     summary:
-      "Aus der Straße zum Immobilienunternehmer, Clubbesitzer und Medienmogul aufgestiegen – Rockstar Games stellt ihn als Figur vor, die den GTA-Traum bereits gelebt hat.",
+      "Eine Vice-City-Größe, die ihre Zeit auf der Straße in ein legales Imperium überführt hat – Immobilien, ein Stripclub, ein Tonstudio. Laut Rockstar Games ganz Lächeln, bis es ums Geschäft geht.",
     role: "Nebenfigur",
     regionSlug: "leonida",
     status: "bestaetigt",
@@ -292,7 +306,7 @@ export const characters: Character[] = [
     motif: "inselkette",
     title: "Brian Heder",
     summary:
-      "Einer der etabliertesten Schmuggler der Leonida Keys. Laut Rockstar Games seit der Blütezeit des Drogenhandels aktiv.",
+      "Einer der etabliertesten Schmuggler der Leonida Keys, seit der Blütezeit des Drogenhandels aktiv. Er ist zugleich Vermieter des Hauses, in dem Jason lebt, und Verbindungsmann zu Cal Hampton.",
     role: "Nebenfigur",
     regionSlug: "leonida",
     status: "bestaetigt",
@@ -309,7 +323,7 @@ export const characters: Character[] = [
     motif: "sumpfland",
     title: "Cal Hampton",
     summary:
-      "Vertrauter von Brian Heder. Rockstar Games beschreibt ihn als überzeugten Verschwörungstheoretiker.",
+      "Jasons Freund und Vertrauter von Brian Heder. Rockstar Games beschreibt ihn als am glücklichsten zu Hause: Funkverkehr der Küstenwache mithören, ein paar Bier, ein paar private Browsertabs.",
     role: "Nebenfigur",
     regionSlug: "leonida",
     status: "bestaetigt",
@@ -323,7 +337,7 @@ export const characters: Character[] = [
     motif: "nachtviertel",
     title: "DreQuan Priest",
     summary:
-      "Von Rockstar Games offiziell vorgestellte Nebenfigur aus dem Umfeld der Musik- und Medienszene von Vice City.",
+      "Mehr Geschäftsmann als Gangster. Der Straßenhandel war Broterwerb, das Ziel war immer die Musik. Er hat The Real Dimez bei Only Raw Records unter Vertrag genommen und bucht Auftritte in Boobie Ikes Club.",
     role: "Nebenfigur",
     regionSlug: "leonida",
     status: "bestaetigt",
@@ -340,7 +354,7 @@ export const characters: Character[] = [
     motif: "nachtviertel",
     title: "Raul Bautista",
     summary:
-      "Von Rockstar Games offiziell vorgestellte Nebenfigur. Zu Rolle und Verbindungen liegt bislang nur die knappe offizielle Beschreibung vor.",
+      "Bae-Luxe und Roxy, seit Langem befreundet. Eine frühe Single mit dem Rapper DWNPLY brachte den Durchbruch; fünf Jahre und viel Ärger später stehen sie bei Only Raw Records unter Vertrag und hoffen auf den zweiten Blitzschlag.",
     role: "Nebenfigur",
     regionSlug: "leonida",
     status: "bestaetigt",
@@ -364,6 +378,34 @@ export const characters: Character[] = [
       { type: "character", slug: "drequan-priest" },
       { type: "location", slug: "vice-city" },
     ],
+  },
+  {
+    id: "chr-lori",
+    slug: "lori",
+    motif: "inselkette",
+    title: "Lori",
+    summary:
+      "Dritte Ehefrau von Brian Heder. Rockstar Games führt sie in dessen Profil – mehr ist bislang offiziell nicht bekannt.",
+    role: "Nebenfigur",
+    regionSlug: "leonida",
+    status: "bestaetigt",
+    sourceIds: ["src-rockstar-charaktere"],
+    updatedAt: "2026-08-30",
+    related: [{ type: "character", slug: "brian-heder" }],
+  },
+  {
+    id: "chr-dwnply",
+    slug: "dwnply",
+    motif: "nachtviertel",
+    title: "DWNPLY",
+    summary:
+      "Rapper aus Vice City. Die gemeinsame frühe Single mit The Real Dimez war deren Durchbruch.",
+    role: "Nebenfigur",
+    regionSlug: "leonida",
+    status: "bestaetigt",
+    sourceIds: ["src-rockstar-charaktere"],
+    updatedAt: "2026-08-30",
+    related: [{ type: "character", slug: "real-dimez" }],
   },
 ];
 
@@ -401,6 +443,24 @@ export const businesses: Business[] = [
     sourceIds: ["src-rockstar-regionen"],
     updatedAt: "2026-08-29",
     related: [{ type: "location", slug: "ambrosia" }],
+  },
+  {
+    id: "biz-only-raw-records",
+    slug: "only-raw-records",
+    motif: "nachtviertel",
+    title: "Only Raw Records",
+    summary:
+      "Plattenlabel in Vice City. Dre'Quan Priest hat The Real Dimez hier unter Vertrag genommen; Boobie Ike ist als Partner beteiligt.",
+    businessType: "Plattenlabel",
+    regionSlug: "leonida",
+    status: "bestaetigt",
+    sourceIds: ["src-rockstar-charaktere"],
+    updatedAt: "2026-08-30",
+    related: [
+      { type: "character", slug: "drequan-priest" },
+      { type: "character", slug: "boobie-ike" },
+      { type: "character", slug: "real-dimez" },
+    ],
   },
 ];
 export const collectibles: Collectible[] = [];
