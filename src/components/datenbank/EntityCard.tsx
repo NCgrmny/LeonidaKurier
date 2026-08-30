@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import type { BaseEntity, Character } from "@/lib/types";
+import { istVerortet } from "@/lib/kartenpunkte";
+import { Standortkarte } from "@/components/kompass/Standortkarte";
 import { Portraetplatte } from "./Portraetplatte";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
 
@@ -21,6 +23,11 @@ export function EntityCard({
         <div className="relative mb-3 aspect-[4/3] overflow-hidden bg-night-900">
           {istFigur(entity) ? (
             <Portraetplatte name={entity.title} rolle={entity.role} />
+          ) : istVerortet(entity) ? (
+            <Standortkarte
+              punkte={[{ name: entity.title, position: entity.marker }]}
+              kompakt
+            />
           ) : (
             <Scene variant={entity.motif ?? motifForSlug(entity.slug)} />
           )}

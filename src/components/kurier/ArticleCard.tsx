@@ -3,6 +3,7 @@ import { Scene, motifForSlug } from "@/components/art/Scene";
 import { formatDate } from "@/lib/format";
 import type { Article, MotifVariant } from "@/lib/types";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
+import { Standortkarte, type Kartenpunkt } from "@/components/kompass/Standortkarte";
 import { Schlagzeile } from "./Schlagzeile";
 import { BildBefunde } from "./BildBefunde";
 
@@ -26,11 +27,14 @@ export function HeroStory({
   article,
   sourceLabel,
   motif,
+  punkte,
 }: {
   article: Article;
   sourceLabel?: string;
   /** Von der Seite zugeteilte Motivflaeche – verhindert Doppelbilder. */
   motif?: MotifVariant;
+  /** Orte, um die es im Beitrag geht. Sind welche da, steht die Karte statt des Motivs. */
+  punkte?: Kartenpunkt[];
 }) {
   return (
     /**
@@ -91,10 +95,16 @@ export function HeroStory({
         {/* Bildspalte: volle Farbe, kein Schleier. */}
         <figure className="m-0 flex flex-col lg:border-l-2 lg:border-ink-900">
           <div className="relative min-h-[15rem] flex-1 overflow-hidden bg-night-950 sm:min-h-[20rem] lg:min-h-[22rem]">
-            <Scene variant={motif ?? article.motif ?? motifForSlug(article.slug)} />
-            <figcaption className="absolute bottom-0 right-0 bg-ink-900/85 px-2.5 py-1 font-mono text-[8px] uppercase tracking-[0.14em] text-paper-200">
-              Illustration · Leonida Kurier
-            </figcaption>
+            {punkte && punkte.length > 0 ? (
+              <Standortkarte punkte={punkte} />
+            ) : (
+              <>
+                <Scene variant={motif ?? article.motif ?? motifForSlug(article.slug)} />
+                <figcaption className="absolute bottom-0 right-0 bg-ink-900/85 px-2.5 py-1 font-mono text-[8px] uppercase tracking-[0.14em] text-paper-200">
+                  Illustration · Leonida Kurier
+                </figcaption>
+              </>
+            )}
           </div>
           {article.bildbefunde ? <BildBefunde befunde={article.bildbefunde} /> : null}
         </figure>
@@ -103,22 +113,42 @@ export function HeroStory({
   );
 }
 
-/** Nebenmeldung mit Motivstreifen. */
+/**
+ * Nebenmeldung.
+ *
+ * `spalte` setzt sie als gesetzte Spalte statt als Bildkarte: Balkenlinie,
+ * grosse Zeile, Initiale im Anreisser. Das ist die Antwort einer Zeitung auf
+ * eine Meldung, zu der es kein Bild gibt – sie erfindet keines, sie gibt der
+ * Geschichte mehr Satz. Bilder stehen dort, wo sie etwas zeigen: die
+ * Standortkarte im Aufmacher, die Karten und Satzplatten in der Datenbank.
+ */
 export function StoryCard({
   article,
   withImage = true,
   motif,
+  punkte,
+  spalte = false,
 }: {
   article: Article;
   withImage?: boolean;
   /** Von der Seite zugeteilte Motivflaeche – verhindert Doppelbilder. */
   motif?: MotifVariant;
+  /** Orte, um die es im Beitrag geht. Sind welche da, steht die Karte statt des Motivs. */
+  punkte?: Kartenpunkt[];
+  /** Gesetzte Spalte statt Bildkarte. */
+  spalte?: boolean;
 }) {
+  if (spalte) return <SpaltenStory article={article} />;
+
   return (
     <article className="group relative flex h-full flex-col">
       {withImage ? (
         <div className="relative mb-3 aspect-[16/10] overflow-hidden bg-night-900">
-          <Scene variant={motif ?? article.motif ?? motifForSlug(article.slug)} />
+          {punkte && punkte.length > 0 ? (
+            <Standortkarte punkte={punkte} kompakt />
+          ) : (
+            <Scene variant={motif ?? article.motif ?? motifForSlug(article.slug)} />
+          )}
           <span className="absolute left-0 top-0 rubric text-[9px]">
             {CATEGORY_LABEL[article.category]}
           </span>
@@ -144,6 +174,43 @@ export function StoryCard({
 
       <p className="meta mt-auto pt-3">
         {formatDate(article.publishedAt)} · {article.readingMinutes} Min.
+        {article.demo ? " · Beispiel" : ""}
+      </p>
+    </article>
+  );
+}
+
+function SpaltenStory({ article }: { article: Article }) {
+  const anreisser =
+    article.body.find((block) => block.type === "paragraph")?.text ?? article.summary;
+
+  return (
+    <article className="group relative flex h-full flex-col border-t-2 border-ink-900 pt-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-coral-600">
+          {CATEGORY_LABEL[article.category]}
+        </span>
+        <StatusBadge status={article.status} />
+        {article.demo ? <DemoBadge /> : null}
+      </div>
+
+      <h3 className="headline mt-3 text-[1.55rem] leading-[0.98] sm:text-[1.9rem]">
+        <Link
+          href={`/kurier/${article.slug}`}
+          className="after:absolute after:inset-0 group-hover:text-coral-700"
+        >
+          <Schlagzeile text={article.title} />
+        </Link>
+      </h3>
+
+      <p className="standfirst mt-3 text-[15px] leading-relaxed">{article.standfirst}</p>
+
+      <p className="dropcap body-text mt-3 line-clamp-4 text-[14.5px] leading-relaxed text-ink-700">
+        {anreisser}
+      </p>
+
+      <p className="meta mt-auto border-t border-ink-900/15 pt-3">
+        {formatDate(article.publishedAt)} · {article.readingMinutes} Min. Lesezeit
         {article.demo ? " · Beispiel" : ""}
       </p>
     </article>

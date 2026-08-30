@@ -22,6 +22,8 @@ import { formatByPrecision, formatDate } from "@/lib/format";
 import { statusDefinition } from "@/lib/status";
 import { MAIN_NAV, SITE } from "@/lib/site";
 import { verteileMotive } from "@/lib/motifs";
+import { istVerortet, kartenpunkteFuerArtikel } from "@/lib/kartenpunkte";
+import { Standortkarte } from "@/components/kompass/Standortkarte";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -131,6 +133,7 @@ export default async function HomePage() {
               article={lead}
               sourceLabel={leadSource?.publisher}
               motif={motive.get(lead.slug)}
+              punkte={kartenpunkteFuerArtikel(lead, locations)}
             />
             <KurzUndWichtig artikel={kurzmeldungen} />
           </div>
@@ -185,11 +188,7 @@ export default async function HomePage() {
             <SectionHeading ressort="Der Kurier" action={{ href: "/kurier", label: "Alle Berichte" }} />
             <div className="mt-6 grid gap-x-7 gap-y-8 sm:grid-cols-2">
               {secondary.map((article) => (
-                <StoryCard
-                  key={article.id}
-                  article={article}
-                  motif={motive.get(article.slug)}
-                />
+                <StoryCard key={article.id} article={article} spalte />
               ))}
             </div>
           </div>
@@ -346,6 +345,11 @@ export default async function HomePage() {
                       <Portraetplatte
                         name={entity.title}
                         rolle={"role" in entity ? entity.role : undefined}
+                      />
+                    ) : istVerortet(entity) ? (
+                      <Standortkarte
+                        punkte={[{ name: entity.title, position: entity.marker }]}
+                        kompakt
                       />
                     ) : (
                       <Scene

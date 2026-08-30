@@ -62,7 +62,19 @@ export const MAP_PALETTE = {
  * Tiefenzonen, Gradnetz, Landmasse mit Textur, Naturräume, Gewässer,
  * Verkehrsnetz, Küstenlinie, Kartenrahmen.
  */
-export function BaseMap() {
+export interface MapCrop {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * `crop` schneidet einen Ausschnitt aus der Grundkarte – fuer Standortkarten
+ * in Karten und Aufmachern. Ohne `crop` bleibt das Verhalten unveraendert:
+ * die volle Karte, auf die Flaeche gezogen.
+ */
+export function BaseMap({ crop }: { crop?: MapCrop } = {}) {
   // Geringe Spannung: Die Küste läuft rund, gerade Grenzen bleiben gerade.
   const coast = toSmoothPath(MAINLAND, true, 0.32);
   const keys = toSmoothPath(KEYS_CHAIN, false, 0.4);
@@ -71,8 +83,12 @@ export function BaseMap() {
 
   return (
     <svg
-      viewBox={`0 0 ${MAP_VIEWBOX.width} ${MAP_VIEWBOX.height}`}
-      preserveAspectRatio="none"
+      viewBox={
+        crop
+          ? `${crop.x} ${crop.y} ${crop.width} ${crop.height}`
+          : `0 0 ${MAP_VIEWBOX.width} ${MAP_VIEWBOX.height}`
+      }
+      preserveAspectRatio={crop ? "xMidYMid slice" : "none"}
       className="absolute inset-0 size-full"
       aria-hidden
     >

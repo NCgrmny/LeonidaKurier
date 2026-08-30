@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { verteileMotive } from "@/lib/motifs";
+import { kartenpunkteFuerArtikel } from "@/lib/kartenpunkte";
 import { content } from "@/lib/content";
 import { formatDate } from "@/lib/format";
 import { RADAR_STATUS_ORDER } from "@/lib/status";
@@ -48,6 +49,8 @@ export default async function KurierPage() {
   const leadSource = (await content.getSources(lead.sourceIds))[0];
   // Der Blattkopf traegt die Nummer der laufenden Ausgabe, nicht eine gesetzte.
   const [aktuelleAusgabe] = await content.listAusgaben();
+  // Orte fuer die Standortkarten der Beitraege.
+  const orte = await content.listLocations();
   const secondary = rest.slice(0, 2);
   const briefs = rest.slice(2);
 
@@ -77,6 +80,7 @@ export default async function KurierPage() {
             article={lead}
             sourceLabel={leadSource?.publisher}
             motif={motive.get(lead.slug)}
+            punkte={kartenpunkteFuerArtikel(lead, orte)}
           />
         </div>
 
@@ -127,6 +131,7 @@ export default async function KurierPage() {
                       key={article.id}
                       article={article}
                       motif={motive.get(article.slug)}
+                      punkte={kartenpunkteFuerArtikel(article, orte)}
                     />
                   ))}
                 </div>
