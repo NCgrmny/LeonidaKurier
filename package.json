@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "bilder": "node scripts/bilder-status.mjs"
   },
   "dependencies": {
     "next": "16.3.3",

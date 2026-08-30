@@ -1,9 +1,19 @@
 import Image from "next/image";
-import { bildnachweis, brauchtUrhebernennung, type Pressebild } from "@/lib/bilder";
+import {
+  bezugshinweis,
+  bildnachweis,
+  brauchtUrhebernennung,
+  type Pressebild,
+} from "@/lib/bilder";
 import { cx } from "@/lib/format";
 
 /**
  * Foto mit Pflichtnachweis.
+ *
+ * Unter dem Bild stehen zwei Zeilen: der Lizenznachweis und der Bezug. Die
+ * zweite Zeile unterscheidet, ob der Eintrag diesen realen Ort als Vorbild
+ * führt oder ob es nur dieselbe Landschaft ist – ein Waldbild aus Nordflorida
+ * belegt nicht, wie ein Nationalpark im Spiel aussieht.
  *
  * Der Nachweis ist nicht optional und steht deshalb im selben Bauteil wie das
  * Bild: Wer das Foto einbindet, bindet die Zuschreibung mit ein. Bei CC-BY
@@ -51,7 +61,7 @@ export function Pressefoto({
           ) : null}
         </span>
         <span className="mt-0.5 block font-mono text-[9px] uppercase leading-tight tracking-[0.12em] text-white/60">
-          Reale Aufnahme des Vorbilds · kein Material aus Grand Theft Auto VI
+          {bezugshinweis(bild)}
         </span>
       </figcaption>
     </figure>

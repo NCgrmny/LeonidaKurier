@@ -19,7 +19,24 @@
  * dem Betreiber und nicht dem Quelltext.
  */
 
-export type PartnerId = "amazon" | "mediamarkt" | "otto" | "startselect";
+export type PartnerId = "amazon" | "mediamarkt" | "otto";
+
+/**
+ * Wie kommt die Kennung an den Link?
+ *
+ * `parameter` – das Programm hängt eine Kennung als Query-Parameter an
+ * (Amazon PartnerNet: `tag`). Der Link lässt sich hier zusammensetzen.
+ *
+ * `deeplink` – das Netzwerk erzeugt die Adresse selbst und kodiert das Ziel
+ * darin (Awin für Otto, EasyMarketing für MediaMarkt und Saturn). Einen
+ * Parameter zu erfinden ergäbe einen Link, der nach Tracking aussieht, aber
+ * keines ist – deshalb wird hier eine Vorlage aus der Umgebung erwartet, in
+ * der `{ziel}` durch die URL-kodierte Zieladresse ersetzt wird. Fehlt sie,
+ * bleibt der Verweis ein gewöhnlicher Händlerlink.
+ */
+type Verknuepfung =
+  | { art: "parameter"; param: string }
+  | { art: "deeplink" };
 
 interface PartnerConfig {
   id: PartnerId;
@@ -27,10 +44,12 @@ interface PartnerConfig {
   name: string;
   /** Name des Partnerprogramms, für die Offenlegung unter /rechtliches. */
   programme: string;
-  /** Kennung des Betreibers; fehlt sie, bleibt der Link provisionsfrei. */
+  /**
+   * Kennung bzw. Deeplink-Vorlage des Betreibers. Fehlt sie, bleibt der Link
+   * provisionsfrei und wird nicht als Werbung gekennzeichnet.
+   */
   tag?: string;
-  /** Query-Parameter, über den die Kennung übergeben wird. */
-  tagParam: string;
+  verknuepfung: Verknuepfung;
 }
 
 const PARTNERS: PartnerConfig[] = [
@@ -39,28 +58,21 @@ const PARTNERS: PartnerConfig[] = [
     name: "Amazon.de",
     programme: "Amazon PartnerNet",
     tag: process.env.NEXT_PUBLIC_PARTNER_AMAZON,
-    tagParam: "tag",
+    verknuepfung: { art: "parameter", param: "tag" },
   },
   {
     id: "mediamarkt",
     name: "MediaMarkt",
-    programme: "MediaMarktSaturn Partnerprogramm",
+    programme: "MediaMarktSaturn Partnerprogramm (EasyMarketing)",
     tag: process.env.NEXT_PUBLIC_PARTNER_MEDIAMARKT,
-    tagParam: "affiliate",
+    verknuepfung: { art: "deeplink" },
   },
   {
     id: "otto",
     name: "Otto",
-    programme: "Otto Partnerprogramm",
+    programme: "Otto Partnerprogramm (Awin)",
     tag: process.env.NEXT_PUBLIC_PARTNER_OTTO,
-    tagParam: "partner",
-  },
-  {
-    id: "startselect",
-    name: "Startselect",
-    programme: "Startselect Affiliate",
-    tag: process.env.NEXT_PUBLIC_PARTNER_STARTSELECT,
-    tagParam: "aff",
+    verknuepfung: { art: "deeplink" },
   },
 ];
 
@@ -117,17 +129,34 @@ export interface ResolvedOffer extends Offer {
   isAffiliate: boolean;
 }
 
-/** Hängt die Partnerkennung an, sofern vorhanden. */
-function withTag(url: string, partner: PartnerConfig): string {
+/**
+ * Baut die Zieladresse.
+ *
+ * Ohne hinterlegte Kennung bleibt die Adresse unverändert – dann ist der Link
+ * kein Provisionslink und wird auch nicht als solcher gekennzeichnet.
+ */
+function mitKennung(url: string, partner: PartnerConfig): string {
   if (!partner.tag) return url;
+
+  if (partner.verknuepfung.art === "deeplink") {
+    // Die Vorlage stammt aus dem Netzwerk; ohne Platzhalter ist sie unbrauchbar.
+    if (!partner.tag.includes("{ziel}")) return url;
+    return partner.tag.replace("{ziel}", encodeURIComponent(url));
+  }
+
   try {
     const parsed = new URL(url);
-    parsed.searchParams.set(partner.tagParam, partner.tag);
+    parsed.searchParams.set(partner.verknuepfung.param, partner.tag);
     return parsed.toString();
   } catch {
     // Unbrauchbare Adresse: lieber unveraendert lassen als kaputt ausliefern.
     return url;
   }
+}
+
+/** Zählt als Provisionslink nur, was tatsächlich verknüpft werden konnte. */
+function istProvisionslink(url: string, partner: PartnerConfig): boolean {
+  return mitKennung(url, partner) !== url;
 }
 
 export function resolveOffers(): ResolvedOffer[] {
@@ -138,14 +167,18 @@ export function resolveOffers(): ResolvedOffer[] {
       {
         ...offer,
         partnerName: partner.name,
-        href: withTag(offer.url, partner),
-        isAffiliate: Boolean(partner.tag),
+        href: mitKennung(offer.url, partner),
+        isAffiliate: istProvisionslink(offer.url, partner),
       },
     ];
   });
 }
 
-/** Partnerprogramme, für die tatsächlich eine Kennung hinterlegt ist. */
+/** Partnerprogramme, über die tatsächlich Provisionslinks ausgeliefert werden. */
 export function activeProgrammes(): string[] {
-  return PARTNERS.filter((partner) => partner.tag).map((partner) => partner.programme);
+  return PARTNERS.filter((partner) =>
+    OFFERS.some(
+      (offer) => offer.partnerId === partner.id && istProvisionslink(offer.url, partner),
+    ),
+  ).map((partner) => partner.programme);
 }

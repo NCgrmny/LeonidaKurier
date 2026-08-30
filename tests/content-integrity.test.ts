@@ -3,6 +3,11 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { bilder } from "@/content/bilder";
 import { brauchtUrhebernennung } from "@/lib/bilder";
+import {
+  fehlendeBilddateien,
+  fotoFuer,
+  verfuegbareBilder,
+} from "@/lib/content/bildzuordnung";
 import { sources } from "@/content/sources";
 import { content } from "@/lib/content";
 import { COLLECTIONS, entityHref } from "@/lib/content/collections";
@@ -295,14 +300,54 @@ describe("Bildbestand", () => {
     }
   });
 
-  it("liegt im Repository, nicht auf fremden Servern", () => {
+  it("verweist auf eigene Dateien, nicht auf fremde Server", () => {
+    // Hotlinking wuerde die Auslieferung fremden Servern ueberlassen und
+    // waere bei CC-Bildern zudem eine Nutzung ohne eigene Kopie.
     for (const bild of bilder) {
       expect(bild.datei).not.toMatch(/^https?:/);
-      expect(bild.datei).toMatch(/^[a-z0-9-]+\.(jpg|jpeg|png|webp|avif)$/);
+      expect(bild.datei).toMatch(/^[a-z0-9-]+\.(jpg|jpeg|png|webp|avif)$/i);
+    }
+  });
+
+  it("zeigt nur Bilder an, deren Datei vorhanden ist", () => {
+    // Der Bestand ist die recherchierte Liste, die Dateien kommen davon
+    // unabhaengig hinzu. Angezeigt wird nur, was wirklich da ist – sonst
+    // stuende eine kaputte Bildflaeche auf der Seite.
+    for (const bild of verfuegbareBilder()) {
       expect(
         existsSync(join(process.cwd(), "public", "bilder", bild.datei)),
         `Datei public/bilder/${bild.datei} fehlt`,
       ).toBe(true);
+    }
+    for (const bild of fehlendeBilddateien()) {
+      expect(fotoFuer(bild.fuer[0])).toBeNull();
+    }
+  });
+
+  it("benennt den Bezug zum Spielort und behauptet kein Vorbild ohne Beleg", async () => {
+    // Ein Foto darf nur dann als Vorbild ausgewiesen werden, wenn der
+    // Eintrag selbst ein reales Vorbild nennt. Sonst waere die Bildzeile
+    // eine Behauptung ueber das Spiel.
+    const orte = await content.listLocations();
+    for (const bild of bilder) {
+      expect(["vorbild", "region"]).toContain(bild.bezug);
+      if (bild.bezug !== "vorbild") continue;
+      for (const slug of bild.fuer) {
+        const ort = orte.find((eintrag) => eintrag.slug === slug);
+        expect(
+          ort?.marker?.note ?? "",
+          `Bild ${bild.datei} behauptet ein Vorbild, das "${slug}" nicht fuehrt`,
+        ).toMatch(/Vorbild/i);
+      }
+    }
+  });
+
+  it("kennzeichnet Bearbeitungen, wo die Lizenz es verlangt", () => {
+    // CC BY-SA verlangt, dass eine Bearbeitung kenntlich ist. Die Darstellung
+    // beschneidet jedes Bild auf das Seitenverhaeltnis seiner Flaeche.
+    for (const bild of bilder) {
+      if (bild.lizenz !== "CC BY-SA 4.0" && bild.lizenz !== "CC BY 4.0") continue;
+      expect(bild.bearbeitung, `Bild ${bild.datei} ohne Bearbeitungsvermerk`).toBeTruthy();
     }
   });
 

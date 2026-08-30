@@ -14,6 +14,20 @@ export type Bildlizenz =
   | "CC BY-SA 4.0"
   | "Eigene Aufnahme";
 
+/**
+ * Wie stark ist der Bezug zum Spielort?
+ *
+ * `vorbild` – der Eintrag nennt genau diesen realen Ort als Vorbild; die
+ * Zuordnung steht in unseren eigenen Daten (Feld `note` am Marker).
+ * `region` – die Aufnahme stammt aus derselben Landschaft, ohne dass ein
+ * Vorbild belegt wäre. Ein Waldbild aus Nordflorida ist kein Beleg dafür,
+ * wie ein Nationalpark im Spiel aussieht.
+ *
+ * Der Unterschied steht sichtbar unter dem Bild. Er ist der Grund, warum
+ * dieses Feld Pflicht ist und keinen Vorgabewert hat.
+ */
+export type Bildbezug = "vorbild" | "region";
+
 export interface Pressebild {
   /** Dateiname unterhalb von /public/bilder/. */
   datei: string;
@@ -29,6 +43,13 @@ export interface Pressebild {
   quelleUrl?: string;
   /** Jahr der Aufnahme, wenn bekannt. */
   jahr?: number;
+  /** Belegter Vorbildbezug oder nur dieselbe Region. */
+  bezug: Bildbezug;
+  /**
+   * Bearbeitungsvermerk. Die Darstellung beschneidet jedes Bild auf das
+   * Seitenverhältnis der Fläche; bei CC-BY-SA gehört das in den Nachweis.
+   */
+  bearbeitung?: string;
   /**
    * Slugs von Beiträgen oder Einträgen, für die dieses Bild passt.
    * Ein Bild kann mehreren zugeordnet sein, ein Slug nur einem Bild –
@@ -39,14 +60,23 @@ export interface Pressebild {
 
 /** Bildunterschrift mit Pflichtangaben, wie sie unter dem Bild steht. */
 export function bildnachweis(bild: Pressebild): string {
-  const teile = [bild.aufnahmeort];
-  if (bild.jahr) teile.push(String(bild.jahr));
-  const ort = teile.join(", ");
+  const ort = bild.jahr ? `${bild.aufnahmeort}, ${bild.jahr}` : bild.aufnahmeort;
   const lizenz =
     bild.lizenz === "Eigene Aufnahme"
       ? "Eigene Aufnahme"
       : `${bild.urheber} · ${bild.lizenz}`;
-  return `${ort}. ${lizenz}.`;
+  const bearbeitung = bild.bearbeitung ? ` ${bild.bearbeitung}.` : "";
+  return `${ort}. ${lizenz}.${bearbeitung}`;
+}
+
+/**
+ * Der Satz, der den Bezug zum Spiel klärt. Er steht unter jedem Foto, weil
+ * ein Bild sonst als Aufnahme aus dem Spiel gelesen werden kann.
+ */
+export function bezugshinweis(bild: Pressebild): string {
+  return bild.bezug === "vorbild"
+    ? "Reale Aufnahme des im Eintrag genannten Vorbilds · kein Material aus Grand Theft Auto VI"
+    : "Reale Aufnahme aus derselben Landschaft · kein belegtes Vorbild, kein Material aus Grand Theft Auto VI";
 }
 
 /** Braucht diese Lizenz eine Urhebernennung? Alle ausser CC0 und PD. */
