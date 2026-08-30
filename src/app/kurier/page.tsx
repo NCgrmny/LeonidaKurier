@@ -11,6 +11,7 @@ import {
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { verteileMotive } from "@/lib/motifs";
 import { content } from "@/lib/content";
 import { formatDate } from "@/lib/format";
 import { RADAR_STATUS_ORDER } from "@/lib/status";
@@ -50,6 +51,10 @@ export default async function KurierPage() {
   const secondary = rest.slice(0, 2);
   const briefs = rest.slice(2);
 
+  // Bebilderte Beitraege in Lesereihenfolge – keine zwei gleichen Flaechen
+  // nebeneinander.
+  const motive = verteileMotive([lead, ...secondary]);
+
   return (
     <>
       <Container width="wide">
@@ -68,7 +73,11 @@ export default async function KurierPage() {
 
       <Container width="wide">
         <div className="mt-6">
-          <HeroStory article={lead} sourceLabel={leadSource?.publisher} />
+          <HeroStory
+            article={lead}
+            sourceLabel={leadSource?.publisher}
+            motif={motive.get(lead.slug)}
+          />
         </div>
 
         {/* Titelseite: Meldungsschiene, Hauptspalten, Statusschlüssel */}
@@ -114,7 +123,11 @@ export default async function KurierPage() {
                 <p className="ressort">Weitere Berichte</p>
                 <div className="mt-6 grid gap-x-7 gap-y-9 sm:grid-cols-2">
                   {secondary.map((article) => (
-                    <StoryCard key={article.id} article={article} />
+                    <StoryCard
+                      key={article.id}
+                      article={article}
+                      motif={motive.get(article.slug)}
+                    />
                   ))}
                 </div>
               </>

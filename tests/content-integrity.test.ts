@@ -5,6 +5,7 @@ import { COLLECTIONS, entityHref } from "@/lib/content/collections";
 import { allEntities } from "@/lib/content/seed-repository";
 import { entriesForCollection } from "@/lib/content/queries";
 import { RADAR_STATUS } from "@/lib/status";
+import { MOTIF_VARIANTS, verteileMotive } from "@/lib/motifs";
 import type { RadarStatus } from "@/lib/types";
 
 /**
@@ -243,5 +244,33 @@ describe("Ausgaben", () => {
     expect(aufgeloest?.aufmacher?.slug).toBe(erste.aufmacher);
     expect(aufgeloest?.beitraege.map((a) => a.slug)).toEqual(erste.beitraege);
     expect(await content.getAusgabeMitBeitraegen("gibt-es-nicht")).toBeNull();
+  });
+});
+
+describe("Motivverteilung", () => {
+  it("zeigt nie zweimal dieselbe Flaeche nebeneinander", async () => {
+    // Zwei identische Bilder nebeneinander lesen sich als Platzhalter.
+    const articles = await content.listArticles();
+    const zugeteilt = verteileMotive(articles);
+    const folge = articles.map((article) => zugeteilt.get(article.slug));
+
+    expect(folge).toHaveLength(articles.length);
+    for (let i = 1; i < folge.length; i += 1) {
+      expect(folge[i], `Position ${i} wiederholt ${folge[i]}`).not.toBe(folge[i - 1]);
+    }
+  });
+
+  it("nutzt alle Flaechen, bevor sie eine wiederholt", async () => {
+    const articles = await content.listArticles();
+    const zugeteilt = verteileMotive(articles);
+    const ersten = articles
+      .slice(0, MOTIF_VARIANTS.length)
+      .map((article) => zugeteilt.get(article.slug));
+    expect(new Set(ersten).size).toBe(Math.min(articles.length, MOTIF_VARIANTS.length));
+  });
+
+  it("ist bei gleicher Eingabe stabil", async () => {
+    const articles = await content.listArticles();
+    expect([...verteileMotive(articles)]).toEqual([...verteileMotive(articles)]);
   });
 });

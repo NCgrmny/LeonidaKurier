@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import { formatDate } from "@/lib/format";
-import type { Article } from "@/lib/types";
+import type { Article, MotifVariant } from "@/lib/types";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { Schlagzeile } from "./Schlagzeile";
 import { BildBefunde } from "./BildBefunde";
@@ -25,9 +25,12 @@ export function articleCategoryLabel(category: Article["category"]): string {
 export function HeroStory({
   article,
   sourceLabel,
+  motif,
 }: {
   article: Article;
   sourceLabel?: string;
+  /** Von der Seite zugeteilte Motivflaeche – verhindert Doppelbilder. */
+  motif?: MotifVariant;
 }) {
   return (
     /**
@@ -84,7 +87,7 @@ export function HeroStory({
         {/* Bildspalte: volle Farbe, kein Schleier. */}
         <figure className="order-1 m-0 flex flex-col lg:order-2 lg:border-l-2 lg:border-ink-900">
           <div className="relative min-h-[15rem] flex-1 overflow-hidden bg-night-950 sm:min-h-[20rem] lg:min-h-[22rem]">
-            <Scene variant={article.motif ?? motifForSlug(article.slug)} />
+            <Scene variant={motif ?? article.motif ?? motifForSlug(article.slug)} />
             <figcaption className="absolute bottom-0 right-0 bg-ink-900/85 px-2.5 py-1 font-mono text-[8px] uppercase tracking-[0.14em] text-paper-200">
               Illustration · Leonida Kurier
             </figcaption>
@@ -100,15 +103,18 @@ export function HeroStory({
 export function StoryCard({
   article,
   withImage = true,
+  motif,
 }: {
   article: Article;
   withImage?: boolean;
+  /** Von der Seite zugeteilte Motivflaeche – verhindert Doppelbilder. */
+  motif?: MotifVariant;
 }) {
   return (
     <article className="group relative flex h-full flex-col">
       {withImage ? (
         <div className="relative mb-3 aspect-[16/10] overflow-hidden bg-night-900">
-          <Scene variant={article.motif ?? motifForSlug(article.slug)} />
+          <Scene variant={motif ?? article.motif ?? motifForSlug(article.slug)} />
           <span className="absolute left-0 top-0 rubric text-[9px]">
             {CATEGORY_LABEL[article.category]}
           </span>
