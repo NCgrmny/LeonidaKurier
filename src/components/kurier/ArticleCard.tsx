@@ -28,53 +28,64 @@ export function HeroStory({
   sourceLabel?: string;
 }) {
   return (
-    <article className="group relative isolate overflow-hidden bg-night-950">
-      <div className="absolute inset-0">
-        <Scene variant={article.motif ?? motifForSlug(article.slug)} />
-      </div>
-      {/* Verlauf, damit die Schlagzeile auf dem Motiv steht statt daneben. */}
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-gradient-to-t from-night-950 via-night-950/55 to-night-950/5"
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-gradient-to-r from-night-950/80 via-transparent to-transparent"
-      />
+    /**
+     * Aufmacher im Titelseitensatz: Das Motiv steht ungetrübt in seiner
+     * eigenen Spalte, die Schlagzeile daneben auf Papier. Ein Verlauf über
+     * dem Bild – damit weiße Schrift darauf lesbar wird – nimmt der
+     * Illustration genau die Farbe, für die sie gebaut ist. Im Druck löst
+     * das niemand so; dort steht der Text neben dem Bild.
+     */
+    <article className="group relative isolate border-y-2 border-ink-900 bg-paper-50">
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+        {/* Textspalte */}
+        <div className="order-2 flex flex-col justify-between p-6 sm:p-8 lg:order-1 lg:p-10">
+          <div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rubric">{CATEGORY_LABEL[article.category]}</span>
+              <StatusBadge status={article.status} />
+              {article.demo ? <DemoBadge /> : null}
+            </div>
 
-      <div className="relative flex min-h-[26rem] flex-col justify-end p-6 sm:min-h-[32rem] sm:p-9 lg:min-h-[36rem] lg:p-12">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="rubric">{CATEGORY_LABEL[article.category]}</span>
-          <StatusBadge status={article.status} tone="night" />
-          {article.demo ? <DemoBadge className="text-paper-300" /> : null}
-        </div>
+            <h2 className="headline mt-4 text-[2.15rem] leading-[0.92] text-ink-900 sm:text-[2.9rem] lg:text-[3.5rem]">
+              <Link
+                href={`/kurier/${article.slug}`}
+                className="after:absolute after:inset-0 hover:text-coral-600"
+              >
+                {article.title}
+              </Link>
+            </h2>
 
-        <h2 className="headline mt-5 max-w-4xl text-[2.1rem] text-paper-50 sm:text-[3.2rem] lg:text-[4rem]">
-          <Link href={`/kurier/${article.slug}`} className="after:absolute after:inset-0">
-            {article.title}
-          </Link>
-        </h2>
+            <p className="standfirst mt-4 max-w-prose text-[1.05rem] leading-relaxed sm:text-[1.15rem]">
+              {article.standfirst}
+            </p>
 
-        <p className="mt-4 max-w-2xl font-serif text-[1.05rem] leading-relaxed text-paper-200 sm:text-[1.2rem]">
-          {article.standfirst}
-        </p>
+            {/* Anreisser aus dem ersten Absatz – Spaltenzentimeter statt Weissraum. */}
+            {article.body[0]?.type === "paragraph" ? (
+              <p className="body-text mt-4 hidden max-w-prose text-[15px] leading-relaxed text-ink-700 lg:block">
+                {article.body[0].text}
+              </p>
+            ) : null}
+          </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-paper-100/20 pt-4">
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-paper-300">
-            {formatDate(article.publishedAt)}
-          </span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-paper-300">
-            {article.author}
-          </span>
-          {sourceLabel ? (
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-lagoon-300">
-              Quelle: {sourceLabel}
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-t-2 border-ink-900 pt-3">
+            <span className="meta">{formatDate(article.publishedAt)}</span>
+            <span className="meta">{article.author}</span>
+            {sourceLabel ? (
+              <span className="meta text-lagoon-700">Quelle: {sourceLabel}</span>
+            ) : null}
+            <span className="ml-auto inline-flex items-center gap-2 bg-ink-900 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-paper-50 transition-colors group-hover:bg-coral-600">
+              Bericht lesen <span aria-hidden>→</span>
             </span>
-          ) : null}
-          <span className="ml-auto inline-flex items-center gap-2 bg-coral-500 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-paper-50 transition-colors group-hover:bg-coral-400">
-            Bericht lesen <span aria-hidden>→</span>
-          </span>
+          </div>
         </div>
+
+        {/* Bildspalte: volle Farbe, kein Schleier. */}
+        <figure className="order-1 relative m-0 min-h-[15rem] overflow-hidden bg-night-950 sm:min-h-[20rem] lg:order-2 lg:min-h-[30rem] lg:border-l-2 lg:border-ink-900">
+          <Scene variant={article.motif ?? motifForSlug(article.slug)} />
+          <figcaption className="absolute bottom-0 right-0 bg-ink-900/85 px-2.5 py-1 font-mono text-[8px] uppercase tracking-[0.14em] text-paper-200">
+            Illustration · Leonida Kurier
+          </figcaption>
+        </figure>
       </div>
     </article>
   );

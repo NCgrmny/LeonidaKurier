@@ -15,7 +15,7 @@ export const articles: Article[] = [
   {
     id: "art-was-der-extended-look-zeigt",
     slug: "was-der-extended-look-zeigt",
-    motif: "nachtviertel",
+    motif: "skyline-sonnenuntergang",
     title: "26 Minuten Leonida: Was Rockstar im Extended Look tatsächlich zeigt",
     standfirst:
       "Figurenwechsel mitten im Auftrag, Autos, die aufgebrochen werden müssen, ein Überfall auf ein Waffelhaus. Eine Auswertung dessen, was im offiziellen Material sichtbar ist – und was daraus noch nicht folgt.",

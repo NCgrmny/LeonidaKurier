@@ -261,8 +261,8 @@ function BandedSun({ cx: x, cy: y, r }: { cx: number; cy: number; r: number }) {
 function Halftone() {
   return (
     <>
-      <rect width="1600" height="1000" fill="url(#sc-halftone)" opacity="0.16" />
-      <rect width="1600" height="1000" fill="url(#sc-grain)" opacity="0.2" />
+      <rect width="1600" height="1000" fill="url(#sc-halftone)" opacity="0.26" />
+      <rect width="1600" height="1000" fill="url(#sc-grain)" opacity="0.28" />
     </>
   );
 }
@@ -287,10 +287,15 @@ function SharedDefs({ skyId }: { skyId: string }) {
         <stop offset="100%" stopColor="#ffe0a3" />
       </linearGradient>
 
-      <linearGradient id="sc-night" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#050d17" />
-        <stop offset="55%" stopColor="#0b2035" />
-        <stop offset="100%" stopColor="#2a2a55" />
+      {/* Heisse Nacht: Vice City glueht von unten, statt blau abzukuehlen. */}
+      <linearGradient id="sc-night" x1="0" y1="0" x2="0.1" y2="1">
+        <stop offset="0%" stopColor="#12061f" />
+        <stop offset="26%" stopColor="#2a0b3d" />
+        <stop offset="48%" stopColor="#4d0f4a" />
+        <stop offset="66%" stopColor="#8a1a55" />
+        <stop offset="82%" stopColor="#c8355e" />
+        <stop offset="94%" stopColor="#e8578c" />
+        <stop offset="100%" stopColor="#f7a06a" />
       </linearGradient>
 
       <linearGradient id="sc-sea" x1="0" y1="0" x2="0" y2="1">
@@ -540,7 +545,7 @@ function NightDistrict() {
     <>
       <rect width="1600" height="1000" fill="url(#sc-night)" />
 
-      <g fill="#f8f2e6" opacity="0.45">
+      <g fill="#ffd9a0" opacity="0.22">
         {[
           [120, 88],
           [304, 148],
@@ -557,33 +562,34 @@ function NightDistrict() {
           <circle key={`${x}-${y}`} cx={x} cy={y} r="2.2" />
         ))}
       </g>
-      <circle cx="1332" cy="176" r="66" fill="#f1e8d7" opacity="0.16" filter="url(#sc-bloom)" />
-      <circle cx="1332" cy="176" r="52" fill="#f1e8d7" opacity="0.92" />
-      <circle cx="1308" cy="160" r="52" fill="#08111d" />
+      {/* Kein Mond: Der Lichtdom der Stadt uebernimmt die Rolle der Lichtquelle. */}
+      <ellipse cx="880" cy="700" rx="720" ry="300" fill="#f0913e" opacity="0.2" filter="url(#sc-bloom)" />
+      <ellipse cx="420" cy="690" rx="360" ry="210" fill="#e8578c" opacity="0.22" filter="url(#sc-bloom)" />
+      <ellipse cx="1280" cy="700" rx="330" ry="190" fill="#17a2a2" opacity="0.16" filter="url(#sc-bloom)" />
 
       {/* Ferne Skyline im Nachtdunst */}
       <SkylineLayer
         buildings={SKYLINE_FAR}
         groundY={horizon}
-        fill="#12233a"
-        windowFill="#8fd8ff"
-        windowOpacity={0.3}
+        fill="#3d1140"
+        windowFill="#ffd0a8"
+        windowOpacity={0.32}
         seed={2}
-        opacity={0.7}
+        opacity={0.72}
       />
       <rect y={horizon - 240} width="1600" height="240" fill="url(#sc-haze-night)" />
 
       <SkylineLayer
         buildings={SKYLINE_MID}
         groundY={horizon}
-        fill="#050c16"
-        windowFill="#7fe3dc"
-        windowOpacity={0.8}
+        fill="#14061c"
+        windowFill="#ffc478"
+        windowOpacity={0.85}
         seed={4}
-        lit="#3f7fa8"
+        lit="#c8355e"
       />
       <g filter="url(#sc-bloom)" opacity="0.45">
-        <SkylineLayer buildings={SKYLINE_MID} groundY={horizon} fill="none" windowFill="#2bbdb6" seed={4} />
+        <SkylineLayer buildings={SKYLINE_MID} groundY={horizon} fill="none" windowFill="#ffa94f" seed={4} />
       </g>
 
       {/* Leuchtreklamen */}
@@ -603,8 +609,8 @@ function NightDistrict() {
       </g>
 
       {/* Nasse Straße */}
-      <rect y={horizon} width="1600" height={1000 - horizon} fill="#071523" />
-      <g opacity="0.35">
+      <rect y={horizon} width="1600" height={1000 - horizon} fill="#1a0722" />
+      <g opacity="0.5">
         <rect x="232" y="700" width="172" height="150" fill="#e8578c" filter="url(#sc-bloom)" />
         <rect x="1150" y="740" width="152" height="170" fill="#2bbdb6" filter="url(#sc-bloom)" />
         <rect x="656" y="690" width="88" height="190" fill="#f0913e" filter="url(#sc-bloom)" />
@@ -615,9 +621,11 @@ function NightDistrict() {
         ))}
       </g>
 
-      <SkylineLayer buildings={SKYLINE_NEAR} groundY={1000} fill="#03080f" opacity={0.95} />
-      <Palm x={186} y={1020} scale={1.46} lean={-6} fill="#03080f" />
-      <Palm x={1452} y={1030} scale={1.54} lean={5} flip fill="#03080f" />
+      <SkylineLayer buildings={SKYLINE_NEAR} groundY={1000} fill="#0b0210" opacity={0.97} />
+      <Palm x={186} y={1020} scale={1.46} lean={-6} fill="#0b0210" />
+      <Palm x={470} y={1044} scale={0.94} lean={4} flip fill="#0b0210" />
+      <Palm x={1452} y={1030} scale={1.54} lean={5} flip fill="#0b0210" />
+      <Palm x={1180} y={1048} scale={0.9} lean={-5} fill="#0b0210" />
 
       <rect width="1600" height="1000" fill="url(#sc-vignette)" />
     </>
