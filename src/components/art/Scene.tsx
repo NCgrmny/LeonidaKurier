@@ -369,101 +369,6 @@ function SharedDefs({ skyId }: { skyId: string }) {
   );
 }
 
-/** Sonnenuntergang über der Skyline – der Aufmacher-Klassiker. */
-function SkylineSunset() {
-  const horizon = 640;
-  return (
-    <>
-      <rect width="1600" height="1000" fill="url(#sc-sky)" />
-
-      {/* Sonnenschein hinter der Stadt */}
-      <circle cx="800" cy="470" r="330" fill="#ffb45c" opacity="0.28" filter="url(#sc-bloom)" />
-      <BandedSun cx={800} cy={470} r={196} />
-
-      {/* Wolkenbänder, nach hinten hin feiner */}
-      <g fill="#e8578c" opacity="0.34">
-        <ellipse cx="300" cy="196" rx="250" ry="15" />
-        <ellipse cx="1200" cy="158" rx="290" ry="17" />
-      </g>
-      <g fill="#ffc978" opacity="0.28">
-        <ellipse cx="470" cy="262" rx="190" ry="10" />
-        <ellipse cx="980" cy="238" rx="260" ry="12" />
-        <ellipse cx="700" cy="316" rx="330" ry="13" />
-      </g>
-
-      {/* Ferne Skyline im Dunst */}
-      <SkylineLayer
-        buildings={SKYLINE_FAR}
-        groundY={horizon}
-        fill="#6a4a6e"
-        windowFill="#ffd9a0"
-        windowOpacity={0.35}
-        seed={3}
-        opacity={0.55}
-        lit="#ffc38a"
-      />
-      {/* Dunstschleier zwischen den Ebenen */}
-      <rect y={horizon - 210} width="1600" height="210" fill="url(#sc-haze)" />
-
-      {/* Mittlere Skyline – die Masse der Stadt */}
-      <SkylineLayer
-        buildings={SKYLINE_MID}
-        groundY={horizon}
-        fill="#231a33"
-        windowFill="#ffcf87"
-        windowOpacity={0.85}
-        seed={1}
-        lit="#ffb26b"
-      />
-      {/* Lichtschein über den Fenstern */}
-      <g filter="url(#sc-bloom)" opacity="0.5">
-        <SkylineLayer buildings={SKYLINE_MID} groundY={horizon} fill="none" windowFill="#ffc978" seed={1} />
-      </g>
-
-      {/* Meer */}
-      <rect y={horizon} width="1600" height={1000 - horizon} fill="url(#sc-sea)" />
-      <rect y={horizon} width="1600" height="6" fill="#140d1e" opacity="0.7" />
-
-      {/* Spiegelung der Sonne, nach unten breiter und unruhiger */}
-      <g fill="#ffc978" opacity="0.5">
-        {[652, 672, 696, 724, 756, 792, 832, 876, 924, 976].map((y, index) => (
-          <rect
-            key={y}
-            x={800 - (24 + index * 15)}
-            y={y}
-            width={48 + index * 30}
-            height={3 + index * 0.85}
-            rx="2"
-          />
-        ))}
-      </g>
-      {/* Spiegelung der Stadtlichter */}
-      <g fill="#ffcf87" opacity="0.16">
-        {[664, 692, 728, 772, 824, 884].map((y, index) => (
-          <rect key={y} x={120 + index * 18} y={y} width={1360 - index * 40} height={2 + index * 0.6} />
-        ))}
-      </g>
-
-      {/* Naher Uferstreifen */}
-      <SkylineLayer buildings={SKYLINE_NEAR} groundY={1000} fill="#0d0a16" opacity={0.92} />
-
-      {/* Palmen im Vordergrund */}
-      <Palm x={168} y={1020} scale={1.62} lean={-5} fill="#0a0712" />
-      <Palm x={352} y={1046} scale={1.08} lean={5} flip fill="#0a0712" />
-      <Palm x={1418} y={1026} scale={1.7} lean={6} flip fill="#0a0712" />
-      <Palm x={1236} y={1050} scale={1.02} lean={-4} fill="#0a0712" />
-
-      {/* Vögel */}
-      <g stroke="#2a1a33" strokeWidth="3" fill="none" opacity="0.6">
-        <path d="M430 172 q15 -13 30 0 q15 -13 30 0" />
-        <path d="M1128 236 q11 -10 22 0 q11 -10 22 0" />
-      </g>
-
-      <rect width="1600" height="1000" fill="url(#sc-vignette)" />
-    </>
-  );
-}
-
 /** Küstenstraße mit Motelschild – Hitze und Asphalt. */
 function CoastRoad() {
   return (
@@ -741,8 +646,101 @@ function Wetland() {
   );
 }
 
+/** Sonnenscheibe mit hartem Rand und Querbändern – Plakat, nicht Verlauf. */
+function PosterSun({ cx: x, cy: y, r }: { cx: number; cy: number; r: number }) {
+  const bands = [0.3, 0.46, 0.6, 0.72, 0.82, 0.9];
+  return (
+    <g>
+      <circle cx={x} cy={y} r={r * 1.5} fill="#ffb45c" opacity="0.22" filter="url(#sc-bloom)" />
+      <circle cx={x} cy={y} r={r} fill="#ffe6a8" />
+      <circle cx={x} cy={y} r={r * 0.72} fill="#fff6d8" />
+      {bands.map((offset, index) => (
+        <rect
+          key={offset}
+          x={x - r - 6}
+          y={y + r * offset}
+          width={r * 2 + 12}
+          height={4 + index * 3}
+          fill="url(#sc-sky)"
+        />
+      ))}
+    </g>
+  );
+}
+
+/**
+ * Titelmotiv: Figur vor der Sonne, Stadt als flache Silhouette dahinter.
+ *
+ * Die Stadt ist bewusst klein und dunkel gehalten. Sie ist Hintergrund, nicht
+ * Gegenstand – anders als in den bisherigen Motiven, in denen die Skyline das
+ * ganze Bild füllte und deshalb wie ein Kulissenbild wirkte.
+ */
+function LeonidaPoster() {
+  const horizon = 690;
+  return (
+    <>
+      <rect width="1600" height="1000" fill="url(#sc-sky)" />
+
+      <PosterSun cx={950} cy={506} r={236} />
+
+      {/* Wolkenbaender als harte Streifen, nicht als Weichzeichnung */}
+      <g fill="#3c1240" opacity="0.5">
+        <rect x="60" y="196" width="520" height="16" rx="8" />
+        <rect x="200" y="244" width="360" height="12" rx="6" />
+        <rect x="1120" y="168" width="440" height="14" rx="7" />
+        <rect x="1240" y="214" width="300" height="10" rx="5" />
+      </g>
+
+      {/* Stadt als flache Silhouette: eine Linie, keine Fensterraster */}
+      <SkylineLayer
+        buildings={SKYLINE_MID}
+        groundY={horizon}
+        fill="#2a0c33"
+        windowFill="#ffcf87"
+        windowOpacity={0.55}
+        seed={7}
+        opacity={0.95}
+      />
+      <SkylineLayer
+        buildings={SKYLINE_FAR}
+        groundY={horizon}
+        fill="#4a1244"
+        windowFill="#ffd9a0"
+        windowOpacity={0.2}
+        seed={5}
+        opacity={0.55}
+      />
+
+      {/* Wasser mit hartem Sonnenpfad */}
+      <rect y={horizon} width="1600" height={1000 - horizon} fill="url(#sc-sea)" />
+      <rect y={horizon} width="1600" height="5" fill="#1b0820" opacity="0.8" />
+      <g fill="#ffe0a3" opacity="0.55">
+        {[700, 718, 740, 766, 796, 830, 868, 910].map((y, index) => (
+          <rect key={y} x={950 - (30 + index * 22)} y={y} width={60 + index * 44} height={4 + index} rx="2" />
+        ))}
+      </g>
+
+      {/* Uferkante */}
+      <path d="M0 862 q380 -26 800 -22 q420 -4 800 22 L1600 1000 L0 1000 Z" fill="#1a0722" />
+
+      {/* Wedel als Rahmen – innerhalb des sichtbaren Fensters angesetzt */}
+      <g fill="#0d0410">
+        <path d="M300 -20 C470 -6 596 96 646 238 C584 122 460 44 300 50 Z" />
+        <path d="M300 76 C462 108 560 200 596 322 C542 218 434 152 300 142 Z" />
+        <path d="M1300 -20 C1130 -6 1004 96 954 238 C1016 122 1140 44 1300 50 Z" />
+        <path d="M1300 86 C1146 116 1048 206 1012 326 C1064 224 1166 160 1300 150 Z" />
+      </g>
+
+      <Palm x={1224} y={926} scale={1.42} lean={7} flip fill="#0d0410" />
+      <Palm x={392} y={946} scale={0.9} lean={-6} fill="#0d0410" />
+
+      <rect width="1600" height="1000" fill="url(#sc-vignette)" />
+    </>
+  );
+}
+
 const SCENES: Record<SceneVariant, () => React.JSX.Element> = {
-  "skyline-sonnenuntergang": SkylineSunset,
+  "skyline-sonnenuntergang": LeonidaPoster,
   kuestenstrasse: CoastRoad,
   nachtviertel: NightDistrict,
   inselkette: KeysWater,
