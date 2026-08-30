@@ -3,9 +3,11 @@ import { cx } from "@/lib/format";
 /**
  * Zweifarbige Schlagzeile.
  *
- * Im Blattsatz steht der zweite Teil einer zweiteiligen Schlagzeile oft in
- * der Schmuckfarbe. Getrennt wird am Doppelpunkt, ersatzweise am Gedankenstrich
- * oder Fragezeichen – also dort, wo die Zeile ohnehin ihren Sinn wechselt.
+ * Im Blattsatz wechselt der zweite Teil einer zweiteiligen Schlagzeile die
+ * Schrift: fette Grotesk in Versalien oben, kursive Serife in gemischter
+ * Schreibung darunter. Das ist ruhiger als ein Farbwechsel und liest sich
+ * schneller. Getrennt wird am Doppelpunkt, ersatzweise am Gedankenstrich oder
+ * Fragezeichen – also dort, wo die Zeile ohnehin ihren Sinn wechselt.
  * Findet sich keine solche Stelle, bleibt die Zeile einfarbig; ein erzwungener
  * Umbruch in der Wortmitte waere schlechter als gar keiner.
  */
@@ -20,12 +22,11 @@ export function Schlagzeile({
 
   return (
     <span className={cx("block", className)}>
-      {teile.kopf}
+      <span className="block">{teile.kopf}</span>
       {teile.akzent ? (
-        <>
-          {" "}
-          <span className="headline-akzent">{teile.akzent}</span>
-        </>
+        <span className="mt-1 block font-editorial text-[0.72em] font-medium normal-case italic leading-[1.1] tracking-normal text-ink-800">
+          {teile.akzent}
+        </span>
       ) : null}
     </span>
   );

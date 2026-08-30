@@ -80,50 +80,51 @@ export function ReleaseCountdown() {
     : [];
 
   return (
+    /**
+     * Der Zaehler stand bisher in einem dunkelblauen Kasten – ein Rest aus
+     * der Zeit, als die Seite wie ein Dashboard gebaut war. In einem Blatt
+     * gibt es keine dunklen Kaesten: Es gibt Papier, schwarze Druckfarbe,
+     * Linien und eine Schmuckfarbe. Der Zaehler ist deshalb ein
+     * Zeitungsstreifen wie jeder andere.
+     */
     <section
       aria-labelledby="countdown-title"
-      className="night border-y-2 border-ink-900"
+      className="border-y-2 border-ink-900 bg-paper-50"
     >
-      <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-        <div className="sm:max-w-[19rem]">
-          <p className="meta text-sun-400">Angekündigter Erscheinungstermin</p>
-          <p
-            id="countdown-title"
-            className="subhead mt-1 text-[1.35rem] leading-tight text-paper-50"
-          >
+      <div className="grid gap-y-3 px-4 py-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,auto)] sm:items-center sm:gap-x-6">
+        <div>
+          <p className="meta text-coral-600">Angekündigter Erscheinungstermin</p>
+          <p id="countdown-title" className="subhead mt-0.5 text-[1.4rem] leading-tight">
             {RELEASE.labelDe}
           </p>
-          <p className="mt-1 font-serif text-[12px] leading-snug text-paper-300">
+          <p className="mt-0.5 font-serif text-[12px] leading-snug text-ink-600">
             {RELEASE.midnightNote}
           </p>
         </div>
 
         {remaining ? (
-          <ul className="flex items-stretch gap-2 sm:gap-3">
+          <ul className="flex items-stretch divide-x divide-ink-900/25 border-x-2 border-ink-900">
             {cells.map(([label, value]) => (
-              <li
-                key={label}
-                className="min-w-[3.6rem] flex-1 border border-paper-100/25 bg-paper-50/5 px-2 py-2 text-center sm:min-w-[4.4rem]"
-              >
-                <span className="headline block text-[1.9rem] leading-none tabular-nums text-paper-50 sm:text-[2.4rem]">
+              <li key={label} className="min-w-[3.4rem] px-3 py-0.5 text-center sm:min-w-[4rem]">
+                <span className="headline block text-[2rem] leading-none tabular-nums text-ink-900 sm:text-[2.5rem]">
                   {String(value).padStart(2, "0")}
                 </span>
-                <span className="meta mt-1 block text-paper-300">{label}</span>
+                <span className="meta mt-0.5 block text-ink-500">{label}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-paper-300">
+          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-500">
             {now === 0 ? "Zähler startet …" : "Der Termin ist erreicht."}
           </p>
         )}
 
         <div className="sm:text-right">
-          <p className="meta text-paper-300">Vorabdownload</p>
-          <p className="mt-1 font-mono text-[12px] font-bold text-paper-50">
+          <p className="meta text-lagoon-700">Vorabdownload</p>
+          <p className="mt-0.5 font-mono text-[12px] font-bold text-ink-900">
             {RELEASE.preloadLabelDe}
           </p>
-          <p className="mt-1 font-serif text-[12px] text-paper-300">
+          <p className="mt-0.5 font-serif text-[12px] text-ink-600">
             {RELEASE.priceEur} · Standard Edition
           </p>
         </div>

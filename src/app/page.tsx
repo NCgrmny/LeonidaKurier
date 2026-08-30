@@ -7,6 +7,7 @@ import { BriefItem, HeroStory, StoryCard } from "@/components/kurier/ArticleCard
 import { SourceDesk } from "@/components/kurier/SourceDesk";
 import { ReleaseCountdown } from "@/components/kurier/ReleaseCountdown";
 import { AusLeonida } from "@/components/kurier/AusLeonida";
+import { KurzUndWichtig } from "@/components/kurier/KurzUndWichtig";
 import { RadarTicker } from "@/components/radar/RadarTicker";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import { BaseMap } from "@/components/kompass/BaseMap";
@@ -48,8 +49,9 @@ export default async function HomePage() {
     ]);
 
   const rest = latest.filter((article) => article.slug !== lead?.slug);
-  const secondary = rest.slice(0, 2);
-  const briefs = rest.slice(2, 5);
+  const kurzmeldungen = rest.slice(0, 4);
+  const secondary = rest.slice(4, 6);
+  const briefs = rest.slice(6, 9);
   const leadSource = lead ? (await content.getSources(lead.sourceIds))[0] : null;
   const recentTimeline = [...timeline].reverse().slice(0, 3);
   const discoveries = [...locations.slice(0, 3), ...characters.slice(0, 1)];
@@ -92,8 +94,12 @@ export default async function HomePage() {
       {/* ================= Aufmacher ================= */}
       {lead ? (
         <Container width="wide">
-          <div className="mt-6">
+          {/* Aufmacher links, Kurzmeldungen rechts – wie auf einer Titelseite */}
+          <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-8">
             <HeroStory article={lead} sourceLabel={leadSource?.publisher} />
+            <KurzUndWichtig artikel={kurzmeldungen} />
+          </div>
+          <div className="mt-5">
             <SourceDesk
               checkedAt={checkedAt}
               primary={newestPrimary}

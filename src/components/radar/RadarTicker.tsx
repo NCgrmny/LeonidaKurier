@@ -11,7 +11,7 @@ export function RadarTicker({ signals }: { signals: RadarSignal[] }) {
   if (signals.length === 0) return null;
 
   return (
-    <div className="flex items-stretch bg-night-950 text-paper-100">
+    <div className="flex items-stretch border-b-2 border-ink-900 bg-paper-100 text-ink-900">
       <p className="flex shrink-0 items-center gap-2 bg-coral-500 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-paper-50 sm:px-4">
         <span aria-hidden className="size-1.5 animate-pulse rounded-full bg-paper-50" />
         Liveticker
@@ -28,7 +28,7 @@ export function RadarTicker({ signals }: { signals: RadarSignal[] }) {
               >
                 {definition.label}
               </span>
-              <span className="whitespace-nowrap font-serif text-[13px] text-paper-200">
+              <span className="whitespace-nowrap font-serif text-[13px] text-ink-800">
                 {signal.title}
               </span>
             </li>
@@ -38,7 +38,7 @@ export function RadarTicker({ signals }: { signals: RadarSignal[] }) {
 
       <Link
         href="/radar"
-        className="hidden shrink-0 items-center gap-1.5 border-l border-white/15 px-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-lagoon-300 transition-colors hover:text-lagoon-200 md:flex"
+        className="hidden shrink-0 items-center gap-1.5 border-l border-ink-900/20 px-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-lagoon-700 transition-colors hover:text-coral-600 md:flex"
       >
         Mehr <span aria-hidden>→</span>
       </Link>
