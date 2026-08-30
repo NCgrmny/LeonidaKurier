@@ -112,7 +112,9 @@ export function ReleaseCountdown() {
           </p>
         </div>
 
-        <p className="meta shrink-0 text-ink-500">
+        {/* Kein shrink-0: die Zeile ist auf 390px breiter als der Platz und
+            wuerde sonst am Rand abgeschnitten statt umzubrechen. */}
+        <p className="meta text-ink-500">
           Vorabdownload ab {RELEASE.preloadLabelDe} · {RELEASE.priceEur}
         </p>
       </div>

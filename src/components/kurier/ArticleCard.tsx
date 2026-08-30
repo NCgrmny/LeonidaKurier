@@ -41,9 +41,13 @@ export function HeroStory({
      * das niemand so; dort steht der Text neben dem Bild.
      */
     <article className="group relative isolate border-y-2 border-ink-900 bg-paper-50">
+      {/* Keine order-Umkehr: auf schmalen Geraeten steht die Schlagzeile
+          zuerst, dann das Bild. Ein Aufmacher, der mit vier nummerierten
+          Bildbefunden beginnt, laesst den Leser Belege lesen, bevor er weiss,
+          worum es geht. */}
       <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
         {/* Textspalte */}
-        <div className="order-2 flex flex-col justify-between p-6 sm:p-8 lg:order-1 lg:p-10">
+        <div className="flex flex-col justify-between p-6 sm:p-8 lg:p-10">
           <div>
             <div className="flex flex-wrap items-center gap-3">
               <span className="rubric">{CATEGORY_LABEL[article.category]}</span>
@@ -85,7 +89,7 @@ export function HeroStory({
         </div>
 
         {/* Bildspalte: volle Farbe, kein Schleier. */}
-        <figure className="order-1 m-0 flex flex-col lg:order-2 lg:border-l-2 lg:border-ink-900">
+        <figure className="m-0 flex flex-col lg:border-l-2 lg:border-ink-900">
           <div className="relative min-h-[15rem] flex-1 overflow-hidden bg-night-950 sm:min-h-[20rem] lg:min-h-[22rem]">
             <Scene variant={motif ?? article.motif ?? motifForSlug(article.slug)} />
             <figcaption className="absolute bottom-0 right-0 bg-ink-900/85 px-2.5 py-1 font-mono text-[8px] uppercase tracking-[0.14em] text-paper-200">
