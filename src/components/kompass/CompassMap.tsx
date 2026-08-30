@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { statusDefinition } from "@/lib/status";
+import { MAP_PRECISION, PRECISION_ORDER, precisionDefinition } from "@/lib/precision";
 import { cx } from "@/lib/format";
 import { entityHref } from "@/lib/content/collections";
 import { MAINLAND, MAP_VIEWBOX, toSmoothPath } from "@/content/geography";
@@ -478,12 +479,32 @@ export function CompassMap({
                     </dt>
                   </div>
                 ))}
-                <div className="flex items-center gap-2 border-t border-ink-900/15 pt-2">
-                  <LayerIcon shape="kreis" color="#8d7f6d" size={14} />
-                  <dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-600">
-                    Ohne belegte Position
-                  </dt>
-                </div>
+              </dl>
+
+              {/* Genauigkeit wird pro Marker ausgewiesen – hier steht, was die
+                  drei Stufen bedeuten. */}
+              <p className="ressort mt-5 inline-block">Genauigkeit</p>
+              <dl className="mt-3 grid gap-2.5">
+                {PRECISION_ORDER.map((id) => {
+                  const stufe = MAP_PRECISION[id];
+                  return (
+                    <div key={id} className="flex gap-2">
+                      <span
+                        aria-hidden
+                        className="mt-1 size-2.5 shrink-0 rounded-full ring-1 ring-inset ring-black/20"
+                        style={{ backgroundColor: stufe.accent }}
+                      />
+                      <div>
+                        <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-ink-800">
+                          {stufe.label}
+                        </dt>
+                        <dd className="font-serif text-[12px] leading-snug text-ink-600">
+                          {stufe.definition}
+                        </dd>
+                      </div>
+                    </div>
+                  );
+                })}
               </dl>
               <button
                 type="button"
@@ -679,9 +700,17 @@ function SelectionDetail({ marker, onClear }: { marker: MapMarker; onClear: () =
       <p className="standfirst mt-2 text-[14px]">{marker.summary}</p>
 
       <div className="mt-4 border-y border-ink-900/15 py-3">
-        <p className="meta">Position: {marker.position.precision}</p>
+        <p className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-ink-800">
+          <span
+            aria-hidden
+            className="size-2 shrink-0 rounded-full ring-1 ring-inset ring-black/20"
+            style={{ backgroundColor: precisionDefinition(marker.position.precision).accent }}
+          />
+          Genauigkeit: {precisionDefinition(marker.position.precision).label}
+        </p>
         <p className="mt-1.5 font-serif text-[12px] leading-snug text-ink-600">
-          {marker.position.note ?? "Zur Lage dieses Eintrags liegt nichts Belegtes vor."}
+          {marker.position.note ??
+            precisionDefinition(marker.position.precision).definition}
         </p>
       </div>
 
