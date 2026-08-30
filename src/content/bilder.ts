@@ -27,7 +27,7 @@ import type { Pressebild } from "@/lib/bilder";
 export const bilder: Pressebild[] = [
   {
     datei: "miami-skyline-am-meer.jpg",
-    beschreibung: "Skyline von Miami, vom Atlantik aus gesehen",
+    beschreibung: "Skyline von Miami bei Nacht, vom Wasser aus gesehen",
     aufnahmeort: "Miami-Dade County, Florida",
     urheber: "Matthew T Rader",
     lizenz: "CC BY-SA 4.0",

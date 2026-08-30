@@ -5,6 +5,8 @@ import { Container } from "@/components/ui/Container";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import { Standortkarte } from "@/components/kompass/Standortkarte";
 import { istVerortet } from "@/lib/kartenpunkte";
+import { Pressefoto } from "@/components/ui/Pressefoto";
+import { fotoFuer } from "@/lib/content/bildzuordnung";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { SourceList } from "@/components/ui/SourceList";
 import { RelatedRefs } from "@/components/ui/RelatedRefs";
@@ -15,6 +17,7 @@ import { COLLECTIONS, collectionBySlug, entityHref } from "@/lib/content/collect
 import { entriesForCollection, resolveRefs } from "@/lib/content/queries";
 import { formatDate } from "@/lib/format";
 import { statusDefinition } from "@/lib/status";
+import { precisionDefinition } from "@/lib/precision";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import type { BaseEntity, GameLocation, Theory } from "@/lib/types";
 
@@ -79,6 +82,7 @@ export default async function EntityPage({
     resolveRefs(entity.related),
   ]);
   const status = statusDefinition(entity.status);
+  const foto = fotoFuer(entity.slug);
   const more = siblings.filter((item) => item.slug !== entity.slug).slice(0, 3);
 
   return (
@@ -122,10 +126,31 @@ export default async function EntityPage({
                 </p>
               </div>
 
-              <figure className="relative m-0 min-h-[16rem] border-ink-900 lg:min-h-[22rem] lg:border-l-2">
-                <Standortkarte
-                  punkte={[{ name: entity.title, position: entity.marker }]}
-                />
+              {/* Liegt ein Foto vor, traegt es den Kopf – die Karte rueckt
+                  darunter als schmaler Streifen. Ein Foto zeigt den Ort, die
+                  Karte sagt, wo er liegt; beides zusammen ist mehr als eines
+                  davon allein. */}
+              <figure className="m-0 flex flex-col border-ink-900 lg:border-l-2">
+                {foto ? (
+                  <>
+                    <div className="relative min-h-[16rem] flex-1 lg:min-h-[17rem]">
+                      <Pressefoto bild={foto} prioritaet />
+                    </div>
+                    <div className="relative h-28 border-t-2 border-ink-900 sm:h-32">
+                      <Standortkarte
+                        punkte={[{ name: entity.title, position: entity.marker }]}
+                        zoom={0.62}
+                        kompakt
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="relative min-h-[16rem] flex-1 lg:min-h-[22rem]">
+                    <Standortkarte
+                      punkte={[{ name: entity.title, position: entity.marker }]}
+                    />
+                  </div>
+                )}
               </figure>
             </div>
           </Container>
@@ -230,13 +255,16 @@ export default async function EntityPage({
             {hasMarker(entity) && entity.marker ? (
               <section className="mt-8 border border-ink-900/15 bg-paper-200/60 p-5">
                 <p className="ressort inline-block">Auf der Karte</p>
+                {/* Kein roher Datenbankwert: 'grob' sagt dem Leser nichts,
+                    die Definition der Stufe schon. */}
                 <p className="mt-3 font-serif text-[15px] leading-relaxed text-ink-700">
                   Dieser Eintrag ist im Leonida Kompass verzeichnet. Genauigkeit der
                   Position:{" "}
-                  <span className="font-mono text-[13px] font-bold text-ink-900">
-                    {entity.marker.precision}
+                  <span className="font-mono text-[12px] font-bold uppercase tracking-[0.1em] text-ink-900">
+                    {precisionDefinition(entity.marker.precision).label}
                   </span>
-                  .
+                  {" – "}
+                  {precisionDefinition(entity.marker.precision).definition}
                 </p>
                 {entity.marker.note ? (
                   <p className="mt-2 border-l-2 border-lagoon-600 pl-3 font-serif text-[13px] italic text-ink-600">
