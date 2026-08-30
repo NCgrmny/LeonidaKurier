@@ -12,6 +12,7 @@ import { HeuteInLeonida } from "@/components/kurier/HeuteInLeonida";
 import { RadarTicker } from "@/components/radar/RadarTicker";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import { BaseMap } from "@/components/kompass/BaseMap";
+import { Portraetplatte } from "@/components/datenbank/Portraetplatte";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { MAP_VIEWBOX } from "@/content/geography";
 import { content } from "@/lib/content";
@@ -341,11 +342,20 @@ export default async function HomePage() {
               return (
                 <li key={entity.id} className="group relative">
                   <div className="relative aspect-[4/3] overflow-hidden bg-night-900">
-                    <Scene
-                      variant={
-                        motive.get(entity.slug) ?? entity.motif ?? motifForSlug(entity.slug)
-                      }
-                    />
+                    {type === "character" ? (
+                      <Portraetplatte
+                        name={entity.title}
+                        rolle={"role" in entity ? entity.role : undefined}
+                      />
+                    ) : (
+                      <Scene
+                        variant={
+                          motive.get(entity.slug) ??
+                          entity.motif ??
+                          motifForSlug(entity.slug)
+                        }
+                      />
+                    )}
                   </div>
                   <div className="mt-3">
                     <StatusBadge status={entity.status} />

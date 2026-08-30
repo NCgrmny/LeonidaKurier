@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Scene, motifForSlug } from "@/components/art/Scene";
-import type { BaseEntity } from "@/lib/types";
+import type { BaseEntity, Character } from "@/lib/types";
+import { Portraetplatte } from "./Portraetplatte";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
 
 export function EntityCard({
@@ -18,7 +19,11 @@ export function EntityCard({
     <article className="group relative flex h-full flex-col">
       {withImage ? (
         <div className="relative mb-3 aspect-[4/3] overflow-hidden bg-night-900">
-          <Scene variant={entity.motif ?? motifForSlug(entity.slug)} />
+          {istFigur(entity) ? (
+            <Portraetplatte name={entity.title} rolle={entity.role} />
+          ) : (
+            <Scene variant={entity.motif ?? motifForSlug(entity.slug)} />
+          )}
         </div>
       ) : null}
       <div className="flex flex-wrap items-center gap-2.5">
@@ -34,4 +39,12 @@ export function EntityCard({
       {meta ? <p className="meta mt-auto pt-3">{meta}</p> : null}
     </article>
   );
+}
+
+/**
+ * Figuren erkennt man an `role`. Ein eigenes Feld dafuer waere ehrlicher,
+ * aber `role` fuehrt bisher ausschliesslich die Charaktersammlung.
+ */
+function istFigur(entity: BaseEntity): entity is Character {
+  return "role" in entity;
 }
