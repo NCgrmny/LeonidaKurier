@@ -319,6 +319,13 @@ body {
   background: var(--color-coral-500);
 }
 
+/* Der Zitatkasten braucht mehr Luft als ein Absatz – er unterbricht die Spalte
+   bewusst, statt in ihr mitzulaufen. */
+.body-text > blockquote {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
 /* Justierter Spaltensatz für die Titelseite */
 .justified p {
   text-align: justify;
