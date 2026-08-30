@@ -103,6 +103,18 @@ export default async function HomePage() {
         </Container>
       ) : null}
 
+      {/* ================= Schlusszeile der Titelseite ================= */}
+      <Container width="wide">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 bg-ink-900 px-4 py-2.5">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-paper-100 sm:text-[11px]">
+            Leonida Kurier — wir filtern das Rauschen. Du siehst, was bleibt.
+          </p>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-coral-400">
+            A project by {SITE.operator}
+          </p>
+        </div>
+      </Container>
+
       {/* ================= Editorial Grid ================= */}
       <Container width="wide">
         <section className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-10">

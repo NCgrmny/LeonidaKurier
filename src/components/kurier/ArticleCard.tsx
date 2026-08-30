@@ -3,6 +3,7 @@ import { Scene, motifForSlug } from "@/components/art/Scene";
 import { formatDate } from "@/lib/format";
 import type { Article } from "@/lib/types";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
+import { Schlagzeile } from "./Schlagzeile";
 
 const CATEGORY_LABEL: Record<Article["category"], string> = {
   meldung: "Meldung",
@@ -49,9 +50,9 @@ export function HeroStory({
             <h2 className="headline mt-4 text-[2.15rem] leading-[0.92] text-ink-900 sm:text-[2.9rem] lg:text-[3.5rem]">
               <Link
                 href={`/kurier/${article.slug}`}
-                className="after:absolute after:inset-0 hover:text-coral-600"
+                className="after:absolute after:inset-0"
               >
-                {article.title}
+                <Schlagzeile text={article.title} />
               </Link>
             </h2>
 

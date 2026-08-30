@@ -1,6 +1,19 @@
-import { formatDate } from "@/lib/format";
+import Link from "next/link";
+import { cx, formatDate } from "@/lib/format";
 import { SITE } from "@/lib/site";
 import { PalmGlyph, Seal } from "./Seal";
+
+/**
+ * Ressortleiste des Blattkopfs. Jedes Ressort traegt seine eigene Farbe –
+ * gedruckte Blaetter machen das, damit man beim Blaettern weiss, wo man ist.
+ */
+const RESSORTS = [
+  { href: "/kurier", label: "Kurier", tone: "ressort-kurier" },
+  { href: "/kompass", label: "Kompass", tone: "ressort-kompass" },
+  { href: "/radar", label: "Radar", tone: "ressort-radar" },
+  { href: "/datenbank", label: "Datenbank", tone: "ressort-datenbank" },
+  { href: "/archiv", label: "Archiv", tone: "ressort-archiv" },
+];
 
 /**
  * Zeitungskopf der Titelseite.
@@ -18,58 +31,60 @@ export function Masthead({
   edition?: number;
 }) {
   return (
-    <div className="pt-5 sm:pt-8">
-      <div className="grid items-center gap-4 border-b border-ink-900/15 pb-4 sm:grid-cols-[1fr_auto_1fr]">
-        {/* Kennzeile */}
-        <div className="order-2 hidden sm:order-1 sm:block">
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-ink-900">
-            {formatDate(editionDate)}
-          </p>
-          <p className="meta mt-1">
-            Ausgabe {String(edition).padStart(3, "0")} · 1. Jahrgang
-          </p>
-          <p className="meta mt-3 text-coral-600">Unabhängiges Fanprojekt</p>
-        </div>
+    <div className="pt-3 sm:pt-5">
+      {/* Kennzeile über dem Titel – Haltung links, Urheber mittig, Adresse rechts */}
+      <div className="flex items-center justify-between gap-3 border-b border-ink-900 pb-1.5 font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-ink-700 sm:text-[9px]">
+        <span>Unabhängig · Überparteilich · Für Leonida</span>
+        <span className="hidden items-center gap-1.5 sm:inline-flex">
+          <PalmGlyph className="h-3 w-auto text-coral-600" />
+          A project by <strong className="font-bold text-ink-900">{SITE.operator}</strong>
+        </span>
+        <span className="hidden md:inline">www.leonidakurier.de</span>
+      </div>
 
-        {/* Wortmarke */}
-        <div className="order-1 sm:order-2">
-          {/* Umbricht auf schmalen Viewports in zwei Zeilen; die Glyphe bleibt
-              beim ersten Wort, damit sie nie allein steht. */}
-          <h1 className="masthead flex flex-wrap items-center justify-center gap-x-1 gap-y-0 text-center text-[clamp(2.4rem,11vw,7.5rem)] text-ink-900 sm:gap-x-2">
-            <span className="inline-flex items-center gap-1 sm:gap-2">
-              Leonida
-              <PalmGlyph className="h-[0.78em] w-auto shrink-0 text-coral-600" />
-            </span>
-            <span>Kurier</span>
-          </h1>
-          <p className="mt-2 text-center font-mono text-[9px] font-bold uppercase tracking-[0.32em] text-ink-600 sm:text-[11px]">
-            Die Stimme Leonidas · Unabhängig · Nachprüfbar
-          </p>
-        </div>
+      {/* Blattkopf */}
+      <h1 className="masthead mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-0 text-center text-[clamp(2.6rem,12vw,7.2rem)] text-ink-900 sm:gap-x-4">
+        <span>Leonida</span>
+        <PalmGlyph doppelt className="h-[0.8em] w-auto shrink-0 text-coral-500" />
+        <span>Kurier</span>
+      </h1>
 
-        {/* Signet und Verbreitungsgebiet */}
-        <div className="order-3 hidden items-center justify-end gap-4 sm:flex">
-          <Seal className="size-[74px] shrink-0 text-coral-600/85" />
-          <ul className="text-right">
-            <li className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-ink-900">
-              Vice City
-            </li>
-            {["Leonida Keys", "Port Gellhorn", "Ambrosia", "Grassrivers"].map((place) => (
-              <li key={place} className="meta">
-                {place}
+      {/* Zeile unter dem Titel: Ausgabe, Anspruch, Preis – wie im Druck */}
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-y border-ink-900 py-1.5">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-ink-900 sm:text-[10px]">
+          Nr. {String(edition).padStart(3, "0")}
+        </span>
+        <span className="order-3 w-full text-center font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-ink-800 sm:order-none sm:w-auto sm:text-[10px] sm:tracking-[0.26em]">
+          Die Zeitung des Bundesstaates Leonida
+        </span>
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-ink-900 sm:text-[10px]">
+          2,50 $
+        </span>
+      </div>
+
+      {/* Datumszeile und farbige Ressortleiste */}
+      <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 border-b-2 border-ink-900 py-2">
+        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-ink-700 sm:text-[10px]">
+          {formatDate(editionDate)} · 1. Jahrgang
+        </span>
+        <nav aria-label="Ressorts">
+          <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 sm:gap-x-6">
+            {RESSORTS.map((ressort) => (
+              <li key={ressort.href}>
+                <Link
+                  href={ressort.href}
+                  className={cx(
+                    "font-mono text-[10px] font-bold uppercase tracking-[0.18em] transition-opacity hover:opacity-70 sm:text-[11px]",
+                    ressort.tone,
+                  )}
+                >
+                  {ressort.label}
+                </Link>
               </li>
             ))}
           </ul>
-        </div>
-      </div>
-
-      {/* Zeile für schmale Viewports */}
-      <div className="flex items-center justify-between gap-3 border-b border-ink-900/15 py-2 sm:hidden">
-        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-ink-900">
-          {formatDate(editionDate)}
-        </span>
-        <span className="meta">Ausgabe {String(edition).padStart(3, "0")}</span>
-        <Seal className="size-8 shrink-0 text-coral-600/85" />
+        </nav>
+        <Seal className="hidden size-9 shrink-0 text-coral-600/85 sm:block" />
       </div>
 
       <p className="sr-only">{SITE.tagline}</p>

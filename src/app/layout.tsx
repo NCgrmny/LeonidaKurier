@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import {
   Anton,
+  Abril_Fatface,
   JetBrains_Mono,
   Playfair_Display,
   Source_Serif_4,
@@ -13,6 +14,18 @@ import { SITE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 /** Schmale, fette Versalschrift für Zeitungskopf und Schlagzeilen. */
+/**
+ * Titelschrift der Zeitung: eine fette Didone mit hohem Strichkontrast.
+ * Die kondensierte Grotesk davor las sich wie ein Plakat, nicht wie ein
+ * Zeitungskopf – gedruckte Blaetter setzen ihren Namen in Serifen.
+ */
+const abril = Abril_Fatface({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-abril",
+  display: "swap",
+});
+
 const anton = Anton({
   subsets: ["latin"],
   weight: "400",
@@ -83,7 +96,7 @@ export default function RootLayout({
   return (
     <html
       lang="de"
-      className={`${anton.variable} ${sourceSerif.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
+      className={`${abril.variable} ${anton.variable} ${sourceSerif.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
     >
       <body className="paper-grain min-h-dvh">
         <a

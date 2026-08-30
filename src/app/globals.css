@@ -53,6 +53,7 @@
 
   /* Schmale Versalien tragen Kopf und Schlagzeilen, die Didone die Ressort-
      und Zwischenüberschriften, die Lesserife den Fließtext. */
+  --font-title: var(--font-abril), "Bodoni 72", Didot, Georgia, serif;
   --font-display: var(--font-anton), "Haettenschweiler", "Impact", sans-serif;
   --font-editorial: var(--font-playfair), ui-serif, Georgia, serif;
   --font-serif: var(--font-source-serif), ui-serif, Georgia, serif;
@@ -108,9 +109,26 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.55;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.34 0 0 0 0 0.29 0 0 0 0 0.2 0 0 0 0.3 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Vergilbung: grossflaechige, unregelmaessige Verfaerbung ueber dem Korn.
+   Zeitungspapier altert nicht gleichmaessig – ohne diese zweite Ebene wirkt
+   die Flaeche wie bedrucktes Kopierpapier. */
+.paper-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image:
+    radial-gradient(60rem 40rem at 12% 8%, rgba(178, 150, 96, 0.16), transparent 70%),
+    radial-gradient(48rem 36rem at 88% 30%, rgba(166, 132, 84, 0.14), transparent 68%),
+    radial-gradient(52rem 44rem at 30% 82%, rgba(150, 122, 78, 0.12), transparent 70%),
+    radial-gradient(40rem 30rem at 70% 96%, rgba(186, 158, 108, 0.12), transparent 66%);
 }
 
 /* Druckraster: Halbtonpunkte, wie im Zeitungsdruck. */
@@ -121,11 +139,13 @@ body {
 
 /* --- Typografie ------------------------------------------------------------ */
 
+/* Zeitungstitel: fette Didone mit hohem Strichkontrast, wie im Blattkopf
+   gedruckter Zeitungen. Nicht die Grotesk der Schlagzeilen. */
 .masthead {
-  font-family: var(--font-display);
+  font-family: var(--font-title);
   font-weight: 400;
-  letter-spacing: 0.005em;
-  line-height: 0.82;
+  letter-spacing: -0.005em;
+  line-height: 0.86;
   text-transform: uppercase;
 }
 
@@ -352,3 +372,20 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Ressortfarben.
+
+   Gedruckte Blaetter geben jedem Ressort eine eigene Farbe, damit man beim
+   Blaettern weiss, wo man ist. Die Farben stammen aus der Palette der Marke,
+   nicht aus einem beliebigen Farbkreis.
+   --------------------------------------------------------------------------- */
+.ressort-kurier { color: var(--color-coral-600); }
+.ressort-kompass { color: var(--color-lagoon-700); }
+.ressort-radar { color: var(--color-sun-500); }
+.ressort-datenbank { color: var(--color-night-700); }
+.ressort-archiv { color: var(--color-flamingo-500); }
+
+/* Zweifarbige Schlagzeile: der zweite Teil steht in Koralle, wie im Blattsatz
+   die Unterzeile einer zweiteiligen Schlagzeile. */
+.headline-akzent { color: var(--color-coral-600); }
