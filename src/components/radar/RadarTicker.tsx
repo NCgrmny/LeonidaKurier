@@ -17,7 +17,18 @@ export function RadarTicker({ signals }: { signals: RadarSignal[] }) {
         Liveticker
       </p>
 
-      <ul className="flex flex-1 items-center gap-5 overflow-x-auto px-3 py-2 [scrollbar-width:none] sm:gap-7 sm:px-4 [&::-webkit-scrollbar]:hidden">
+      {/* Der Scrollbalken ist ausgeblendet, damit das Band flach bleibt. Ohne
+          Hinweis sieht ein angeschnittenes Wort am rechten Rand aber nach
+          Fehler aus – die Ausblendung zeigt, dass die Zeile weitergeht. */}
+      <ul
+        className="flex flex-1 items-center gap-5 overflow-x-auto px-3 py-2 [scrollbar-width:none] sm:gap-7 sm:px-4 [&::-webkit-scrollbar]:hidden"
+        style={{
+          maskImage:
+            "linear-gradient(to right, #000 calc(100% - 3rem), transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, #000 calc(100% - 3rem), transparent 100%)",
+        }}
+      >
         {signals.slice(0, 6).map((signal) => {
           const definition = statusDefinition(signal.status);
           return (
