@@ -2,13 +2,17 @@ import type { Bildbefund } from "@/lib/types";
 import { statusDefinition } from "@/lib/status";
 
 /**
- * Bildlegende als Befundliste.
+ * Befundliste zum offiziellen Material.
  *
  * Andere Seiten setzen ein Bild darunter und schreiben eine Zeile dazu. Der
- * Kurier nummeriert, was darauf zu sehen ist, und gibt jedem Punkt seinen
- * Belegstatus. Damit wird aus Dekoration Beweismaterial – und der Unterschied
- * zu einer gewöhnlichen Newsseite steht direkt am Bild statt in einem
- * Leitbild.
+ * Kurier nummeriert, was aus Rockstars Material hervorgeht, und gibt jedem
+ * Punkt seinen Belegstatus.
+ *
+ * Wichtig ist, worauf sich die Befunde beziehen: auf das offizielle Material,
+ * nicht auf die Grafik daneben. Die stammt aus dieser Redaktion und kann
+ * nichts belegen. Die frühere Überschrift „Was auf dem Bild zu sehen ist"
+ * legte genau das nahe – spätestens neben einer Standortkarte wurde daraus
+ * eine falsche Aussage.
  *
  * Bewusst zurückhaltend gesetzt: dünne Linien, kleine Ziffern, keine
  * Aktenoptik. Es bleibt eine Bildunterschrift, nur eine genaue.
@@ -19,7 +23,7 @@ export function BildBefunde({ befunde }: { befunde: Bildbefund[] }) {
   return (
     <div className="border-t border-ink-900/20 bg-paper-100/60">
       <p className="border-b border-ink-900/15 px-3 py-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.16em] text-ink-600">
-        Was auf dem Bild zu sehen ist
+        Was das offizielle Material zeigt
       </p>
       <ol className="grid sm:grid-cols-2">
         {befunde.map((befund, index) => {
