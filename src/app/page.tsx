@@ -6,6 +6,7 @@ import { Masthead } from "@/components/kurier/Masthead";
 import { BriefItem, HeroStory, StoryCard } from "@/components/kurier/ArticleCard";
 import { SourceDesk } from "@/components/kurier/SourceDesk";
 import { ReleaseCountdown } from "@/components/kurier/ReleaseCountdown";
+import { AusLeonida } from "@/components/kurier/AusLeonida";
 import { RadarTicker } from "@/components/radar/RadarTicker";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import { BaseMap } from "@/components/kompass/BaseMap";
@@ -102,6 +103,13 @@ export default async function HomePage() {
           </div>
         </Container>
       ) : null}
+
+      {/* ================= Aus Leonida ================= */}
+      <Container width="wide">
+        <div className="mt-10">
+          <AusLeonida />
+        </div>
+      </Container>
 
       {/* ================= Schlusszeile der Titelseite ================= */}
       <Container width="wide">

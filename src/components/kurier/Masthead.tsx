@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cx, formatDate } from "@/lib/format";
 import { SITE } from "@/lib/site";
-import { PalmGlyph, Seal } from "./Seal";
+import { BlattMarke, PalmGlyph, Seal } from "./Seal";
 
 /**
  * Ressortleiste des Blattkopfs. Jedes Ressort traegt seine eigene Farbe –
@@ -39,13 +39,15 @@ export function Masthead({
           <PalmGlyph className="h-3 w-auto text-coral-600" />
           A project by <strong className="font-bold text-ink-900">{SITE.operator}</strong>
         </span>
-        <span className="hidden md:inline">www.leonidakurier.de</span>
+        <span className="hidden text-right md:inline">
+          Keine Verbindung zu Rockstar Games oder Take-Two Interactive
+        </span>
       </div>
 
       {/* Blattkopf */}
       <h1 className="masthead mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-0 text-center text-[clamp(2.6rem,12vw,7.2rem)] text-ink-900 sm:gap-x-4">
         <span>Leonida</span>
-        <PalmGlyph doppelt className="h-[0.8em] w-auto shrink-0 text-coral-500" />
+        <BlattMarke className="h-[0.92em] w-auto shrink-0 text-coral-500" />
         <span>Kurier</span>
       </h1>
 
