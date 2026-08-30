@@ -66,11 +66,11 @@ export const locations: GameLocation[] = [
     motif: "inselkette",
     title: "Leonida Keys",
     summary:
-      "Geboren in Liberty City, das Kämpfen vom Vater gelernt. Der Versuch, ihre Familie zu schützen, brachte sie ins Leonida Penitentiary – herausgekommen ist sie nur durch Glück. Eine der beiden Hauptfiguren.",
+      "Die Inselkette im Süden des Bundesstaates. Hier liegt die Wohnung, in der Jason und Lucia zu Beginn leben.",
     category: "gebiet",
     regionSlug: "leonida",
     status: "bestaetigt",
-    sourceIds: ["src-rockstar-charaktere", "src-rockstar-gta6", "src-trailer-1"],
+    sourceIds: ["src-rockstar-regionen", "src-rockstar-gta6"],
     updatedAt: "2026-08-30",
     marker: {
       ...fromGeo(-81.1, 24.72),
@@ -258,12 +258,12 @@ export const characters: Character[] = [
     motif: "nachtviertel",
     title: "Lucia Caminos",
     summary:
-      "Eine der beiden Hauptfiguren von Grand Theft Auto VI, offiziell von Rockstar Games vorgestellt.",
+      "Geboren in Liberty City, das Kämpfen vom Vater gelernt. Der Versuch, ihre Familie zu schützen, brachte sie ins Leonida Penitentiary – herausgekommen ist sie nur durch Glück. Eine der beiden Hauptfiguren.",
     role: "Hauptfigur",
     regionSlug: "leonida",
     status: "bestaetigt",
-    sourceIds: ["src-rockstar-gta6", "src-trailer-1"],
-    updatedAt: "2026-08-01",
+    sourceIds: ["src-rockstar-charaktere", "src-rockstar-gta6", "src-trailer-1"],
+    updatedAt: "2026-08-30",
     related: [
       { type: "character", slug: "jason-duval" },
       { type: "location", slug: "vice-city" },
@@ -354,12 +354,12 @@ export const characters: Character[] = [
     motif: "nachtviertel",
     title: "Raul Bautista",
     summary:
-      "Bae-Luxe und Roxy, seit Langem befreundet. Eine frühe Single mit dem Rapper DWNPLY brachte den Durchbruch; fünf Jahre und viel Ärger später stehen sie bei Only Raw Records unter Vertrag und hoffen auf den zweiten Blitzschlag.",
+      "Erfahrener Bankräuber – von Rockstar Games ausdrücklich als solcher vorgestellt und damit der naheliegendste Name für ein größeres Ding.",
     role: "Nebenfigur",
     regionSlug: "leonida",
     status: "bestaetigt",
     sourceIds: ["src-rockstar-charaktere"],
-    updatedAt: "2026-08-29",
+    updatedAt: "2026-08-30",
     related: [{ type: "location", slug: "vice-city" }],
   },
   {

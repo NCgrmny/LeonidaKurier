@@ -17,6 +17,33 @@ import type { RadarStatus } from "@/lib/types";
 
 const ISO_DATE = /^\d{4}-\d{2}(-\d{2})?$/;
 
+describe("Zusammenfassungen", () => {
+  it("sind über alle Sammlungen hinweg eindeutig", async () => {
+    // Zwei Einträge mit identischem Text bedeuten fast immer, dass ein Text
+    // beim Bearbeiten in den falschen Eintrag gerutscht ist.
+    const gesehen = new Map<string, string>();
+    // Kartenmarker sind abgeleitete Eintraege mit bewusst knappen,
+    // gleichartigen Texten – sie gehoeren nicht in diese Pruefung.
+    for (const { type, entity } of allEntities()) {
+      if (type === "mapMarker") continue;
+      const vorher = gesehen.get(entity.summary);
+      expect(
+        vorher,
+        `"${entity.id}" und "${vorher}" teilen sich dieselbe Zusammenfassung`,
+      ).toBeUndefined();
+      gesehen.set(entity.summary, entity.id);
+    }
+  });
+
+  it("sagen mehr als den Titel", async () => {
+    for (const { type, entity } of allEntities()) {
+      if (type === "mapMarker") continue;
+      expect(entity.summary.length, entity.id).toBeGreaterThan(40);
+      expect(entity.summary.trim(), entity.id).not.toBe(entity.title);
+    }
+  });
+});
+
 describe("Slugs", () => {
   it("sind innerhalb jeder Sammlung eindeutig", async () => {
     for (const collection of COLLECTIONS) {
