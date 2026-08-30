@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import type { BaseEntity, Character } from "@/lib/types";
 import { istVerortet } from "@/lib/kartenpunkte";
+import { Pressefoto } from "@/components/ui/Pressefoto";
+import { fotoFuer } from "@/lib/content/bildzuordnung";
 import { Standortkarte } from "@/components/kompass/Standortkarte";
 import { Portraetplatte } from "./Portraetplatte";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
@@ -17,11 +19,15 @@ export function EntityCard({
   meta?: string;
   withImage?: boolean;
 }) {
+  const foto = fotoFuer(entity.slug);
+
   return (
     <article className="group relative flex h-full flex-col">
       {withImage ? (
         <div className="relative mb-3 aspect-[4/3] overflow-hidden bg-night-900">
-          {istFigur(entity) ? (
+          {foto ? (
+            <Pressefoto bild={foto} />
+          ) : istFigur(entity) ? (
             <Portraetplatte name={entity.title} rolle={entity.role} />
           ) : istVerortet(entity) ? (
             <Standortkarte

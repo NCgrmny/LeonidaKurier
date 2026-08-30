@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { Scene, motifForSlug } from "@/components/art/Scene";
+import { Standortkarte } from "@/components/kompass/Standortkarte";
+import { istVerortet } from "@/lib/kartenpunkte";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { SourceList } from "@/components/ui/SourceList";
 import { RelatedRefs } from "@/components/ui/RelatedRefs";
@@ -81,7 +83,54 @@ export default async function EntityPage({
 
   return (
     <>
-      {/* Aufmacher mit Motiv und Aktenkopf */}
+      {/* Aktenkopf.
+          Verortete Eintraege bekommen ihre Karte in eine eigene Spalte statt
+          als abgedunkelten Hintergrund: Eine Standortkarte, die man nicht
+          lesen kann, zeigt nichts. Alles Uebrige behaelt das dunkle Band. */}
+      {istVerortet(entity) ? (
+        <div className="border-b-2 border-ink-900 bg-paper-50">
+          <Container width="wide">
+            <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div className="py-8 pr-0 sm:py-10 lg:py-12 lg:pr-10">
+                <nav aria-label="Brotkrumen" className="meta mb-5">
+                  <Link href="/datenbank" className="hover:text-coral-600">
+                    Datenbank
+                  </Link>
+                  <span aria-hidden> / </span>
+                  <Link
+                    href={`/datenbank/${collection.slug}`}
+                    className="hover:text-coral-600"
+                  >
+                    {collection.label}
+                  </Link>
+                </nav>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="rubric">{collection.singular}</span>
+                  <StatusBadge status={entity.status} />
+                  {entity.demo ? <DemoBadge /> : null}
+                </div>
+
+                <h1 className="headline mt-5 text-[2.3rem] sm:text-[3.2rem]">
+                  {entity.title}
+                </h1>
+                <p className="standfirst mt-4 max-w-2xl text-[1.05rem]">
+                  {entity.summary}
+                </p>
+                <p className="mt-6 border-t-2 border-ink-900 pt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-600">
+                  Aktualisiert {formatDate(entity.updatedAt)}
+                </p>
+              </div>
+
+              <figure className="relative m-0 min-h-[16rem] border-ink-900 lg:min-h-[22rem] lg:border-l-2">
+                <Standortkarte
+                  punkte={[{ name: entity.title, position: entity.marker }]}
+                />
+              </figure>
+            </div>
+          </Container>
+        </div>
+      ) : (
       <div className="relative isolate overflow-hidden bg-night-950">
         <div className="absolute inset-0">
           <Scene variant={entity.motif ?? motifForSlug(entity.slug)} />
@@ -123,6 +172,7 @@ export default async function EntityPage({
           </div>
         </Container>
       </div>
+      )}
 
       <Container width="wide">
         <div className="grid gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-14 lg:py-14">

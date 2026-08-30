@@ -4,6 +4,8 @@ import { formatDate } from "@/lib/format";
 import type { Article, MotifVariant } from "@/lib/types";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { Standortkarte, type Kartenpunkt } from "@/components/kompass/Standortkarte";
+import { Pressefoto } from "@/components/ui/Pressefoto";
+import { fotoFuer } from "@/lib/content/bildzuordnung";
 import { Schlagzeile } from "./Schlagzeile";
 import { BildBefunde } from "./BildBefunde";
 
@@ -36,6 +38,8 @@ export function HeroStory({
   /** Orte, um die es im Beitrag geht. Sind welche da, steht die Karte statt des Motivs. */
   punkte?: Kartenpunkt[];
 }) {
+  const foto = fotoFuer(article.slug);
+
   return (
     /**
      * Aufmacher im Titelseitensatz: Das Motiv steht ungetrübt in seiner
@@ -95,7 +99,12 @@ export function HeroStory({
         {/* Bildspalte: volle Farbe, kein Schleier. */}
         <figure className="m-0 flex flex-col lg:border-l-2 lg:border-ink-900">
           <div className="relative min-h-[15rem] flex-1 overflow-hidden bg-night-950 sm:min-h-[20rem] lg:min-h-[22rem]">
-            {punkte && punkte.length > 0 ? (
+            {/* Rangfolge der Bildflaeche: belegtes Foto, sonst Karte, sonst
+                Motiv. Der Bildbestand ist noch leer – die Reihenfolge steht
+                trotzdem hier, damit ein spaeteres Foto ohne Umbau greift. */}
+            {foto ? (
+              <Pressefoto bild={foto} prioritaet />
+            ) : punkte && punkte.length > 0 ? (
               <Standortkarte punkte={punkte} />
             ) : (
               <>
@@ -144,7 +153,9 @@ export function StoryCard({
     <article className="group relative flex h-full flex-col">
       {withImage ? (
         <div className="relative mb-3 aspect-[16/10] overflow-hidden bg-night-900">
-          {punkte && punkte.length > 0 ? (
+          {fotoFuer(article.slug) ? (
+            <Pressefoto bild={fotoFuer(article.slug)!} />
+          ) : punkte && punkte.length > 0 ? (
             <Standortkarte punkte={punkte} kompakt />
           ) : (
             <Scene variant={motif ?? article.motif ?? motifForSlug(article.slug)} />

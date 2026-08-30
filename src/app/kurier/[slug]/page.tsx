@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { Scene, motifForSlug } from "@/components/art/Scene";
+import { Standortkarte } from "@/components/kompass/Standortkarte";
+import { kartenpunkteFuerArtikel } from "@/lib/kartenpunkte";
 import { ArticleBody } from "@/components/kurier/ArticleBody";
 import { articleCategoryLabel, StoryCard } from "@/components/kurier/ArticleCard";
 import { DemoBadge, StatusBadge } from "@/components/ui/StatusBadge";
@@ -48,11 +50,13 @@ export default async function ArticlePage({
   const article = await content.getArticle(slug);
   if (!article) notFound();
 
-  const [sources, related, all] = await Promise.all([
+  const [sources, related, all, orte] = await Promise.all([
     content.getSources(article.sourceIds),
     resolveRefs(article.related),
     content.listArticles(),
+    content.listLocations(),
   ]);
+  const punkte = kartenpunkteFuerArtikel(article, orte);
   const status = statusDefinition(article.status);
   const more = all.filter((entry) => entry.slug !== article.slug).slice(0, 3);
 
@@ -61,11 +65,22 @@ export default async function ArticlePage({
       {/* Aufmacherbild mit überlagerter Rubrik und Schlagzeile */}
       <div className="relative isolate overflow-hidden bg-night-950">
         <div className="absolute inset-0">
-          <Scene variant={article.motif ?? motifForSlug(article.slug)} />
+          {/* Geht es im Bericht um Orte, steht deren Lage im Kopf. */}
+          {punkte.length > 0 ? (
+            <Standortkarte punkte={punkte} kompakt />
+          ) : (
+            <Scene variant={article.motif ?? motifForSlug(article.slug)} />
+          )}
         </div>
+        {/* Ueber einer Karte liegt ein staerkerer Verlauf nur unten: Die
+            Schlagzeile braucht Grund, die Karte oben bleibt lesbar. */}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-night-950 via-night-950/58 to-night-950/8"
+          className={
+            punkte.length > 0
+              ? "absolute inset-0 bg-gradient-to-t from-night-950 via-night-950/72 to-transparent"
+              : "absolute inset-0 bg-gradient-to-t from-night-950 via-night-950/58 to-night-950/8"
+          }
         />
         <Container width="wide">
           <div className="relative flex min-h-[22rem] flex-col justify-end py-10 sm:min-h-[28rem] sm:py-14">

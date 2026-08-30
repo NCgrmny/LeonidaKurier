@@ -1,4 +1,8 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { bilder } from "@/content/bilder";
+import { brauchtUrhebernennung } from "@/lib/bilder";
 import { sources } from "@/content/sources";
 import { content } from "@/lib/content";
 import { COLLECTIONS, entityHref } from "@/lib/content/collections";
@@ -272,5 +276,58 @@ describe("Motivverteilung", () => {
   it("ist bei gleicher Eingabe stabil", async () => {
     const articles = await content.listArticles();
     expect([...verteileMotive(articles)]).toEqual([...verteileMotive(articles)]);
+  });
+});
+
+describe("Bildbestand", () => {
+  it("nennt zu jedem Foto Urheber und Lizenz", () => {
+    // Ohne Zuschreibung erlischt eine CC-BY-Lizenz, und § 13 UrhG verlangt
+    // die Urhebernennung ohnehin. Ein Bild ohne diese Angaben darf nicht in
+    // den Bestand.
+    for (const bild of bilder) {
+      expect(bild.urheber.trim(), `Bild ${bild.datei} ohne Urheber`).not.toBe("");
+      expect(bild.beschreibung.trim(), `Bild ${bild.datei} ohne Beschreibung`).not.toBe("");
+      expect(bild.aufnahmeort.trim(), `Bild ${bild.datei} ohne Aufnahmeort`).not.toBe("");
+      if (brauchtUrhebernennung(bild.lizenz)) {
+        expect(bild.lizenzUrl, `Bild ${bild.datei} ohne Lizenzlink`).toBeTruthy();
+        expect(bild.quelleUrl, `Bild ${bild.datei} ohne Quellenlink`).toBeTruthy();
+      }
+    }
+  });
+
+  it("liegt im Repository, nicht auf fremden Servern", () => {
+    for (const bild of bilder) {
+      expect(bild.datei).not.toMatch(/^https?:/);
+      expect(bild.datei).toMatch(/^[a-z0-9-]+\.(jpg|jpeg|png|webp|avif)$/);
+      expect(
+        existsSync(join(process.cwd(), "public", "bilder", bild.datei)),
+        `Datei public/bilder/${bild.datei} fehlt`,
+      ).toBe(true);
+    }
+  });
+
+  it("ordnet jeden Slug hoechstens einem Bild zu", () => {
+    const gesehen = new Map<string, string>();
+    for (const bild of bilder) {
+      for (const slug of bild.fuer) {
+        expect(
+          gesehen.get(slug),
+          `Slug "${slug}" ist ${gesehen.get(slug)} und ${bild.datei} zugeordnet`,
+        ).toBeUndefined();
+        gesehen.set(slug, bild.datei);
+      }
+    }
+  });
+
+  it("verweist nur auf vorhandene Beitraege oder Eintraege", async () => {
+    const bekannt = new Set([
+      ...(await content.listArticles()).map((eintrag) => eintrag.slug),
+      ...allEntities().map(({ entity }) => entity.slug),
+    ]);
+    for (const bild of bilder) {
+      for (const slug of bild.fuer) {
+        expect(bekannt.has(slug), `Bild ${bild.datei} verweist auf "${slug}"`).toBe(true);
+      }
+    }
   });
 });
