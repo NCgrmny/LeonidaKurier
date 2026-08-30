@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { bilder } from "@/content/bilder";
+import { abgelehnteBilder, bilder } from "@/content/bilder";
 import { brauchtUrhebernennung } from "@/lib/bilder";
 import {
   fehlendeBilddateien,
@@ -373,6 +373,27 @@ describe("Bildbestand", () => {
       for (const slug of bild.fuer) {
         expect(bekannt.has(slug), `Bild ${bild.datei} verweist auf "${slug}"`).toBe(true);
       }
+    }
+  });
+});
+
+describe("Abgelehnte Bilder", () => {
+  it("bleiben aus dem Bestand heraus", () => {
+    // Eine Ablehnung, die nur als Kommentar existiert, geht beim naechsten
+    // Rechercheanlauf verloren. Dieser Test macht sie haltbar.
+    const imBestand = new Set(bilder.map((bild) => bild.datei));
+    for (const abgelehnt of abgelehnteBilder) {
+      expect(
+        imBestand.has(abgelehnt.datei),
+        `${abgelehnt.datei} wurde abgelehnt: ${abgelehnt.grund}`,
+      ).toBe(false);
+    }
+  });
+
+  it("nennen einen Grund und die geprüfte Quelle", () => {
+    for (const abgelehnt of abgelehnteBilder) {
+      expect(abgelehnt.grund.length).toBeGreaterThan(20);
+      expect(abgelehnt.quelleUrl).toMatch(/^https:\/\//);
     }
   });
 });

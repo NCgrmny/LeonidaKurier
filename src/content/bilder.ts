@@ -67,34 +67,6 @@ export const bilder: Pressebild[] = [
     fuer: ["leonida-keys"],
   },
   {
-    datei: "portmiami-kreuzfahrtschiff.jpg",
-    beschreibung: "Kreuzfahrtschiff in PortMiami, vom Wasser aus aufgenommen",
-    aufnahmeort: "PortMiami, Miami, Florida",
-    urheber: "Kiran891",
-    lizenz: "CC BY-SA 4.0",
-    lizenzUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
-    quelleUrl:
-      "https://commons.wikimedia.org/wiki/File:Independence_of_the_Seas_at_Port_Miami_(March_15,_2024).jpg",
-    jahr: 2024,
-    bezug: "vorbild",
-    bearbeitung: "Bildausschnitt",
-    fuer: ["vc-port"],
-  },
-  {
-    datei: "little-havana-welcome-center.jpg",
-    beschreibung: "Welcome Center an der Calle Ocho im Viertel Little Havana",
-    aufnahmeort: "Little Havana, Miami, Florida",
-    urheber: "Tamanoeconomico",
-    lizenz: "CC BY-SA 4.0",
-    lizenzUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
-    quelleUrl:
-      "https://commons.wikimedia.org/wiki/File:Little_Havana_Welcome_Center.jpg",
-    jahr: 2018,
-    bezug: "vorbild",
-    bearbeitung: "Bildausschnitt",
-    fuer: ["little-cuba"],
-  },
-  {
     datei: "lake-okeechobee-aus-dem-all.jpg",
     beschreibung: "Lake Okeechobee aus dem Weltraum",
     aufnahmeort: "Lake Okeechobee, Florida",
@@ -149,3 +121,30 @@ export const bilder: Pressebild[] = [
     fuer: ["mount-kalaga"],
   },
 ];
+
+/**
+ * Geprüft und abgelehnt.
+ *
+ * Diese Motive standen auf der Rechercheliste, wurden in voller Auflösung
+ * angesehen und verworfen. Der Vermerk steht hier, damit dieselbe Datei nicht
+ * in einem halben Jahr erneut recherchiert und eingebaut wird – eine Ablehnung
+ * ohne Begründung geht sonst verloren.
+ */
+export const abgelehnteBilder = [
+  {
+    datei: "little-havana-welcome-center.jpg",
+    quelleUrl:
+      "https://commons.wikimedia.org/wiki/File:Little_Havana_Welcome_Center.jpg",
+    fuer: "little-cuba",
+    grund:
+      "Mehrere identifizierbare Personen deutlich im Vordergrund. Das Recht am eigenen Bild wiegt schwerer als eine passende Bildidee.",
+  },
+  {
+    datei: "portmiami-kreuzfahrtschiff.jpg",
+    quelleUrl:
+      "https://commons.wikimedia.org/wiki/File:Independence_of_the_Seas_at_Port_Miami_(March_15,_2024).jpg",
+    fuer: "vc-port",
+    grund:
+      "Das Bild wird von einem Kreuzfahrtschiff samt Markenaufschrift beherrscht und zeigt keine Hafenanlage. Als Hafenbild unbrauchbar, als Markenabbildung unnötig.",
+  },
+] as const;
