@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CommunityMap } from "@/components/kompass/CommunityMap";
 import { CompassMap } from "@/components/kompass/CompassMap";
 import { Container } from "@/components/ui/Container";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -48,6 +49,25 @@ export default async function KompassPage({
           </div>
         </Container>
       </div>
+
+      {/* Zuerst die Karte, die es gibt: die Community-Rekonstruktion. Danach
+          die eigene Quellenebene. Der Kompass tritt nicht als bessere Karte an,
+          sondern als die Ebene, die erklaert, was davon belegt ist. */}
+      <CommunityMap />
+
+      <Container width="wide">
+        <div className="border-b-2 border-ink-900 py-4">
+          <p className="meta text-coral-600">Leonida Kurier · eigene Quellenebene</p>
+          <h2 className="subhead mt-1 text-[1.5rem] leading-tight">
+            Belegte Namen, nachvollziehbare Positionen
+          </h2>
+          <p className="mt-2 max-w-2xl font-serif text-[14px] leading-relaxed text-ink-700">
+            Unter der Community-Karte folgt unsere eigene deutsche Ebene. Sie
+            verknüpft jeden Eintrag mit Status, Quelle und Datenbank – und behauptet
+            keine Präzision, die Rockstar Games noch nicht veröffentlicht hat.
+          </p>
+        </div>
+      </Container>
 
       <CompassMap markers={markers} initialMarkerSlug={marker} />
 

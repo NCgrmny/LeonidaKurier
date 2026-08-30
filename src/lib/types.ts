@@ -92,6 +92,22 @@ export interface BaseEntity {
   demo?: boolean;
 }
 
+/**
+ * Bildbefund: was auf einem Motiv zu sehen ist – und wie sicher.
+ *
+ * Der Kurier behandelt Bildmaterial als Beweismaterial, nicht als Schmuck.
+ * Zu jedem Aufmacherbild kann die Redaktion nummerierte Befunde festhalten:
+ * was erkennbar ist, und mit welchem Status es gefuehrt wird. Damit gilt am
+ * Bild dieselbe Beweislogik wie am Text.
+ */
+export interface Bildbefund {
+  /** Kurzbezeichnung des Befunds, z. B. "Küstenlinie". */
+  titel: string;
+  /** Was daran erkennbar ist – ein Satz. */
+  beobachtung: string;
+  status: RadarStatus;
+}
+
 export type ArticleCategory =
   | "meldung"
   | "analyse"
@@ -115,6 +131,8 @@ export interface Article extends BaseEntity {
   communityReaction?: string;
   /** Steuert die Platzierung als Aufmacher auf der Startseite. */
   lead?: boolean;
+  /** Nummerierte Befunde zum Aufmacherbild – Bild als Beweismaterial. */
+  bildbefunde?: Bildbefund[];
   readingMinutes: number;
 }
 

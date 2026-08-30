@@ -27,6 +27,37 @@ export const articles: Article[] = [
     updatedAt: "2026-08-29",
     status: "bestaetigt",
     lead: true,
+    /**
+     * Bildbefunde: Was auf dem Motiv zu sehen ist, einzeln gefuehrt. Damit
+     * gilt am Bild dieselbe Beweislogik wie am Text – das Motiv ist Beleg,
+     * nicht Schmuck.
+     */
+    bildbefunde: [
+      {
+        titel: "Vice City",
+        beobachtung:
+          "Skyline und Küstenlinie im offiziellen Material sichtbar, von Rockstar Games namentlich benannt.",
+        status: "bestaetigt" as const,
+      },
+      {
+        titel: "Küstenverlauf",
+        beobachtung:
+          "Lässt sich mit den Rekonstruktionen der Mapping-Community abgleichen, aber nicht daran messen.",
+        status: "hinweis" as const,
+      },
+      {
+        titel: "Verkehr",
+        beobachtung:
+          "Mehrere Fahrzeugklassen erkennbar; einzelne Modelle sind offiziell nicht benannt.",
+        status: "hinweis" as const,
+      },
+      {
+        titel: "Landmarke",
+        beobachtung:
+          "Position auf der Karte nicht bestimmbar, solange keine offizielle Geografie vorliegt.",
+        status: "spekulation" as const,
+      },
+    ],
     demo: false,
     readingMinutes: 6,
     sourceIds: [

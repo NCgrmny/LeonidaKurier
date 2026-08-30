@@ -8,6 +8,7 @@ import { SourceDesk } from "@/components/kurier/SourceDesk";
 import { ReleaseCountdown } from "@/components/kurier/ReleaseCountdown";
 import { AusLeonida } from "@/components/kurier/AusLeonida";
 import { KurzUndWichtig } from "@/components/kurier/KurzUndWichtig";
+import { HeuteInLeonida } from "@/components/kurier/HeuteInLeonida";
 import { RadarTicker } from "@/components/radar/RadarTicker";
 import { Scene, motifForSlug } from "@/components/art/Scene";
 import { BaseMap } from "@/components/kompass/BaseMap";
@@ -65,6 +66,16 @@ export default async function HomePage() {
     // damit die Newswire-Meldung vor der Videoseite steht.
     .sort((a, b) => b.publishedAt!.localeCompare(a.publishedAt!))[0];
   const mapSource = allSources.find((source) => source.id === "src-state-of-leonida");
+
+  // Kennzahlen fuer "Heute in Leonida" – alle gezaehlt, keine gesetzt.
+  const marker = await content.listMapMarkers();
+  const markerVerortet = marker.filter(
+    (eintrag) => eintrag.position.precision !== "platzhalter",
+  ).length;
+  const offeneSignale = signals.filter(
+    (signal) => signal.status !== "bestaetigt" && signal.status !== "widerlegt",
+  ).length;
+  const datenbankEintraege = Object.values(counts).reduce((summe, n) => summe + n, 0);
   const checkedAt = [lead?.updatedAt, ...latest.map((a) => a.updatedAt)]
     .filter(Boolean)
     .sort()
@@ -109,6 +120,20 @@ export default async function HomePage() {
           </div>
         </Container>
       ) : null}
+
+      {/* ================= Heute in Leonida ================= */}
+      <Container width="wide">
+        <div className="mt-5">
+          <HeuteInLeonida
+            quellenGesamt={allSources.length}
+            quellenPrimaer={officialSources.length}
+            markerVerortet={markerVerortet}
+            markerGesamt={marker.length}
+            offeneSignale={offeneSignale}
+            datenbankEintraege={datenbankEintraege}
+          />
+        </div>
+      </Container>
 
       {/* ================= Aus Leonida ================= */}
       <Container width="wide">
