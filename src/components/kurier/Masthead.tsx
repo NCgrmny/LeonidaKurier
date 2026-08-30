@@ -26,8 +26,11 @@ const RESSORTS = [
 export function Masthead({
   editionDate,
   edition = 1,
+  editionHref,
 }: {
   editionDate: string;
+  /** Verweis auf die gebundene Ausgabe dieser Nummer, falls vorhanden. */
+  editionHref?: string;
   edition?: number;
 }) {
   return (
@@ -53,9 +56,19 @@ export function Masthead({
 
       {/* Zeile unter dem Titel: Ausgabe, Anspruch, Preis – wie im Druck */}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-y border-ink-900 py-1.5">
-        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-ink-900 sm:text-[10px]">
-          Nr. {String(edition).padStart(3, "0")}
-        </span>
+        {editionHref ? (
+          <Link
+            href={editionHref}
+            className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-ink-900 underline-offset-4 hover:text-coral-600 hover:underline sm:text-[10px]"
+            title="Diese Ausgabe im Archiv"
+          >
+            Nr. {String(edition).padStart(3, "0")}
+          </Link>
+        ) : (
+          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-ink-900 sm:text-[10px]">
+            Nr. {String(edition).padStart(3, "0")}
+          </span>
+        )}
         <span className="order-3 w-full text-center font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-ink-800 sm:order-none sm:w-auto sm:text-[10px] sm:tracking-[0.26em]">
           Die Zeitung des Bundesstaates Leonida
         </span>

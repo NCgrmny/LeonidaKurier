@@ -1,5 +1,6 @@
 import type {
   Article,
+  Ausgabe,
   BaseEntity,
   Business,
   Character,
@@ -28,6 +29,15 @@ export interface ContentRepository {
   getLeadArticle(): Promise<Article | null>;
   getArticle(slug: string): Promise<Article | null>;
 
+  /** Ausgaben des Leonida Blatts, neueste zuerst. */
+  listAusgaben(): Promise<Ausgabe[]>;
+  getAusgabe(slug: string): Promise<Ausgabe | null>;
+  /**
+   * Löst eine Ausgabe zu ihren tatsächlichen Beiträgen auf. Fehlende Slugs
+   * werden übersprungen, damit ein umbenannter Beitrag keine Seite zerstört.
+   */
+  getAusgabeMitBeitraegen(slug: string): Promise<AufgeloesteAusgabe | null>;
+
   listRadarSignals(): Promise<RadarSignal[]>;
 
   listRegions(): Promise<Region[]>;
@@ -47,6 +57,12 @@ export interface ContentRepository {
 
   /** Löst einen Verweis auf einen darstellbaren Eintrag auf. */
   resolveRef(ref: EntityRef): Promise<ResolvedRef | null>;
+}
+
+export interface AufgeloesteAusgabe {
+  ausgabe: Ausgabe;
+  aufmacher: Article | null;
+  beitraege: Article[];
 }
 
 export interface ResolvedRef {

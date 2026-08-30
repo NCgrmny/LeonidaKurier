@@ -69,6 +69,9 @@ export default async function HomePage() {
 
   // Kennzahlen fuer "Heute in Leonida" – alle gezaehlt, keine gesetzt.
   const marker = await content.listMapMarkers();
+
+  // Der Blattkopf traegt die Nummer der laufenden Ausgabe, nicht eine gesetzte.
+  const [aktuelleAusgabe] = await content.listAusgaben();
   const markerVerortet = marker.filter(
     (eintrag) => eintrag.position.precision !== "platzhalter",
   ).length;
@@ -85,7 +88,13 @@ export default async function HomePage() {
     <>
       {/* ================= Zeitungskopf ================= */}
       <Container width="wide">
-        <Masthead editionDate={lead?.publishedAt ?? new Date().toISOString()} />
+        <Masthead
+          editionDate={lead?.publishedAt ?? new Date().toISOString()}
+          edition={aktuelleAusgabe?.nummer ?? 1}
+          editionHref={
+            aktuelleAusgabe ? `/archiv/ausgabe/${aktuelleAusgabe.slug}` : undefined
+          }
+        />
       </Container>
 
       {/* ================= Countdown ================= */}

@@ -45,13 +45,21 @@ export default async function KurierPage() {
 
   const [lead, ...rest] = articles;
   const leadSource = (await content.getSources(lead.sourceIds))[0];
+  // Der Blattkopf traegt die Nummer der laufenden Ausgabe, nicht eine gesetzte.
+  const [aktuelleAusgabe] = await content.listAusgaben();
   const secondary = rest.slice(0, 2);
   const briefs = rest.slice(2);
 
   return (
     <>
       <Container width="wide">
-        <Masthead editionDate={lead.publishedAt} />
+        <Masthead
+          editionDate={lead.publishedAt}
+          edition={aktuelleAusgabe?.nummer ?? 1}
+          editionHref={
+            aktuelleAusgabe ? `/archiv/ausgabe/${aktuelleAusgabe.slug}` : undefined
+          }
+        />
       </Container>
 
       <Container width="wide">

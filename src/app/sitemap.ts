@@ -22,6 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const articles = await content.listArticles();
+  const ausgaben = await content.listAusgaben();
   const collectionEntries = await Promise.all(
     COLLECTIONS.map(async (collection) => {
       const entries = await entriesForCollection(collection.slug);
@@ -43,6 +44,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(article.updatedAt),
       changeFrequency: "weekly" as const,
       priority: 0.7,
+    })),
+    ...ausgaben.map((ausgabe) => ({
+      url: `${SITE_URL}/archiv/ausgabe/${ausgabe.slug}`,
+      lastModified: new Date(ausgabe.bis),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
     ...collectionEntries.flatMap(({ collection, entries }) => [
       {

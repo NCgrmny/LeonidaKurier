@@ -198,3 +198,50 @@ describe("Archiv", () => {
     for (const entry of entries) expect(entry.date).toMatch(ISO_DATE);
   });
 });
+
+describe("Ausgaben", () => {
+  it("verweisen ausschließlich auf vorhandene Beiträge", async () => {
+    // Eine Ausgabe speichert nur Verweise. Zeigt ein Verweis ins Leere, fehlt
+    // der Ausgabe stillschweigend ihr Aufmacher – das darf nicht passieren.
+    const ausgaben = await content.listAusgaben();
+    expect(ausgaben.length).toBeGreaterThan(0);
+
+    for (const ausgabe of ausgaben) {
+      for (const slug of [ausgabe.aufmacher, ...ausgabe.beitraege]) {
+        expect(
+          await content.getArticle(slug),
+          `Ausgabe Nr. ${ausgabe.nummer} verweist auf "${slug}"`,
+        ).not.toBeNull();
+      }
+    }
+  });
+
+  it("führen jeden Beitrag höchstens einmal", async () => {
+    const ausgaben = await content.listAusgaben();
+    for (const ausgabe of ausgaben) {
+      const slugs = [ausgabe.aufmacher, ...ausgabe.beitraege];
+      expect(new Set(slugs).size, `Ausgabe Nr. ${ausgabe.nummer}`).toBe(slugs.length);
+    }
+  });
+
+  it("haben eindeutige Nummern, Slugs und gültige Zeiträume", async () => {
+    const ausgaben = await content.listAusgaben();
+    expect(new Set(ausgaben.map((a) => a.nummer)).size).toBe(ausgaben.length);
+    expect(new Set(ausgaben.map((a) => a.slug)).size).toBe(ausgaben.length);
+
+    for (const ausgabe of ausgaben) {
+      expect(ausgabe.von).toMatch(ISO_DATE);
+      expect(ausgabe.bis).toMatch(ISO_DATE);
+      expect(ausgabe.von <= ausgabe.bis).toBe(true);
+    }
+  });
+
+  it("werden vollständig aufgelöst ausgeliefert", async () => {
+    const [erste] = await content.listAusgaben();
+    const aufgeloest = await content.getAusgabeMitBeitraegen(erste.slug);
+    expect(aufgeloest).not.toBeNull();
+    expect(aufgeloest?.aufmacher?.slug).toBe(erste.aufmacher);
+    expect(aufgeloest?.beitraege.map((a) => a.slug)).toEqual(erste.beitraege);
+    expect(await content.getAusgabeMitBeitraegen("gibt-es-nicht")).toBeNull();
+  });
+});

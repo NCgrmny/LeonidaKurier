@@ -37,6 +37,35 @@ export interface Source {
   note?: string;
 }
 
+/**
+ * Ausgabe des Leonida Blatts.
+ *
+ * Eine Ausgabe ist kein neuer Inhaltstyp, sondern eine kuratierte Sicht auf
+ * vorhandene Beiträge: ein Zeitraum, ein Aufmacher, eine Auswahl – und eine
+ * redaktionelle Bilanz dessen, was in diesem Zeitraum belegbar wurde.
+ *
+ * Damit entsteht über die Monate das Gedächtnis der Entdeckung Leonidas:
+ * Man kann später nachlesen, was zu einem Zeitpunkt als gesichert galt, was
+ * vermutet wurde und was sich als falsch erwiesen hat – ohne dass Beiträge
+ * doppelt gepflegt werden müssten.
+ */
+export interface Ausgabe {
+  nummer: number;
+  slug: string;
+  titel: string;
+  untertitel: string;
+  /** ISO-Datum, Beginn des abgedeckten Zeitraums. */
+  von: string;
+  /** ISO-Datum, Ende des abgedeckten Zeitraums. */
+  bis: string;
+  /** Slug des Aufmachers dieser Ausgabe. */
+  aufmacher: string;
+  /** Weitere Beiträge der Ausgabe, in redaktioneller Reihenfolge. */
+  beitraege: string[];
+  /** Was in diesem Zeitraum dazukam – die Einordnung im Rückblick. */
+  bilanz: string;
+}
+
 /** Verweis von einem Inhalt auf eine beliebige andere Entitaet. */
 export interface EntityRef {
   type: EntityType;

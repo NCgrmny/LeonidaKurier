@@ -1,4 +1,5 @@
 import { articles } from "@/content/articles";
+import { ausgaben } from "@/content/ausgaben";
 import { mapMarkers, radarSignals } from "@/content/radar";
 import { sources } from "@/content/sources";
 import { timeline } from "@/content/timeline";
@@ -14,7 +15,11 @@ import {
 } from "@/content/world";
 import type { BaseEntity, EntityRef, EntityType } from "@/lib/types";
 import { entityHref } from "./collections";
-import type { ContentRepository, ResolvedRef } from "./repository";
+import type {
+  AufgeloesteAusgabe,
+  ContentRepository,
+  ResolvedRef,
+} from "./repository";
 
 function byDateDesc<T extends { publishedAt?: string; updatedAt?: string }>(
   a: T,
@@ -58,6 +63,28 @@ export const seedRepository: ContentRepository = {
 
   async getArticle(slug) {
     return articles.find((article) => article.slug === slug) ?? null;
+  },
+
+  async listAusgaben() {
+    return [...ausgaben].sort((a, b) => b.nummer - a.nummer);
+  },
+
+  async getAusgabe(slug) {
+    return ausgaben.find((ausgabe) => ausgabe.slug === slug) ?? null;
+  },
+
+  async getAusgabeMitBeitraegen(slug): Promise<AufgeloesteAusgabe | null> {
+    const ausgabe = ausgaben.find((item) => item.slug === slug);
+    if (!ausgabe) return null;
+    const finde = (articleSlug: string) =>
+      articles.find((article) => article.slug === articleSlug) ?? null;
+    return {
+      ausgabe,
+      aufmacher: finde(ausgabe.aufmacher),
+      beitraege: ausgabe.beitraege
+        .map(finde)
+        .filter((article): article is (typeof articles)[number] => Boolean(article)),
+    };
   },
 
   async listRadarSignals() {

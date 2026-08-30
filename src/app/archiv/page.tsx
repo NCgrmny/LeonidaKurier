@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { Timeline } from "@/components/archiv/Timeline";
+import { AusgabenRegal } from "@/components/blatt/AusgabenRegal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Scene } from "@/components/art/Scene";
@@ -16,7 +17,10 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function ArchivPage() {
-  const entries = await content.listTimeline();
+  const [entries, ausgaben] = await Promise.all([
+    content.listTimeline(),
+    content.listAusgaben(),
+  ]);
   const reversed = [...entries].reverse();
 
   return (
@@ -44,8 +48,27 @@ export default async function ArchivPage() {
       </div>
 
       <Container width="wide">
-        <section className="py-12">
-          <Timeline entries={reversed} />
+        {/* Das Blatt: dieselben Beitraege, zu Ausgaben gebunden. */}
+        {ausgaben.length > 0 ? (
+          <section className="py-12">
+            <SectionHeading
+              ressort="Leonida Blatt"
+              title="Die Ausgaben"
+              description="Das Blatt ist keine zweite Zeitung, sondern der gebundene Kurier: Jede Ausgabe fasst einen Zeitraum zusammen und zieht Bilanz, was in ihm belegbar wurde."
+            />
+            <AusgabenRegal ausgaben={ausgaben} />
+          </section>
+        ) : null}
+
+        <section className="border-t border-ink-900/15 py-12">
+          <SectionHeading
+            ressort="Chronologie"
+            title="Wann was belegbar wurde"
+            description="Jede Zeile steht für ein Ereignis mit benennbarer Quelle – nicht für eine Vermutung."
+          />
+          <div className="mt-6">
+            <Timeline entries={reversed} />
+          </div>
         </section>
 
         <section className="pb-16">
